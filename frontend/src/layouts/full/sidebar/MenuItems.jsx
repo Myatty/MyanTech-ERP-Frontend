@@ -24,7 +24,7 @@ const Menuitems = [
     id: uniqueId(),
     title: 'Product List',
     icon: IconListCheck,
-    href: '/products',
+    href: '/product-page',
   },
   {
     navlabel: true,
