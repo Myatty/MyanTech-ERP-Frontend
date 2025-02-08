@@ -1,4 +1,3 @@
-// filepath: /d:/Programming Repos/MyanTech ERP/frontend/src/reducers/productsReducer.js
 import {
     FETCH_PRODUCTS_REQUEST,
     FETCH_PRODUCTS_SUCCESS,

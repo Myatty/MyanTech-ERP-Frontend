@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -7,98 +8,102 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-const DialogBox = ({ open, setOpen }) => {
+import axios from 'axios';
+
+const DialogBox = ({ open, setOpen, onProductCreated }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    category: '',
+    brand: '',
+    price: '',
+    serial_number: '',
+    stock_quantity: '',
+    product_segment: '',
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // create new product
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:4000/api/products', formData);
+      setOpen(false);
+      onProductCreated(); 
+    } catch (error) {
+      console.error('Error creating product:', error);
+    }
+  };
+
   return (
-    <>
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>Create New Product</DialogTitle>
-        <DialogContent sx={{ display: "flex", flexDirection: "column", p: 4 }}>
-          <Box>
-            <h4>Name</h4>
-            <TextField
-              sx={{ width: 300 }}
-              placeholder="Name"
-              onChange={(evt) => {
-                //   setData({ ...data, name: evt.target.value });
-              }}
-            />
-          </Box>
-          <Box>
-            <h4>Brand</h4>
-            <TextField
-              sx={{ width: 300 }}
-              placeholder="Brand"
-              onChange={(evt) => {
-                //   setData({ ...data, name: evt.target.value });
-              }}
-            />
-          </Box>
-          <Box>
-            <h4>Category</h4>
-            <TextField
-              sx={{ width: 300 }}
-              placeholder="Category"
-              onChange={(evt) => {
-                //   setData({ ...data, name: evt.target.value });
-              }}
-            />
-          </Box>
-          <Box>
-            <h4>Product Segment</h4>
-            <TextField
-              sx={{ width: 300 }}
-              placeholder="Product Segment"
-              onChange={(evt) => {
-                //   setData({ ...data, name: evt.target.value });
-              }}
-            />
-          </Box>
-          <Box>
-            <h4>Serial Number</h4>
-            <TextField
-              sx={{ width: 300 }}
-              placeholder="Serial Number"
-              onChange={(evt) => {
-                //   setData({ ...data, name: evt.target.value });
-              }}
-            />
-          </Box>
-          <Box>
-            <h4>Price</h4>
-            <TextField
-              sx={{ width: 300 }}
-              placeholder="Price"
-              onChange={(evt) => {
-                //   setData({ ...data, name: evt.target.value });
-              }}
-            />
-          </Box>
-          <Box>
-            <h4>Quantity</h4>
-            <TextField
-              sx={{ width: 300 }}
-              placeholder="Quantity"
-              onChange={(evt) => {
-                //   setData({ ...data, name: evt.target.value });
-              }}
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            variant="contained"
-            onClick={() => {
-              setOpen(false);
-            }}
-          >
-            Cancle
-          </Button>
-          <Button variant="contained" onClick={() => {}}>
-            Comfrim
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+    <Dialog open={open} onClose={() => setOpen(false)}>
+      <DialogTitle>Create New Product</DialogTitle>
+      <DialogContent sx={{ display: "flex", flexDirection: "column", p: 4 }}>
+        <Box component="form" onSubmit={handleSubmit}>
+          <TextField
+            name="name"
+            label="Name"
+            value={formData.name}
+            onChange={handleChange}
+            sx={{ mb: 2, width: 300 }}
+          />
+          <TextField
+            name="category"
+            label="Category"
+            value={formData.category}
+            onChange={handleChange}
+            sx={{ mb: 2, width: 300 }}
+          />
+          <TextField
+            name="brand"
+            label="Brand"
+            value={formData.brand}
+            onChange={handleChange}
+            sx={{ mb: 2, width: 300 }}
+          />
+          <TextField
+            name="price"
+            label="Price"
+            type="number"
+            value={formData.price}
+            onChange={handleChange}
+            sx={{ mb: 2, width: 300 }}
+          />
+          <TextField
+            name="serial_number"
+            label="Serial Number"
+            value={formData.serial_number}
+            onChange={handleChange}
+            sx={{ mb: 2, width: 300 }}
+          />
+          <TextField
+            name="stock_quantity"
+            label="Stock Quantity"
+            type="number"
+            value={formData.stock_quantity}
+            onChange={handleChange}
+            sx={{ mb: 2, width: 300 }}
+          />
+          <TextField
+            name="product_segment"
+            label="Product Segment"
+            value={formData.product_segment}
+            onChange={handleChange}
+            sx={{ mb: 2, width: 300 }}
+          />
+          <DialogActions>
+            <Button onClick={() => setOpen(false)}>Cancel</Button>
+            <Button type="submit" variant="contained">Create</Button>
+          </DialogActions>
+        </Box>
+      </DialogContent>
+    </Dialog>
   );
 };
+
 export default DialogBox;

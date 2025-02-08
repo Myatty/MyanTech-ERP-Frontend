@@ -1,31 +1,30 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts } from '../../actions/productActions';
 import Table from "@mui/material/Table";
-
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import TableBody from "@mui/material/TableBody";
+import Button from "@mui/material/Button";
 import DialogBox from "./component/dilogBox";
-import { useState } from "react";
-
-import { Typography } from "@mui/material";
 import PageContainer from "src/components/container/PageContainer";
 import DashboardCard from "../../components/shared/DashboardCard";
-import { Button } from "@mui/material";
 
 const ProductPage = () => {
-  const [open, setOpen] = useState(false);
-
   const dispatch = useDispatch();
   const { loading, products, error } = useSelector((state) => state.products);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
+
+  const handleProductCreated = () => {
+    dispatch(fetchProducts());
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -113,7 +112,7 @@ const ProductPage = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <DialogBox open={open} setOpen={setOpen} />
+          <DialogBox open={open} setOpen={setOpen} onProductCreated={handleProductCreated} />
         </>
       </DashboardCard>
     </PageContainer>
