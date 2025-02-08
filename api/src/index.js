@@ -1,21 +1,20 @@
-const express = require("express");
-const cors = require("cors");
-const morgan = require("morgan")
+require('dotenv').config({ path: '../.env' });
+const express = require('express');
+const pool = require('../config/db');
+const mysql = require('mysql2/promise');
 
 const app = express();
+const PORT = process.env.PORT || 4000;
 
-app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(morgan('dev'));
-
-const userRouter = require("./routes/user");
-app.use(userRouter);
 
 app.get("/", (req, res) => {
-    res.send("Express API Index");
+    res.json({ message: "MyanTech ERP API is running!" });
 });
 
-app.listen(8000, () => {
-    console.log("API server running at port 8000");
+const productRoutes = require("./routes/products");
+app.use("/api/products", productRoutes);
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
