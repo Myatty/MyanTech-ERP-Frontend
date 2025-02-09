@@ -15,6 +15,8 @@ import {
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { fetchUsers } from "../../../actions/userActions";
+import axios from "axios";
+
 const UserDialog = ({
   open,
   setOpen,
@@ -25,11 +27,11 @@ const UserDialog = ({
   const dispatch = useDispatch();
   const [userData, setUserData] = useState({
     name: "",
-    phone: "",
+    phone_number: "",
     email: "",
     password: "",
-    role: "",
-    department: "",
+    role_name: "",
+    dept_name: "",
   });
 
   const handleChange = (e) => {
@@ -38,6 +40,7 @@ const UserDialog = ({
       [e.target.name]: e.target.value,
     });
     if (e.target.name == "department") {
+      console.log("hello");
       setDepartment(e.target.value);
     }
   };
@@ -57,7 +60,7 @@ const UserDialog = ({
   return (
     <>
       <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>User Registor Form</DialogTitle>
+        <DialogTitle>User Registration Form</DialogTitle>
         <DialogContent sx={{ display: "flex", flexDirection: "column", p: 4 }}>
           <Box component="form" onSubmit={handleSubmit}>
             <Box>
@@ -72,7 +75,7 @@ const UserDialog = ({
             <Box>
               <h4>Phone</h4>
               <TextField
-                name="phone"
+                name="phone_number"
                 sx={{ width: 300 }}
                 placeholder="Phone"
                 onChange={handleChange}
@@ -100,8 +103,8 @@ const UserDialog = ({
             <Box>
               <h4>Role</h4>
               <TextField
-                name="role"
-                type="Role"
+                name="role_name"
+                type="role_name"
                 sx={{ width: 300 }}
                 placeholder="Role"
                 onChange={handleChange}
