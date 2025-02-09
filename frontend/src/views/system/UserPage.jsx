@@ -117,11 +117,11 @@ const User = () => {
                       key={row.name}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      <TableCell align="center">{row.id}</TableCell>
+                      <TableCell align="center">{row.employee_id}</TableCell>
                       <TableCell align="center">{row.name}</TableCell>
                       <TableCell align="center">{row.email}</TableCell>
-                      <TableCell align="center">{row.Ph_no}</TableCell>
-                      <TableCell align="center">{row.role}</TableCell>
+                      <TableCell align="center">{row.phone_number}</TableCell>
+                      <TableCell align="center">{row.role_name}</TableCell>
                       <TableCell align="center">{editIcon}</TableCell>
                       <TableCell align="center">{deleteIcon}</TableCell>
                     </TableRow>
