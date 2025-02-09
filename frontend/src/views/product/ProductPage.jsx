@@ -4,9 +4,14 @@ import DataTable from "react-data-table-component";
 import { CSVLink } from "react-csv"; // For exporting CSV
 import { fetchProducts } from "../../actions/productActions";
 import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
 import DialogBox from "./component/dilogBox";
 import PageContainer from "src/components/container/PageContainer";
 import DashboardCard from "../../components/shared/DashboardCard";
+import Skeleton from "@mui/material/Skeleton";
+import Box from "@mui/material/Box";
+import { FormControl, InputLabel, Select } from "@mui/material";
 
 const ProductPage = () => {
   const dispatch = useDispatch();
@@ -14,6 +19,8 @@ const ProductPage = () => {
 
   const [open, setOpen] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(""); // Search term state
+  const [categoryFilter, setCategoryFilter] = useState(""); // Category filter state
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -23,20 +30,22 @@ const ProductPage = () => {
     dispatch(fetchProducts());
   };
 
-  // Simple handler to show how you might respond to an Edit button
   const handleEdit = (row) => {
     alert(`Edit product ID: ${row._id || row.id}`);
-    // Or open an edit dialog, navigate to an edit page, etc.
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  // Get unique categories from products
+  const uniqueCategories = [
+    ...new Set(products?.map((product) => product.category) || []),
+  ];
 
-  // Data for react-data-table-component
-  const data = products || [];
+  // Filtered products based on search & category
+  const filteredProducts = products?.filter(
+    (product) =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (categoryFilter ? product.category === categoryFilter : true)
+  );
 
-  // Example: generate CSV column headers from your columns array
-  // Or define them manually, if you prefer
   const csvHeaders = [
     { label: "Item Name", key: "name" },
     { label: "Brand", key: "brand" },
@@ -47,22 +56,14 @@ const ProductPage = () => {
     { label: "Quantity", key: "stock_quantity" },
   ];
 
-  // CSVLink config
   const csvReport = {
-    data,
+    data: filteredProducts,
     headers: csvHeaders,
     filename: "ProductReport.csv",
   };
 
-  // Define columns (including an "Actions" column for Edit)
   const columns = [
-    // This first column is not necessary for checkboxes;
-    // we leave it if you still want a "No." column.
-    {
-      name: "No",
-      selector: (row, index) => index + 1,
-      width: "60px",
-    },
+    { name: "No", selector: (row, index) => index + 1, width: "60px" },
     {
       name: "Item Name",
       selector: (row) => row.name,
@@ -108,9 +109,24 @@ const ProductPage = () => {
     {
       name: "Actions",
       cell: (row) => (
-        <Button variant="outlined" size="small" onClick={() => handleEdit(row)}>
-          Edit
-        </Button>
+        <>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => handleEdit(row)}
+          >
+            Edit
+          </Button>
+          <Button
+            variant="outlined"
+            size="small"
+            sx={{ ml: 1 }}
+            color="error"
+            onClick={() => handleEdit(row)}
+          >
+            Delete
+          </Button>
+        </>
       ),
       ignoreRowClick: true,
       allowOverflow: true,
@@ -118,45 +134,96 @@ const ProductPage = () => {
     },
   ];
 
-  // Callback whenever selected rows change
   const handleSelectedRowsChange = (state) => {
     setSelectedRows(state.selectedRows);
   };
 
   return (
     <PageContainer title="Product Page" description="this is product page">
-      <DashboardCard title="Product List">
-        {/* Create New Product button at the top-right */}
-        <Button
-          sx={{ float: "right" }}
-          variant="contained"
-          onClick={() => setOpen(true)}
+      <DashboardCard>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "20px",
+          }}
         >
-          Create New Product
-        </Button>
-        <CSVLink {...csvReport} style={{ textDecoration: "none" }}>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ mr: 2, float: "right" }}
-          >
-            Export
-          </Button>
-        </CSVLink>
-        {/* DataTable with subHeader for the Export button */}
-        <DataTable
-          columns={columns}
-          data={data}
-          pagination
-          highlightOnHover
-          striped
-          // Enable row selection (checkboxes)
-          selectableRows
-          onSelectedRowsChange={handleSelectedRowsChange}
-          // Add a subHeader and center it
-          subHeader
-          subHeaderAlign="center"
-        />
+          <h2>Product List</h2>
+          <div>
+            <Button
+              sx={{ mr: 2 }}
+              variant="contained"
+              onClick={() => setOpen(true)}
+            >
+              Create New Product
+            </Button>
+            <CSVLink {...csvReport} style={{ textDecoration: "none" }}>
+              <Button variant="contained" color="primary">
+                Export
+              </Button>
+            </CSVLink>
+          </div>
+        </div>
+
+        {/* Search & Category Filter Section */}
+        <Box display="flex" sx={{ width: "50%" }} gap={2} mb={2}>
+          {/* Search Box */}
+          <TextField
+            size="small"
+            label="Search Product"
+            variant="outlined"
+            fullWidth
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+
+          {/* Category Dropdown */}
+          <FormControl variant="outlined" size="small" fullWidth>
+            <InputLabel>Filter by Category</InputLabel>
+            <Select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              label="Filter by Category"
+            >
+              <MenuItem value="">All Categories</MenuItem>
+              {uniqueCategories.map((category) => (
+                <MenuItem key={category} value={category}>
+                  {category}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        {/* Show Skeleton while Loading */}
+        {loading ? (
+          <Box>
+            {[...Array(6)].map((_, index) => (
+              <Box key={index} display="flex" alignItems="center" gap={2} p={1}>
+                <Skeleton variant="text" width={40} />
+                <Skeleton variant="text" width={150} />
+                <Skeleton variant="text" width={130} />
+                <Skeleton variant="text" width={120} />
+                <Skeleton variant="text" width={160} />
+                <Skeleton variant="text" width={100} />
+                <Skeleton variant="text" width={110} />
+                <Skeleton variant="text" width={90} />
+              </Box>
+            ))}
+          </Box>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={filteredProducts} // Use filtered data
+            pagination
+            highlightOnHover
+            striped
+            selectableRows
+            onSelectedRowsChange={handleSelectedRowsChange}
+            subHeaderAlign="center"
+          />
+        )}
 
         <DialogBox
           open={open}
