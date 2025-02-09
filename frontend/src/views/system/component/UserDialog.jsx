@@ -15,7 +15,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { fetchUsers } from "../../../actions/userActions";
-import axios from 'axios';
+import axios from "axios";
 
 const UserDialog = ({
   open,
@@ -40,6 +40,7 @@ const UserDialog = ({
       [e.target.name]: e.target.value,
     });
     if (e.target.name == "department") {
+      console.log("hello");
       setDepartment(e.target.value);
     }
   };
@@ -114,7 +115,7 @@ const UserDialog = ({
               <FormControl fullWidth sx={{ mt: 2 }}>
                 <InputLabel>Departments</InputLabel>
                 <Select
-                  name="dept_name"
+                  name="department"
                   label="Department"
                   value={department}
                   onChange={handleChange}
