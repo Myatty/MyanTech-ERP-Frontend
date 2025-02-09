@@ -1,79 +1,86 @@
 import {
-  IconListCheck, IconBasket, IconLayoutDashboard, IconHistory, IconBasketSearch, IconTruckDelivery, IconPackages, IconFileDollar
-} from '@tabler/icons-react';
+  IconListCheck,
+  IconBasket,
+  IconLayoutDashboard,
+  IconHistory,
+  IconBasketSearch,
+  IconTruckDelivery,
+  IconPackages,
+  IconFileDollar,
+} from "@tabler/icons-react";
 
-import { uniqueId } from 'lodash';
+import { uniqueId } from "lodash";
 
 const Menuitems = [
   {
     navlabel: true,
-    subheader: 'Home',
+    subheader: "Home",
   },
 
   {
     id: uniqueId(),
-    title: 'Dashboard',
+    title: "Dashboard",
     icon: IconLayoutDashboard,
-    href: '/dashboard',
+    href: "/dashboard",
   },
   {
     navlabel: true,
-    subheader: 'Product',
+    subheader: "Product",
   },
   {
     id: uniqueId(),
-    title: 'Product List',
+    title: "Product List",
     icon: IconListCheck,
-    href: '/product-page',
+    href: "/products",
   },
   {
     navlabel: true,
-    subheader: 'Sale',
+    subheader: "Sale",
   },
   {
     id: uniqueId(),
-    title: 'Create Sale Order',
+    title: "Create Sale Order",
     icon: IconBasket,
-    href: '/sales/create',
+    href: "/sales/create",
   },
   {
     id: uniqueId(),
-    title: 'Sale History',
+    title: "Sale History",
     icon: IconHistory,
-    href: '/sales/history',
+    href: "/sales/history",
   },
   {
     id: uniqueId(),
-    title: 'Create Sale Return',
+    title: "Create Sale Return",
     icon: IconBasketSearch,
-    href: '/sales/return',
+    href: "/sales/return",
   },
   {
     navlabel: true,
-    subheader: 'Warehouse',
+    subheader: "Warehouse",
   },
   {
     id: uniqueId(),
-    title: 'Pending Orders',
+    title: "Pending Orders",
     icon: IconPackages,
-    href: '/warehouse/pending',
+    href: "/warehouse/pending",
   },
   {
     id: uniqueId(),
-    title: 'Delivery Records',
+    title: "Delivery Records",
     icon: IconTruckDelivery,
-    href: '/warehouse/delivery',
+    href: "/warehouse/delivery",
   },
   {
     navlabel: true,
-    subheader: 'Finance',
+    subheader: "Finance",
   },
   {
     id: uniqueId(),
-    title: 'Create Invoice',
+    title: "Create Invoice",
     icon: IconFileDollar,
-    href: '/finance/invoice',
-  }
+    href: "/finance/invoice",
+  },
   // {
   //   id: uniqueId(),
   //   title: 'Shadow',

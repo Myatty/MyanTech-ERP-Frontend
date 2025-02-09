@@ -11,7 +11,7 @@ const BlankLayout = Loadable(
 /* ****Pages***** */
 const Dashboard = Loadable(lazy(() => import("../views/dashboard/Dashboard")));
 const ProductPage = Loadable(
-  lazy(() => import("../views/product_page/ProductPage"))
+  lazy(() => import("../views/product/ProductPage"))
 );
 const Icons = Loadable(lazy(() => import("../views/icons/Icons")));
 const TypographyPage = Loadable(
@@ -31,7 +31,7 @@ const Router = [
     children: [
       { path: "/", element: <Navigate to="/dashboard" /> },
       { path: "/dashboard", exact: true, element: <Dashboard /> },
-      { path: "/product-page", exact: true, element: <ProductPage /> },
+      { path: "/products", exact: true, element: <ProductPage /> },
       { path: "/icons", exact: true, element: <Icons /> },
       { path: "/ui/typography", exact: true, element: <TypographyPage /> },
       { path: "/ui/shadow", exact: true, element: <Shadow /> },
