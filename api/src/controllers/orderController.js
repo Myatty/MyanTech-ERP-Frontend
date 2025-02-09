@@ -1,4 +1,6 @@
 const pool = require("../../config/db");
+const jwt = require('jsonwebtoken');
+const { checkPrivilege } = require("../helpers/jwtHelperFunctions");
 
 // Get all orders
 const getAllOrders = async (req, res) => {
@@ -40,8 +42,11 @@ const addOrder = async (req, res) => {
 
 // Update order
 const updateOrder = async (req, res) => {
+
+    checkPrivilege(req, res, 'Warehouse');
+
     try {
-        const { customer_id, order_date, status, total_amount } = req.body;
+        const { status } = req.body;
         const [result] = await pool.query(
             "UPDATE Orders SET status=? WHERE order_id=?",
             [status, req.params.id]
