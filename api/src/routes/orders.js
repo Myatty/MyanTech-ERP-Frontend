@@ -5,10 +5,13 @@ const {
     addOrder,
     updateOrder,
     deleteOrder,
-    addProductToOrder
+    addProductToOrder,
+    getYearlyBreakup
 } = require("../controllers/orderController");
 
 const router = express.Router();
+
+router.get("/yearly", getYearlyBreakup)
 
 router.get("/", getAllOrders);
 router.get("/:id", getOrder);

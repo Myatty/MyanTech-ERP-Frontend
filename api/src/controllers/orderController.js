@@ -124,11 +124,31 @@ const addProductToOrder = async (req, res) => {
     }
 };
 
+const getYearlyBreakup = async (req, res) => {
+    try {
+        const [yearlyBreakup] = await pool.query(`
+            SELECT 
+                YEAR(order_date) AS year,
+                COUNT(*) AS total_orders,
+                SUM(total_amount) AS total_amount
+            FROM Orders
+            GROUP BY YEAR(order_date)
+            ORDER BY YEAR(order_date) DESC
+        `);
+
+        res.json(yearlyBreakup);
+    } catch (error) {
+        console.error("Error fetching yearly breakup data:", error);
+        res.status(500).json({ error: "Database query failed" });
+    }
+};
+
 module.exports = {
     getAllOrders,
     getOrder,
     addOrder,
     updateOrder,
     deleteOrder,
-    addProductToOrder
+    addProductToOrder,
+    getYearlyBreakup
 };
