@@ -95,7 +95,7 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
-    title: "Create User",
+    title: "User List",
     icon: IconUser,
     href: "/system/users",
   },
