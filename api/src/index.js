@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(cors());
 
 app.get("/", (req, res) => {
-    res.json({ message: "MyanTech ERP API is running!" });
+  res.json({ message: "MyanTech ERP API is running!" });
 });
 
 
@@ -22,7 +22,7 @@ const AuthMiddleware = require('./middlewares/AuthMiddleware');
 const authRoutes = require('./routes/auth');
 
 app.use("/auth", authRoutes)
-app.use(AuthMiddleware);
+//app.use(AuthMiddleware);
 app.use("/api/products", productRoutes);
 
 app.listen(PORT, () => {
