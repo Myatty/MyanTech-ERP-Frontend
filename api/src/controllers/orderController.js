@@ -3,7 +3,7 @@ const pool = require("../../config/db");
 // Get all orders
 const getAllOrders = async (req, res) => {
     try {
-        const [orders] = await pool.query("SELECT * FROM Orders ORDER BY created_at DESC");
+        const [orders] = await pool.query("SELECT * FROM Orders");
         res.json(orders);
     } catch (error) {
         console.error("Error fetching orders:", error);
@@ -43,8 +43,8 @@ const updateOrder = async (req, res) => {
     try {
         const { customer_id, order_date, status, total_amount } = req.body;
         const [result] = await pool.query(
-            "UPDATE Orders SET customer_id=?, order_date=?, status=?, total_amount=? WHERE order_id=?",
-            [customer_id, order_date, status, total_amount, req.params.id]
+            "UPDATE Orders SET status=? WHERE order_id=?",
+            [status, req.params.id]
         );
         if (result.affectedRows === 0) return res.status(404).json({ error: "Order not found" });
         res.json({ message: "Order updated" });
