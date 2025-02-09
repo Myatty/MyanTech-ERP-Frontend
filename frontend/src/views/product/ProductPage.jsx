@@ -29,8 +29,9 @@ const ProductPage = () => {
     dispatch(fetchProducts());
   };
 
+  // set yay 
   const handleEdit = (row) => {
-    alert(`Edit product ID: ${row._id || row.id}`);
+    alert(`Edit product ID: ${row.product_id || row.id}`);
   };
 
   // Get unique categories from products
@@ -61,7 +62,7 @@ const ProductPage = () => {
     filename: "ProductReport.csv",
   };
 
-  const columns = [
+  const columns = [ 
     { name: "No", selector: (row, index) => index + 1, width: "60px" },
     {
       name: "Item Name",
@@ -98,6 +99,7 @@ const ProductPage = () => {
       selector: (row) => row.price,
       sortable: true,
       width: "120px",
+      sortFunction: (a, b) => parseFloat(a.price) - parseFloat(b.price),
     },
     {
       name: "Quantity",
