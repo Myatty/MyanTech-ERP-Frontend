@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchProducts } from '../../actions/productActions';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProducts } from "../../actions/productActions";
 import Table from "@mui/material/Table";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
@@ -103,16 +103,26 @@ const ProductPage = () => {
                     </TableCell>
                     <TableCell align="center">{product.brand}</TableCell>
                     <TableCell align="center">{product.category}</TableCell>
-                    <TableCell align="center">{product.product_segment}</TableCell>
-                    <TableCell align="center">{product.serial_number}</TableCell>
+                    <TableCell align="center">
+                      {product.product_segment}
+                    </TableCell>
+                    <TableCell align="center">
+                      {product.serial_number}
+                    </TableCell>
                     <TableCell align="center">{product.price}</TableCell>
-                    <TableCell align="center">{product.stock_quantity}</TableCell>
+                    <TableCell align="center">
+                      {product.stock_quantity}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
-          <DialogBox open={open} setOpen={setOpen} onProductCreated={handleProductCreated} />
+          <DialogBox
+            open={open}
+            setOpen={setOpen}
+            onProductCreated={handleProductCreated}
+          />
         </>
       </DashboardCard>
     </PageContainer>

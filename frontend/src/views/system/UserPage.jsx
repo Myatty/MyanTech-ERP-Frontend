@@ -8,19 +8,38 @@ import {
   TableCell,
   TableBody,
 } from "@mui/material";
-import { useState } from "react";
 import PageContainer from "src/components/container/PageContainer";
 import DashboardCard from "../../components/shared/DashboardCard";
 import UserDialog from "./component/UserDialog";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUsers } from "../../actions/userActions";
+
 const User = () => {
+  const dispatch = useDispatch();
+  const { loading, users, error } = useSelector((state) => state.users);
   const [open, setOpen] = useState(false);
-  const [department, setDepartment] = useState(0);
+
+  const [department, setDepartment] = useState("");
   const departments = [
     { id: 1, name: "Sale" },
     { id: 2, name: "Warehouse" },
     { id: 3, name: "Finance" },
   ];
+
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   const rows = [
     {
       id: 1,
@@ -89,7 +108,7 @@ const User = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => {
+                {users.map((row) => {
                   const editIcon = <IconPencil stroke={1.5} size="1.3rem" />;
                   const deleteIcon = <IconTrash stroke={1.5} size="1.3rem" />;
 
