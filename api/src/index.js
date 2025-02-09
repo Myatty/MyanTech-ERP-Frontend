@@ -20,10 +20,12 @@ app.get("/", (req, res) => {
 const productRoutes = require("./routes/products");
 const AuthMiddleware = require('./middlewares/AuthMiddleware');
 const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
 
 app.use("/auth", authRoutes)
 //app.use(AuthMiddleware);
 app.use("/api/products", productRoutes);
+app.use("/api/users", userRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
