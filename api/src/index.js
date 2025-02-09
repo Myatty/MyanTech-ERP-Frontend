@@ -22,12 +22,14 @@ const AuthMiddleware = require('./middlewares/AuthMiddleware');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const customerRoutes = require('./routes/customers');
+const orderRoutes = require('./routes/orders');
 
 app.use("/auth", authRoutes)
 // app.use(AuthMiddleware);
 app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/customers", customerRoutes);
+app.use("/api/orders", orderRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
