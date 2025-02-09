@@ -89,20 +89,25 @@ const User = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
-                  <TableRow
-                    key={row.name}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell align="center">{row.id}</TableCell>
-                    <TableCell align="center">{row.name}</TableCell>
-                    <TableCell align="center">{row.email}</TableCell>
-                    <TableCell align="center">{row.Ph_no}</TableCell>
-                    <TableCell align="center">{row.role}</TableCell>
-                    {/* <TableCell align="center">{IconPencil}</TableCell>
-                    <TableCell align="center">{IconTrash}</TableCell> */}
-                  </TableRow>
-                ))}
+                {rows.map((row) => {
+                  const editIcon = <IconPencil stroke={1.5} size="1.3rem" />;
+                  const deleteIcon = <IconTrash stroke={1.5} size="1.3rem" />;
+
+                  return (
+                    <TableRow
+                      key={row.name}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell align="center">{row.id}</TableCell>
+                      <TableCell align="center">{row.name}</TableCell>
+                      <TableCell align="center">{row.email}</TableCell>
+                      <TableCell align="center">{row.Ph_no}</TableCell>
+                      <TableCell align="center">{row.role}</TableCell>
+                      <TableCell align="center">{editIcon}</TableCell>
+                      <TableCell align="center">{deleteIcon}</TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>
