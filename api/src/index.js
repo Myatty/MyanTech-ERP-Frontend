@@ -23,7 +23,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 
 app.use("/auth", authRoutes)
-//app.use(AuthMiddleware);
+app.use(AuthMiddleware);
 app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);
 
