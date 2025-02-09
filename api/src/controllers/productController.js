@@ -66,10 +66,38 @@ const deleteProduct = async (req, res) => {
     }
 };
 
+// Search products
+const searchProducts = async (req, res) => {
+    try {
+        const searchText = req.query.q;
+        const [products] = await pool.query(
+            "SELECT * FROM products WHERE name LIKE ? OR category LIKE ? OR brand LIKE ?",
+            [`%${searchText}%`, `%${searchText}%`, `%${searchText}%`]
+        );
+        res.json(products);
+    } catch (error) {
+        console.error("Error searching products:", error);
+        res.status(500).json({ error: "Database query failed" });
+    }
+};
+
+const getAllBrands = async (req, res) => {
+    try {
+        const [brands] = await pool.query("SELECT DISTINCT brand FROM products ORDER BY brand ASC");
+        res.json(brands);
+    } catch (error) {
+        console.error("Error fetching brands:", error);
+        res.status(500).json({ error: "Database query failed" });
+    }
+};
+
+
 module.exports = {
     getAllProducts,
     getProduct,
     addProduct,
     updateProduct,
     deleteProduct,
+    searchProducts,
+    getAllBrands,
 };
