@@ -8,6 +8,7 @@ import {
   IconPackages,
   IconFileDollar,
   IconUser,
+  IconDevicesMinus,
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -26,7 +27,13 @@ const Menuitems = [
   },
   {
     navlabel: true,
-    subheader: "Product",
+    subheader: "Inventory",
+  },
+  {
+    id: uniqueId(),
+    title: "Create Product",
+    icon: IconDevicesMinus,
+    href: "/products/create",
   },
   {
     id: uniqueId(),

@@ -16,7 +16,6 @@ import { FormControl, InputLabel, Select } from "@mui/material";
 const ProductPage = () => {
   const dispatch = useDispatch();
   const { loading, products, error } = useSelector((state) => state.products);
-
   const [open, setOpen] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
   const [searchTerm, setSearchTerm] = useState(""); // Search term state
@@ -24,7 +23,7 @@ const ProductPage = () => {
 
   useEffect(() => {
     dispatch(fetchProducts());
-  }, [dispatch]);
+  }, []);
 
   const handleProductCreated = () => {
     dispatch(fetchProducts());
@@ -151,13 +150,6 @@ const ProductPage = () => {
         >
           <h2>Product List</h2>
           <div>
-            <Button
-              sx={{ mr: 2 }}
-              variant="contained"
-              onClick={() => setOpen(true)}
-            >
-              Create New Product
-            </Button>
             <CSVLink {...csvReport} style={{ textDecoration: "none" }}>
               <Button variant="contained" color="primary">
                 Export
