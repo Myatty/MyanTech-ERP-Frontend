@@ -1,12 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
 import { useTheme } from '@mui/material/styles';
 import { Grid, Stack, Typography, Avatar } from '@mui/material';
 import { IconArrowUpLeft } from '@tabler/icons-react';
+import axios from 'axios';
 
 import DashboardCard from '../../../components/shared/DashboardCard';
-
 const YearlyBreakup = () => {
+  const [currentYearSale, setCurrentYearSale] = useState(0);
+
+  useEffect(() => {
+    const fetchCurrentYearSale = async () => {
+      try {
+        const response = await axios.get('http://localhost:4000/api/orders/current-year-breakup');
+        if (response.data.length > 0) {
+          setCurrentYearSale(response.data[0].total_amount);
+        }
+      } catch (error) {
+        console.error('Error fetching total yearly sales:', error);
+      }
+    };
+
+    fetchCurrentYearSale();
+  }, []);
   // chart color
   const theme = useTheme();
   const primary = theme.palette.primary.main;
@@ -66,8 +82,8 @@ const YearlyBreakup = () => {
       <Grid container spacing={3}>
         {/* column */}
         <Grid item xs={7} sm={7}>
-          <Typography variant="h3" fontWeight="700">
-            $36,358
+          <Typography variant="h4" fontWeight="700">
+            {currentYearSale.toLocaleString()} MMK
           </Typography>
           <Stack direction="row" spacing={1} mt={1} alignItems="center">
             <Avatar sx={{ bgcolor: successlight, width: 27, height: 27 }}>

@@ -7,12 +7,14 @@ const {
     deleteOrder,
     addProductToOrder,
     getYearlyBreakup,
-    getMonthlyEarnings
+    getMonthlyEarnings,
+    getCurrentYearBreakup
 } = require("../controllers/orderController");
 
 const router = express.Router();
 
 router.get("/yearly-breakup", getYearlyBreakup)
+router.get("/current-year-breakup", getCurrentYearBreakup)
 router.get("/monthly-earnings/:year", getMonthlyEarnings)
 
 router.get("/", getAllOrders);
