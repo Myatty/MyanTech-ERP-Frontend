@@ -143,6 +143,28 @@ const getYearlyBreakup = async (req, res) => {
     }
 };
 
+const getMonthlyEarnings = async (req, res) => {
+    const { year } = req.params;
+    try {
+        const [monthlyEarnings] = await pool.query(`
+            SELECT 
+                YEAR(order_date) AS year,
+                MONTH(order_date) AS month,
+                COUNT(*) AS total_orders,
+                SUM(total_amount) AS total_amount
+            FROM Orders
+            WHERE YEAR(order_date) = ?
+            GROUP BY YEAR(order_date), MONTH(order_date)
+            ORDER BY YEAR(order_date) DESC, MONTH(order_date) DESC
+        `, [year]);
+
+        res.json(monthlyEarnings);
+    } catch (error) {
+        console.error("Error fetching monthly earnings data:", error);
+        res.status(500).json({ error: "Database query failed" });
+    }
+};
+
 module.exports = {
     getAllOrders,
     getOrder,
@@ -150,5 +172,6 @@ module.exports = {
     updateOrder,
     deleteOrder,
     addProductToOrder,
-    getYearlyBreakup
+    getYearlyBreakup,
+    getMonthlyEarnings
 };
