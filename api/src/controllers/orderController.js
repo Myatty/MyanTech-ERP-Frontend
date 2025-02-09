@@ -43,6 +43,7 @@ const addOrder = async (req, res) => {
 // Update order
 const updateOrder = async (req, res) => {
 
+    //Commend out this line if you dont want to use login
     checkPrivilege(req, res, 'Warehouse');
 
     try {
