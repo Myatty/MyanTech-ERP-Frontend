@@ -62,12 +62,12 @@ const CreateProduct = () => {
     <PageContainer title="Create Product" description="Add a new product">
       <Box
         sx={{
-          maxWidth: "900px",
+          maxWidth: "1200px",
           margin: "auto",
           padding: "40px",
           borderRadius: "12px",
           background: "#fff",
-          boxShadow: "0px 5px 20px rgba(0, 0, 0, 0.1)",
+          boxShadow: "0px 5px 10px rgba(0, 0, 0, 0.1)",
         }}
       >
         <Typography variant="h5" fontWeight="bold" mb={3}>

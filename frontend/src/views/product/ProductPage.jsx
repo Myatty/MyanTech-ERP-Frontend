@@ -12,6 +12,8 @@ import DashboardCard from "../../components/shared/DashboardCard";
 import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
 import { FormControl, InputLabel, Select } from "@mui/material";
+import { IconPencil, IconTrash } from "@tabler/icons-react";
+import { borderRadius, borderTop } from "@mui/system";
 
 const ProductPage = () => {
   const dispatch = useDispatch();
@@ -102,7 +104,7 @@ const ProductPage = () => {
       sortFunction: (a, b) => parseFloat(a.price) - parseFloat(b.price),
     },
     {
-      name: "Quantity",
+      name: "Qty",
       selector: (row) => row.stock_quantity,
       sortable: true,
       width: "100px",
@@ -116,7 +118,11 @@ const ProductPage = () => {
             size="small"
             onClick={() => handleEdit(row)}
           >
-            Edit
+            <IconPencil
+              stroke={1.5}
+              size="1.3rem"
+              style={{ cursor: "pointer" }}
+            />
           </Button>
           <Button
             variant="outlined"
@@ -125,7 +131,11 @@ const ProductPage = () => {
             color="error"
             onClick={() => handleEdit(row)}
           >
-            Delete
+            <IconTrash
+              stroke={1.5}
+              size="1.3rem"
+              style={{ cursor: "pointer" }}
+            />
           </Button>
         </>
       ),
@@ -134,6 +144,27 @@ const ProductPage = () => {
       button: true,
     },
   ];
+
+  const customStyles = {
+    headRow: {
+      style: {
+        backgroundColor: "#5D87FF", // Change this to your desired color
+        minHeight: "56px",
+        borderTopRightRadius: "8px",
+        borderTopLeftRadius: "8px",
+      },
+    },
+    headCells: {
+      style: {
+        color: "#FFF", // Text color
+        fontSize: "14px",
+        fontWeight: "bold",
+        "&:not(:last-of-type)": {
+          borderRight: "1px solid #e0e0e0",
+        },
+      },
+    },
+  };
 
   const handleSelectedRowsChange = (state) => {
     setSelectedRows(state.selectedRows);
@@ -216,6 +247,7 @@ const ProductPage = () => {
             selectableRows
             onSelectedRowsChange={handleSelectedRowsChange}
             subHeaderAlign="center"
+            customStyles={customStyles}
           />
         )}
 
