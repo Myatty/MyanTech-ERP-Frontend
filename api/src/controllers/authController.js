@@ -1,32 +1,31 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
+const pool = require("../../config/db");
 
-const mockUser = {
-    id: 1,
-    email: 'test@example.com',
-    password: "$2a$12$HeWCu1FCZxL.eYuX0zOx/emvhfW/0nV3xNwXkagAia3bJXfmjjAJG" // hashed password
-};
 
-const authenticateUser = (email, password, res) => {
-    if (email !== mockUser.email) {
-        return res.status(401).json({ message: 'Invalid email or password' });
-    }
-
-    bcrypt.compare(password, mockUser.password, (err, isMatch) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
+const authenticateUser = async (email, password, res) => {
+    try {
+        const [users] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
+        if (users.length === 0) {
+            return res.status(401).json({ message: 'Invalid email or password' });
         }
 
+        const user = users[0];
+
+        const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        const token = jwt.sign({ _id: mockUser.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ _id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.cookie('jwt', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
         res.json({ message: 'Login successful' });
-    });
+    } catch (error) {
+        console.error("Error during authentication:", error);
+        res.status(500).json({ error: "Database query failed" });
+    }
 };
 
 const login = (req, res) => {

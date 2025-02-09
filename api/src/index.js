@@ -21,11 +21,13 @@ const productRoutes = require("./routes/products");
 const AuthMiddleware = require('./middlewares/AuthMiddleware');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
+const customerRoutes = require('./routes/customers');
 
 app.use("/auth", authRoutes)
 // app.use(AuthMiddleware);
 app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/customers", customerRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
