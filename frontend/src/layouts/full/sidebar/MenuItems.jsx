@@ -7,6 +7,7 @@ import {
   IconTruckDelivery,
   IconPackages,
   IconFileDollar,
+  IconUser,
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -80,6 +81,16 @@ const Menuitems = [
     title: "Create Invoice",
     icon: IconFileDollar,
     href: "/finance/invoice",
+  },
+  {
+    navlabel: true,
+    subheader: "System",
+  },
+  {
+    id: uniqueId(),
+    title: "Create User",
+    icon: IconUser,
+    href: "/system/users",
   },
   // {
   //   id: uniqueId(),
