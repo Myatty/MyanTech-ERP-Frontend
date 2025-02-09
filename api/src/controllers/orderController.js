@@ -126,15 +126,17 @@ const addProductToOrder = async (req, res) => {
 
 const getYearlyBreakup = async (req, res) => {
     try {
+        const currentYear = new Date().getFullYear();
         const [yearlyBreakup] = await pool.query(`
             SELECT 
                 YEAR(order_date) AS year,
                 COUNT(*) AS total_orders,
                 SUM(total_amount) AS total_amount
             FROM Orders
+            WHERE YEAR(order_date) BETWEEN ? AND ?
             GROUP BY YEAR(order_date)
             ORDER BY YEAR(order_date) DESC
-        `);
+        `, [currentYear - 5, currentYear]);
 
         res.json(yearlyBreakup);
     } catch (error) {
