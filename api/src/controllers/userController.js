@@ -51,8 +51,25 @@ const createUser = async (req, res) => {
     }
 };
 
+// Update user by ID
+const updateUserById = async (req, res) => {
+  try {
+      const { name, email, phone_number, role_name, dept_name } = req.body;
+      const [result] = await pool.query(
+          "UPDATE users SET name=?, email=?, phone_number=?, role_name=?, dept_name=? WHERE employee_id=?",
+          [name, email, phone_number, role_name, dept_name, req.params.id]
+      );
+      if (result.affectedRows === 0) return res.status(404).json({ error: "User not found" });
+      res.json({ message: "User updated" });
+  } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ error: "Database update failed" });
+  }
+};
+
 module.exports = {
   getAllUsers,
   createUser,
   getUserByName,
+  updateUserById
 };
