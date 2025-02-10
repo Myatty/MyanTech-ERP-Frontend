@@ -13,6 +13,7 @@ router.get("/search", getCustomerByName);
 router.get("/", getAllCustomers); // GET /api/customers?limit=100&offset=0
 router.put("/", updateCustomer);
 router.delete("/", deleteCustomer);
+router.post("/", createCustomer)
 
 module.exports = router;
 
