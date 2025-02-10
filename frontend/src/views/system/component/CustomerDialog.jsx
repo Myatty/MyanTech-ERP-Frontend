@@ -7,65 +7,50 @@ import {
   DialogActions,
   Box,
   TextField,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   Grid,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { fetchUsers } from "../../../actions/userActions";
 import axios from "axios";
 
-const UserDialog = ({
-  open,
-  setOpen,
-  department,
-  setDepartment,
-  departments,
-}) => {
+import { fetchCustomers } from "../../../actions/customerActions";
+
+const CustomerDialog = ({ open, setOpen }) => {
   const dispatch = useDispatch();
-  const [userData, setUserData] = useState({
+
+  const [customerData, setCustomerData] = useState({
     name: "",
-    phone_number: "",
+    contact_number1: "",
+    contact_number2: "",
     email: "",
-    password: "",
-    role_name: "",
-    dept_name: "",
+    address: "",
+    township: "",
+    region: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUserData((prev) => ({
+    setCustomerData((prev) => ({
       ...prev,
       [name]: value,
     }));
-
-    if (name === "department") {
-      setDepartment(value);
-      setUserData((prev) => ({
-        ...prev,
-        dept_name: value,
-      }));
-    }
   };
 
-  // Create new user
   const handleSubmit = async (e) => {
+    console.log("customerData", customerData);
     e.preventDefault();
     try {
-      await axios.post("http://localhost:4000/api/users", userData);
+      await axios.post("http://localhost:4000/api/customers", customerData);
       setOpen(false);
-      dispatch(fetchUsers());
+      dispatch(fetchCustomers());
     } catch (error) {
-      console.error("Error creating user:", error);
+      console.error("Error creating customer:", error);
     }
   };
 
   return (
     <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
       <DialogTitle sx={{ fontWeight: "bold", fontSize: "1.25rem" }}>
-        User Registration
+        Create New Customer
       </DialogTitle>
 
       <Box component="form" onSubmit={handleSubmit}>
@@ -75,22 +60,35 @@ const UserDialog = ({
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Name"
+                required
                 name="name"
                 fullWidth
                 variant="outlined"
-                value={userData.name}
+                value={customerData.name}
                 onChange={handleChange}
               />
             </Grid>
 
-            {/* Phone */}
+            {/* Contact #1 */}
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Phone"
-                name="phone_number"
+                label="Contact #1"
+                name="contact_number1"
                 fullWidth
                 variant="outlined"
-                value={userData.phone_number}
+                value={customerData.contact_number1}
+                onChange={handleChange}
+              />
+            </Grid>
+
+            {/* Contact #2 */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Contact #2"
+                name="contact_number2"
+                fullWidth
+                variant="outlined"
+                value={customerData.contact_number2}
                 onChange={handleChange}
               />
             </Grid>
@@ -103,52 +101,43 @@ const UserDialog = ({
                 fullWidth
                 variant="outlined"
                 type="email"
-                value={userData.email}
+                value={customerData.email}
                 onChange={handleChange}
               />
             </Grid>
 
-            {/* Password */}
+            {/* Address */}
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Password"
-                name="password"
+                label="Address"
+                name="address"
                 fullWidth
                 variant="outlined"
-                type="password"
-                value={userData.password}
+                value={customerData.address}
                 onChange={handleChange}
               />
             </Grid>
 
-            {/* Department */}
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel id="department-label">Department</InputLabel>
-                <Select
-                  labelId="department-label"
-                  label="Department"
-                  name="department"
-                  value={department}
-                  onChange={handleChange}
-                >
-                  {departments.map((item) => (
-                    <MenuItem key={item.id} value={item.name}>
-                      {item.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-
-            {/* Role */}
+            {/* Township */}
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Role"
-                name="role_name"
+                label="Township"
+                name="township"
                 fullWidth
                 variant="outlined"
-                value={userData.role_name}
+                value={customerData.township}
+                onChange={handleChange}
+              />
+            </Grid>
+
+            {/* Region */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Region"
+                name="region"
+                fullWidth
+                variant="outlined"
+                value={customerData.region}
                 onChange={handleChange}
               />
             </Grid>
@@ -172,4 +161,4 @@ const UserDialog = ({
   );
 };
 
-export default UserDialog;
+export default CustomerDialog;

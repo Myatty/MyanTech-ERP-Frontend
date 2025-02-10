@@ -12,8 +12,16 @@ import {
   TablePagination,
   TextField,
   Skeleton,
+  Box,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
+import { CSVLink } from "react-csv";
+
 import PageContainer from "src/components/container/PageContainer";
 import DashboardCard from "../../components/shared/DashboardCard";
 import UserDialog from "./component/UserDialog";
@@ -29,6 +37,9 @@ const User = () => {
 
   // Search term state
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Role filter state
+  const [roleFilter, setRoleFilter] = useState("");
 
   // Pagination states
   const [page, setPage] = useState(0);
@@ -49,13 +60,21 @@ const User = () => {
   const handleOpenDialog = () => {
     setOpen(true);
   };
+
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
     setPage(0); // Reset to first page on new search
   };
+
+  const handleRoleFilter = (e) => {
+    setRoleFilter(e.target.value);
+    setPage(0); // Reset to first page on new filter
+  };
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
+
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -72,32 +91,106 @@ const User = () => {
     return <div>Error: {error}</div>;
   }
 
-  // Filter the data by search term
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // 1) Create a unique list of roles from the fetched users
+  //    We'll provide an "All Roles" option to disable the filter
+  const uniqueRoles = [
+    "All",
+    ...new Set(users.map((user) => user.role_name).filter(Boolean)),
+  ];
 
-  // Slice the data for pagination
+  // 2) Filter the data by search term and role
+  //    If roleFilter is "All" or empty => show all roles, else filter by that role
+  const filteredUsers = users.filter((user) => {
+    const matchesName = user.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesRole =
+      roleFilter && roleFilter !== "All" ? user.role_name === roleFilter : true;
+
+    return matchesName && matchesRole;
+  });
+
+  // 3) Slice the data for pagination
   const startIndex = page * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
   const paginatedUsers =
     rowsPerPage > 0 ? filteredUsers.slice(startIndex, endIndex) : filteredUsers;
 
+  // 4) CSV Export Setup:
+  //    We'll export the *filtered* data here.
+  //    If you want to export all users, change to `users` instead.
+  const csvHeaders = [
+    { label: "ID", key: "employee_id" },
+    { label: "Name", key: "name" },
+    { label: "Email", key: "email" },
+    { label: "Phone", key: "phone_number" },
+    {
+      label: "Department",
+      // We'll store the "id" in the data, but for CSV we want the department name
+      key: "department_id",
+    },
+    { label: "Role", key: "role_name" },
+  ];
+
+  // Transform data to show the actual department name in CSV (not just ID).
+  // We'll map each user into a new object for CSV so `department_id` becomes the dept name.
+  const csvData = filteredUsers.map((user) => ({
+    ...user,
+    department_id: getDepartmentName(user.department_id), // replace ID with the name
+  }));
+
+  const csvReport = {
+    data: csvData,
+    headers: csvHeaders,
+    filename: "UserReport.csv",
+  };
+
   return (
     <PageContainer title="User Page" description="this is user page">
       <DashboardCard>
-        {/* Header with Title, Search Box, and Create Button */}
+        {/* Header with Title, Search Box, Create Button, and Role Filter + CSV Export */}
         <div
           style={{
             display: "flex",
+            flexWrap: "wrap",
+            gap: 16,
             justifyContent: "space-between",
-            marginBottom: 16,
             alignItems: "center",
+            marginBottom: 16,
           }}
         >
-          <h2 style={{ margin: 0 }}>User List</h2>
+          <Box
+            sx={{
+              backgroundColor: "#F0F0F0",
+              padding: "16px",
+              borderRadius: "8px",
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+              Total Users: {filteredUsers.length}
+            </Typography>
+          </Box>
 
+          {/* Right side actions */}
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            {/* Role Filter */}
+            <FormControl variant="outlined" size="small">
+              <InputLabel>Role Filter</InputLabel>
+              <Select
+                label="Role Filter"
+                value={roleFilter}
+                onChange={handleRoleFilter}
+                style={{ width: 150 }}
+              >
+                {uniqueRoles.map((role) => (
+                  <MenuItem key={role} value={role}>
+                    {role}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {/* Search Box */}
             <TextField
               label="Search by Name"
               variant="outlined"
@@ -105,9 +198,16 @@ const User = () => {
               value={searchTerm}
               onChange={handleSearch}
             />
+
+            {/* Create Button */}
             <Button variant="contained" onClick={handleOpenDialog}>
               Create New User
             </Button>
+
+            {/* CSV Export */}
+            <CSVLink {...csvReport} style={{ textDecoration: "none" }}>
+              <Button variant="outlined">Export</Button>
+            </CSVLink>
           </div>
         </div>
 
