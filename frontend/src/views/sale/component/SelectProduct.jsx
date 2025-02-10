@@ -9,6 +9,7 @@ const SelectedProduct = ({
   setOrders,
   selecteddate,
   customer,
+  customer_id,
 }) => {
   const [status, setStatus] = useState(true);
   const [product, setProduct] = useState('');
@@ -40,9 +41,11 @@ const SelectedProduct = ({
       fakeOrderID: null,
       date: selecteddate,
       customer: customer.name,
+      customer_id: customer.customer_id,
       township: customer.township,
       region: customer.region,
       phone: customer.contact_number1,
+      product_id: "",
       productName: "",
       brand: "",
       category: "",
@@ -66,6 +69,7 @@ const SelectedProduct = ({
       setNewOrder({
         ...newOrder,
         productName: find.name,
+        product_id: find.product_id,
         brand: find.brand,
         category: find.category,
         product_segment: find.product_segment,

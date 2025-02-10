@@ -68,7 +68,7 @@ const deleteOrder = async (req, res) => {
 // Add products to order
 const addProductToOrder = async (req, res) => {
     console.log("went into order controller");
-    let { customer_id, order_date, status, total_amount, products } = req.body;
+    let { customer_id, order_date, total_amount, products } = req.body;
 
     if (!order_date) {
         order_date = new Date();
@@ -83,8 +83,8 @@ const addProductToOrder = async (req, res) => {
         await connection.beginTransaction();
 
         const [orderResult] = await connection.query(
-            "INSERT INTO Orders (customer_id, order_date, status, total_amount) VALUES (?, ?, ?, ?)",
-            [customer_id, order_date, status, total_amount]
+            "INSERT INTO Orders (customer_id, order_date, total_amount) VALUES (?, ?, ?)",
+            [customer_id, order_date, total_amount]
         );
 
         const orderId = orderResult.insertId;
