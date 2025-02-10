@@ -9,6 +9,9 @@ import {
   IconFileDollar,
   IconUser,
   IconDevicesMinus,
+  IconUsersGroup,
+  IconUserCog,
+  IconLockCheck,
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -95,9 +98,21 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
+    title: "Create Role",
+    icon: IconLockCheck,
+    href: "/system/roles",
+  },
+  {
+    id: uniqueId(),
     title: "User List",
-    icon: IconUser,
+    icon: IconUserCog,
     href: "/system/users",
+  },
+  {
+    id: uniqueId(),
+    title: "Customer List",
+    icon: IconUsersGroup,
+    href: "/customers",
   },
   // {
   //   id: uniqueId(),

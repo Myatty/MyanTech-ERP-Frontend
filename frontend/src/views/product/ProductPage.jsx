@@ -108,33 +108,22 @@ const ProductPage = () => {
       width: "100px",
     },
     {
-      name: "Actions",
+      name: "Action",
       cell: (row) => (
         <>
-          <Button
-            variant="outlined"
-            size="small"
+          <IconPencil
+            stroke={1.5}
+            size="1.3rem"
+            style={{ cursor: "pointer", color: "blue", marginRight: "10px" }}
             onClick={() => handleEdit(row)}
-          >
-            <IconPencil
-              stroke={1.5}
-              size="1.3rem"
-              style={{ cursor: "pointer" }}
-            />
-          </Button>
-          <Button
-            variant="outlined"
-            size="small"
-            sx={{ ml: 1 }}
-            color="error"
+          />
+
+          <IconTrash
+            stroke={1.5}
+            size="1.3rem"
+            style={{ cursor: "pointer", color: "red" }}
             onClick={() => handleEdit(row)}
-          >
-            <IconTrash
-              stroke={1.5}
-              size="1.3rem"
-              style={{ cursor: "pointer" }}
-            />
-          </Button>
+          />
         </>
       ),
       ignoreRowClick: true,

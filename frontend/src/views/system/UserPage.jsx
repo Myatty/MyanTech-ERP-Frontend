@@ -341,7 +341,7 @@ const User = () => {
                         <IconPencil
                           strokeWidth={1.5}
                           size="1.3rem"
-                          color="green"
+                          color="blue"
                           style={{ cursor: "pointer", marginRight: 12 }}
                         />
                         <IconTrash
@@ -356,7 +356,6 @@ const User = () => {
                 })}
               </TableBody>
 
-              {/* MUI's pagination in the TableFooter */}
               <TableFooter>
                 <TableRow>
                   <TablePagination
