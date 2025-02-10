@@ -165,6 +165,19 @@ const getMonthlyEarnings = async (req, res) => {
     }
 };
 
+
+// View pending orders
+const viewPendingOrder = async (req, res) => {
+    try {
+        const [pendingOrders] = await pool.query("SELECT * FROM Orders WHERE status = 'pending'");
+        res.json(pendingOrders);
+    } catch (error) {
+        console.error("Error fetching pending orders:", error);
+        res.status(500).json({ error: "Database query failed" });
+    }
+};
+
+
 module.exports = {
     getAllOrders,
     getOrder,
@@ -172,5 +185,6 @@ module.exports = {
     deleteOrder,
     addProductToOrder,
     getYearlyBreakup,
-    getMonthlyEarnings
+    getMonthlyEarnings,
+    viewPendingOrder
 };
