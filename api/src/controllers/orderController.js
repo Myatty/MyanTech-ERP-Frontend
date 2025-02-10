@@ -5,7 +5,7 @@ const { checkPrivilege } = require("../helpers/jwtHelperFunctions");
 // Get all orders with pagination
 const getAllOrders = async (req, res) => {
 
-    checkPrivilege(req, res, ['Warehouse', 'Sale']);
+    //checkPrivilege(req, res, ['Warehouse', 'Sale']);
 
     try {
         const limit = parseInt(req.query.limit) || 100;
@@ -36,7 +36,7 @@ const getOrder = async (req, res) => {
 const updateOrder = async (req, res) => {
 
     //Commend out this line if you dont want to use login
-    checkPrivilege(req, res, ['Warehouse', 'Sale']);
+    //checkPrivilege(req, res, ['Warehouse', 'Sale']);
 
     try {
         const { status } = req.body;
@@ -122,6 +122,7 @@ const addProductToOrder = async (req, res) => {
     }
 };
 
+// all years's breakup
 const getYearlyBreakup = async (req, res) => {
     try {
         const currentYear = new Date().getFullYear();
@@ -143,6 +144,28 @@ const getYearlyBreakup = async (req, res) => {
     }
 };
 
+//current year's breakup
+const getCurrentYearBreakup = async (req, res) => {
+    try {
+        const [yearlyBreakup] = await pool.query(`
+            SELECT 
+                YEAR(order_date) AS year,
+                COUNT(*) AS total_orders,
+                SUM(total_amount) AS total_amount
+            FROM Orders
+            WHERE YEAR(order_date) = YEAR(CURDATE())
+            GROUP BY YEAR(order_date)
+            ORDER BY YEAR(order_date) DESC
+        `);
+
+        res.json(yearlyBreakup);
+    } catch (error) {
+        console.error("Error fetching yearly breakup data:", error);
+        res.status(500).json({ error: "Database query failed" });
+    }
+};
+
+//monthly earnings
 const getMonthlyEarnings = async (req, res) => {
     const { year } = req.params;
     try {
@@ -207,5 +230,5 @@ module.exports = {
     addProductToOrder,
     getYearlyBreakup,
     getMonthlyEarnings,
-    viewPendingOrders
+    getCurrentYearBreakup
 };
