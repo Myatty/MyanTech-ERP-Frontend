@@ -10,8 +10,8 @@ const {
 
 const router = express.Router();
 
-router.get("/searchUser", getUserByName);
+router.get("/searchUser", getUserByName); // GET /api/users/searchUser?=username
 router.get("/", getAllUsers); // GET /api/users?limit=100&offset=0
 router.post("/", createUser);
-router.put('/update', updateUserById)
+router.put('/:id', updateUserById)
 module.exports = router;
