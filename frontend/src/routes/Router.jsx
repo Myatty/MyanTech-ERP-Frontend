@@ -15,6 +15,7 @@ const ProductPage = Loadable(
   lazy(() => import("../views/product/ProductPage"))
 );
 const UserRoute = Loadable(lazy(() => import("../views/system/UserPage.jsx")));
+const SalePage = Loadable(lazy(() => import("../views/sale/CreateOrder.jsx")));
 const Icons = Loadable(lazy(() => import("../views/icons/Icons")));
 const TypographyPage = Loadable(
   lazy(() => import("../views/utilities/TypographyPage"))
@@ -36,6 +37,7 @@ const Router = [
       { path: "/products", exact: true, element: <ProductPage /> },
       { path: "/products/create", exact: true, element: <CreateOrder /> },
       { path: "/system/users", exact: true, element: <UserRoute /> },
+      { path: "/sales/create", exact: true, element: <SalePage /> },
       { path: "/icons", exact: true, element: <Icons /> },
       { path: "/ui/typography", exact: true, element: <TypographyPage /> },
       { path: "/ui/shadow", exact: true, element: <Shadow /> },
