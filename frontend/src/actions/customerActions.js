@@ -9,6 +9,7 @@ export const fetchCustomers = () => {
     dispatch({ type: FETCH_CUSTOMERS_REQUEST });
     try {
       const response = await axios.get("http://localhost:4000/api/customers");
+      console.log("API Response:", response.data);
       dispatch({ type: FETCH_CUSTOMERS_SUCCESS, payload: response.data });
     } catch (error) {
       dispatch({ type: FETCH_CUSTOMERS_FAILURE, error: error.message });

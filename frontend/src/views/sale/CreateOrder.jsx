@@ -17,18 +17,27 @@ import {
 } from "@mui/material";
 import OrderTab from "./component/Tab";
 import { fetchProducts } from "../../actions/productActions";
-import { fetchUsers } from "../../actions/userActions";
+import { fetchCustomers } from "../../actions/customerActions";
 import axios from "axios";
 
 const OrderCreate = () => {
   const dispatch = useDispatch();
 
   const { loading, products, error } = useSelector((state) => state.products);
-  const { users } = useSelector((state) => state.users);
+  const { customers } = useSelector((state) => state.customers);
 
   useEffect(() => {
-    dispatch(fetchUsers());
+    dispatch(fetchCustomers());
   }, [dispatch]);
+
+  // useEffect(() => {
+  //   const testFetch = async () => {
+  //     const result = await dispatch(fetchCustomers());
+  //     console.log("Fetched Customers:", result); // Check if it returns anything
+  //   };
+
+  //   testFetch();
+  // }, [dispatch]);
 
   const [customer, setCustomer] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState({
@@ -59,7 +68,7 @@ const OrderCreate = () => {
   });
 
   const handleCustomer = (e) => {
-    const findCus = users.find((c) => c.customer_id === Number(e.target.value));
+    const findCus = customers.find((c) => c.customer_id === Number(e.target.value));
     setSelectedCustomer({
       ...selectedCustomer,
       name: findCus.name,
@@ -154,7 +163,7 @@ const OrderCreate = () => {
                     handleCustomer(e);
                   }}
                 >
-                  {users.map((item) => (
+                  {customers.map((item) => (
                     <MenuItem key={item.customer_id} value={item.customer_id}>
                       <ListItemText primary={item.name} />
                     </MenuItem>

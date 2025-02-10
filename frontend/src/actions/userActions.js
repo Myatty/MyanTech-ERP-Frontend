@@ -8,7 +8,7 @@ export const fetchUsers = () => {
   return async (dispatch) => {
     dispatch({ type: FETCH_USERS_REQUEST });
     try {
-      const response = await axios.get("http://localhost:4000/api/customers");
+      const response = await axios.get("http://localhost:4000/api/users");
       dispatch({ type: FETCH_USERS_SUCCESS, payload: response.data });
     } catch (error) {
       dispatch({ type: FETCH_USERS_FAILURE, error: error.message });
