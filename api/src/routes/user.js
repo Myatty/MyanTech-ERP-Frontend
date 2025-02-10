@@ -10,6 +10,6 @@ const {
 const router = express.Router();
 
 router.get("/searchUser", getUserByName);
-router.get("/", getAllUsers);
+router.get("/", getAllUsers); // GET /api/users?limit=100&offset=0
 router.post("/", createUser);
 module.exports = router;

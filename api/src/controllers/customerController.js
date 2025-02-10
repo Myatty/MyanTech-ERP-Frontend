@@ -1,16 +1,19 @@
 const pool = require("../../config/db");
 
-// Get all customers
+// Get all customers with pagination
 const getAllCustomers = async (req, res) => {
     try {
-        const [customers] = await pool.query("SELECT * FROM Customers");
+        const limit = parseInt(req.query.limit) || 100;
+        const offset = parseInt(req.query.offset) || 0;
+
+        const [customers] = await pool.query("SELECT * FROM Customers ORDER BY name ASC LIMIT ? OFFSET ?", [limit, offset]);
+
         res.json(customers);
     } catch (error) {
         console.error("Error fetching customers:", error);
         res.status(500).json({ error: "Database query failed" });
     }
 };
-
 // Get single customer by name
 const getCustomerByName = async (req, res) => {
     try {

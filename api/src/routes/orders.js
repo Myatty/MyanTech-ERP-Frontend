@@ -18,6 +18,6 @@ router.get("/:id", getOrder);
 router.put("/:id", updateOrder);
 router.delete("/:id", deleteOrder);
 router.post("/", addProductToOrder);
-router.get("/", getAllOrders);
+router.get("/", getAllOrders); // GET /api/orders?limit=100&offset=0
 
 module.exports = router;

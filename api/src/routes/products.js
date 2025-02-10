@@ -14,7 +14,7 @@ const router = express.Router();
 router.get("/search", searchProducts);
 router.get("/brand-names", getAllBrands); // only brandNames
 
-router.get("/", getAllProducts); 
+router.get("/", getAllProducts);  // GET /api/products?limit=100&offset=0
 router.get("/:id", getProduct); 
 router.post("/", addProduct); 
 router.put("/:id", updateProduct); 

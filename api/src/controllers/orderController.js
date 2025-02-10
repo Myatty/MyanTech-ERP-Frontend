@@ -2,13 +2,17 @@ const pool = require("../../config/db");
 const jwt = require('jsonwebtoken');
 const { checkPrivilege } = require("../helpers/jwtHelperFunctions");
 
-// Get all orders
+// Get all orders with pagination
 const getAllOrders = async (req, res) => {
 
-    checkPrivilege(req, res, ['Warehouse','Sale']);
+    checkPrivilege(req, res, ['Warehouse', 'Sale']);
 
     try {
-        const [orders] = await pool.query("SELECT * FROM Orders");
+        const limit = parseInt(req.query.limit) || 100;
+        const offset = parseInt(req.query.offset) || 0;
+
+        const [orders] = await pool.query("SELECT * FROM Orders ORDER BY order_date DESC LIMIT ? OFFSET ?", [limit, offset]);
+
         res.json(orders);
     } catch (error) {
         console.error("Error fetching orders:", error);
