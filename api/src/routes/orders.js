@@ -2,7 +2,6 @@ const express = require('express');
 const {
     getAllOrders,
     getOrder,
-    addOrder,
     updateOrder,
     deleteOrder,
     addProductToOrder,
@@ -17,11 +16,10 @@ router.get("/yearly-breakup", getYearlyBreakup)
 router.get("/current-year-breakup", getCurrentYearBreakup)
 router.get("/monthly-earnings/:year", getMonthlyEarnings)
 
-router.get("/", getAllOrders);
 router.get("/:id", getOrder);
-router.post("/", addOrder);
 router.put("/:id", updateOrder);
 router.delete("/:id", deleteOrder);
-router.post("/add", addProductToOrder);
+router.post("/", addProductToOrder);
+router.get("/", getAllOrders); // GET /api/orders?limit=100&offset=0
 
 module.exports = router;

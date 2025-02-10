@@ -1,9 +1,13 @@
 const pool = require("../../config/db");
 
-// Get all products
+// Get all products with pagination
 const getAllProducts = async (req, res) => {
     try {
-        const [products] = await pool.query("SELECT * FROM products ORDER BY created_at DESC");
+        const limit = parseInt(req.query.limit) || 100;
+        const offset = parseInt(req.query.offset) || 0;
+
+        const [products] = await pool.query("SELECT * FROM products ORDER BY created_at DESC LIMIT ? OFFSET ?", [limit, offset]);
+
         res.json(products);
     } catch (error) {
         console.error("Error fetching products:", error);

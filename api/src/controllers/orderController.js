@@ -1,9 +1,18 @@
 const pool = require("../../config/db");
+const jwt = require('jsonwebtoken');
+const { checkPrivilege } = require("../helpers/jwtHelperFunctions");
 
-// Get all orders
+// Get all orders with pagination
 const getAllOrders = async (req, res) => {
+
+    checkPrivilege(req, res, ['Warehouse', 'Sale']);
+
     try {
-        const [orders] = await pool.query("SELECT * FROM Orders");
+        const limit = parseInt(req.query.limit) || 100;
+        const offset = parseInt(req.query.offset) || 0;
+
+        const [orders] = await pool.query("SELECT * FROM Orders ORDER BY order_date DESC LIMIT ? OFFSET ?", [limit, offset]);
+
         res.json(orders);
     } catch (error) {
         console.error("Error fetching orders:", error);
@@ -23,25 +32,14 @@ const getOrder = async (req, res) => {
     }
 };
 
-// Add new order
-const addOrder = async (req, res) => {
-    try {
-        const { customer_id, order_date, status, total_amount } = req.body;
-        const [result] = await pool.query(
-            "INSERT INTO Orders (customer_id, order_date, status, total_amount) VALUES (?, ?, ?, ?)",
-            [customer_id, order_date, status, total_amount]
-        );
-        res.json({ message: "Order added", order_id: result.insertId });
-    } catch (error) {
-        console.error("Error adding order:", error);
-        res.status(500).json({ error: "Database insert failed" });
-    }
-};
-
 // Update order
 const updateOrder = async (req, res) => {
+
+    //Commend out this line if you dont want to use login
+    checkPrivilege(req, res, ['Warehouse','Sale']);
+
     try {
-        const { customer_id, order_date, status, total_amount } = req.body;
+        const { status } = req.body;
         const [result] = await pool.query(
             "UPDATE Orders SET status=? WHERE order_id=?",
             [status, req.params.id]
@@ -127,15 +125,17 @@ const addProductToOrder = async (req, res) => {
 // all years's breakup
 const getYearlyBreakup = async (req, res) => {
     try {
+        const currentYear = new Date().getFullYear();
         const [yearlyBreakup] = await pool.query(`
             SELECT 
                 YEAR(order_date) AS year,
                 COUNT(*) AS total_orders,
                 SUM(total_amount) AS total_amount
             FROM Orders
+            WHERE YEAR(order_date) BETWEEN ? AND ?
             GROUP BY YEAR(order_date)
             ORDER BY YEAR(order_date) DESC
-        `);
+        `, [currentYear - 5, currentYear]);
 
         res.json(yearlyBreakup);
     } catch (error) {
@@ -191,7 +191,6 @@ const getMonthlyEarnings = async (req, res) => {
 module.exports = {
     getAllOrders,
     getOrder,
-    addOrder,
     updateOrder,
     deleteOrder,
     addProductToOrder,
