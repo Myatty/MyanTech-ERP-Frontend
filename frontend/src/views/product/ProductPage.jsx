@@ -3,50 +3,53 @@ import { useDispatch, useSelector } from "react-redux";
 import DataTable from "react-data-table-component";
 import { CSVLink } from "react-csv"; // For exporting CSV
 import { fetchProducts } from "../../actions/productActions";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
+import {
+  Button,
+  TextField,
+  MenuItem,
+  Box,
+  Skeleton,
+  FormControl,
+  InputLabel,
+  Select,
+  Typography,
+} from "@mui/material";
+import { IconPencil, IconTrash } from "@tabler/icons-react";
+
 import DialogBox from "./component/dilogBox";
 import PageContainer from "src/components/container/PageContainer";
 import DashboardCard from "../../components/shared/DashboardCard";
-import Skeleton from "@mui/material/Skeleton";
-import Box from "@mui/material/Box";
-import { FormControl, InputLabel, Select } from "@mui/material";
-import { IconPencil, IconTrash } from "@tabler/icons-react";
-import { borderRadius, borderTop } from "@mui/system";
 
-const ProductPage = () => {
+const Product = () => {
   const dispatch = useDispatch();
   const { loading, products, error } = useSelector((state) => state.products);
+
   const [open, setOpen] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(""); // Search term state
-  const [categoryFilter, setCategoryFilter] = useState(""); // Category filter state
+  const [searchTerm, setSearchTerm] = useState(""); // Search term
+  const [categoryFilter, setCategoryFilter] = useState(""); // Category filter
 
   useEffect(() => {
     dispatch(fetchProducts());
-  }, []);
+  }, [dispatch]);
 
   const handleProductCreated = () => {
     dispatch(fetchProducts());
   };
 
-  const handleEdit = (row) => {
-    alert(`Edit product ID: ${row._id || row.id}`);
-  };
-
-  // Get unique categories from products
+  // Unique categories from product list
   const uniqueCategories = [
     ...new Set(products?.map((product) => product.category) || []),
   ];
 
   // Filtered products based on search & category
-  const filteredProducts = products?.filter(
+  const filteredProducts = (products || []).filter(
     (product) =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
       (categoryFilter ? product.category === categoryFilter : true)
   );
 
+  // CSV configuration
   const csvHeaders = [
     { label: "Item Name", key: "name" },
     { label: "Brand", key: "brand" },
@@ -63,6 +66,11 @@ const ProductPage = () => {
     filename: "ProductReport.csv",
   };
 
+  const handleEdit = (row) => {
+    alert(`Edit product ID: ${row._id || row.id}`);
+  };
+
+  // DataTable columns
   const columns = [
     { name: "No", selector: (row, index) => index + 1, width: "60px" },
     {
@@ -117,7 +125,6 @@ const ProductPage = () => {
             style={{ cursor: "pointer", color: "blue", marginRight: "10px" }}
             onClick={() => handleEdit(row)}
           />
-
           <IconTrash
             stroke={1.5}
             size="1.3rem"
@@ -132,10 +139,11 @@ const ProductPage = () => {
     },
   ];
 
+  // Custom styles for DataTable
   const customStyles = {
     headRow: {
       style: {
-        backgroundColor: "#5D87FF", // Change this to your desired color
+        backgroundColor: "#5D87FF",
         minHeight: "56px",
         borderTopRightRadius: "8px",
         borderTopLeftRadius: "8px",
@@ -143,7 +151,7 @@ const ProductPage = () => {
     },
     headCells: {
       style: {
-        color: "#FFF", // Text color
+        color: "#FFF",
         fontSize: "14px",
         fontWeight: "bold",
         "&:not(:last-of-type)": {
@@ -157,58 +165,77 @@ const ProductPage = () => {
     setSelectedRows(state.selectedRows);
   };
 
+  // Simple error message
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <PageContainer title="Product Page" description="this is product page">
       <DashboardCard>
+        {/* TOP SECTION with Heading, Total Products, and Export */}
         <div
           style={{
             display: "flex",
+            gap: "16px",
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: "baseline",
             marginBottom: "20px",
+            flexWrap: "wrap", // in case screen is small
           }}
         >
-          <h2>Product List</h2>
-          <div>
+          {/* Display total and filtered counts */}
+          <Box
+            sx={{
+              backgroundColor: "#F0F0F0",
+              p: 2,
+              borderRadius: 2,
+              minWidth: "200px",
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+              Total Products: {filteredProducts?.length || 0}
+            </Typography>
+          </Box>
+
+          {/* SEARCH & CATEGORY FILTER SECTION */}
+          <Box display="flex" sx={{ width: "50%" }} gap={2} mb={2}>
+            {/* Search Box */}
+            <TextField
+              size="small"
+              label="Search Product"
+              variant="outlined"
+              fullWidth
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+
+            {/* Category Dropdown */}
+            <FormControl variant="outlined" size="small" fullWidth>
+              <InputLabel>Filter by Category</InputLabel>
+              <Select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                label="Filter by Category"
+              >
+                <MenuItem value="">All Categories</MenuItem>
+                {uniqueCategories.map((category) => (
+                  <MenuItem key={category} value={category}>
+                    {category}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
             <CSVLink {...csvReport} style={{ textDecoration: "none" }}>
               <Button variant="contained" color="primary">
                 Export
               </Button>
             </CSVLink>
-          </div>
+          </Box>
         </div>
 
-        {/* Search & Category Filter Section */}
-        <Box display="flex" sx={{ width: "50%" }} gap={2} mb={2}>
-          {/* Search Box */}
-          <TextField
-            size="small"
-            label="Search Product"
-            variant="outlined"
-            fullWidth
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-
-          {/* Category Dropdown */}
-          <FormControl variant="outlined" size="small" fullWidth>
-            <InputLabel>Filter by Category</InputLabel>
-            <Select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              label="Filter by Category"
-            >
-              <MenuItem value="">All Categories</MenuItem>
-              {uniqueCategories.map((category) => (
-                <MenuItem key={category} value={category}>
-                  {category}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-
-        {/* Show Skeleton while Loading */}
+        {/* SHOW SKELETON WHILE LOADING */}
         {loading ? (
           <Box>
             {[...Array(6)].map((_, index) => (
@@ -227,7 +254,7 @@ const ProductPage = () => {
         ) : (
           <DataTable
             columns={columns}
-            data={filteredProducts} // Use filtered data
+            data={filteredProducts} // use the filtered data
             pagination
             highlightOnHover
             striped
@@ -248,4 +275,4 @@ const ProductPage = () => {
   );
 };
 
-export default ProductPage;
+export default Product;

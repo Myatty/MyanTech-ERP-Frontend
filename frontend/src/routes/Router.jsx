@@ -11,10 +11,13 @@ const BlankLayout = Loadable(
 
 /* ****Pages***** */
 const Dashboard = Loadable(lazy(() => import("../views/dashboard/Dashboard")));
-const ProductPage = Loadable(
+const ProductRoute = Loadable(
   lazy(() => import("../views/product/ProductPage"))
 );
 const UserRoute = Loadable(lazy(() => import("../views/system/UserPage.jsx")));
+const CustomerRoute = Loadable(
+  lazy(() => import("../views/system/CustomerPage.jsx"))
+);
 const Icons = Loadable(lazy(() => import("../views/icons/Icons")));
 const TypographyPage = Loadable(
   lazy(() => import("../views/utilities/TypographyPage"))
@@ -33,9 +36,10 @@ const Router = [
     children: [
       { path: "/", element: <Navigate to="/dashboard" /> },
       { path: "/dashboard", exact: true, element: <Dashboard /> },
-      { path: "/products", exact: true, element: <ProductPage /> },
+      { path: "/products", exact: true, element: <ProductRoute /> },
       { path: "/products/create", exact: true, element: <CreateOrder /> },
       { path: "/system/users", exact: true, element: <UserRoute /> },
+      { path: "/system/customers", exact: true, element: <CustomerRoute /> },
       { path: "/icons", exact: true, element: <Icons /> },
       { path: "/ui/typography", exact: true, element: <TypographyPage /> },
       { path: "/ui/shadow", exact: true, element: <Shadow /> },
