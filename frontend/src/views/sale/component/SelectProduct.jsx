@@ -65,6 +65,7 @@ const SelectedProduct = ({
       setFakeId(fakeId + 1);
       setNewOrder({
         ...newOrder,
+        productId: find.product_id,
         productName: find.name,
         brand: find.brand,
         category: find.category,
