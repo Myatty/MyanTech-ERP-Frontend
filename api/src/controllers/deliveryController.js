@@ -2,8 +2,11 @@ const pool = require("../../config/db");
 
 // Get all deliveries
 const getAllDeliveries = async (req, res) => {
+    const limit = parseInt(req.query.limit) || 100;
+    const offset = parseInt(req.query.offset) || 0;
+
     try {
-        const [deliveries] = await pool.query("SELECT * FROM Deliveries");
+        const [deliveries] = await pool.query("SELECT * FROM Deliveries LIMIT ? OFFSET ?", [limit, offset]);
         res.json(deliveries);
     } catch (error) {
         console.error("Error fetching deliveries:", error);
@@ -28,11 +31,20 @@ const getDeliveryById = async (req, res) => {
 const createDelivery = async (req, res) => {
     try {
         const { driver_id, truck_id, departure_time } = req.body;
-        const [result] = await pool.query(
-            "INSERT INTO Deliveries (driver_id, truck_id, departure_time) VALUES (?, ?, ?)",
-            [driver_id, truck_id, departure_time]
-        );
-        res.json({ message: "Delivery added", delivery_id: result.insertId });
+
+        if (!departure_time) {
+            const [result] = await pool.query(
+                "INSERT INTO Deliveries (driver_id, truck_id) VALUES (?, ?)",
+                [driver_id, truck_id]
+            );
+            res.json({ message: "Delivery added", delivery_id: result.insertId });
+        } else {
+            const [result] = await pool.query(
+                "INSERT INTO Deliveries (driver_id, truck_id, departure_time) VALUES (?, ?, ?)",
+                [driver_id, truck_id, departure_time]
+            );
+            res.json({ message: "Delivery added", delivery_id: result.insertId });
+        }
     } catch (error) {
         console.error("Error adding delivery:", error);
         res.status(500).json({ error: "Database insert failed" });
@@ -75,24 +87,24 @@ const isValidStatus = (status) => {
     return validStatuses.includes(status);
 };
 
-// Update delivery departure
-const updateDeliveryDeparture = async (req, res) => {
+// Update delivery status
+const updateDeliveryStatus = async (req, res) => {
     try {
         const { id } = req.params;
-        const { departure_time, status } = req.body;
+        const { status } = req.body;
 
         if (!isValidStatus(status)) {
             return res.status(400).json({ error: "Invalid status" });
         }
 
         const [result] = await pool.query(
-            "UPDATE Deliveries SET departure_time=?, status=? WHERE delivery_id=?",
-            [departure_time, status, id]
+            "UPDATE Deliveries SET status=? WHERE delivery_id=?",
+            [status, id]
         );
         if (result.affectedRows === 0) return res.status(404).json({ error: "Delivery not found" });
-        res.json({ message: "Delivery updated" });
+        res.json({ message: "Delivery status updated" });
     } catch (error) {
-        console.error("Error updating delivery:", error);
+        console.error("Error updating delivery status:", error);
         res.status(500).json({ error: "Database update failed" });
     }
 };
@@ -103,5 +115,5 @@ module.exports = {
     createDelivery,
     updateDelivery,
     deleteDelivery,
-    updateDeliveryDeparture
+    updateDeliveryStatus
 };
