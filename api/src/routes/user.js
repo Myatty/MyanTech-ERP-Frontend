@@ -4,7 +4,8 @@ const express = require('express');
 const { 
     getAllUsers, 
     createUser, 
-    getUserByName 
+    getUserByName,
+    updateUserById 
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -12,4 +13,5 @@ const router = express.Router();
 router.get("/searchUser", getUserByName);
 router.get("/", getAllUsers); // GET /api/users?limit=100&offset=0
 router.post("/", createUser);
+router.put('/update', updateUserById)
 module.exports = router;
