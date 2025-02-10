@@ -9,6 +9,7 @@ import {
   TableBody,
 } from "@mui/material";
 import SelectedProduct from "./SelectProduct";
+import { IconTrash } from "@tabler/icons-react";
 const OrderTab = ({
   tabIndex,
   setTabIndex,
@@ -17,9 +18,14 @@ const OrderTab = ({
   setNewOrder,
   products,
   setOrders,
-  customer,
+  selectedCustomer,
   selecteddate,
 }) => {
+  const handleDelete = (fakeId) => {
+    const filterItem = orders.filter((o) => o.fakeOrderID !== fakeId);
+    setOrders(filterItem);
+  };
+  const d = [1, 2, 4];
   return (
     <>
       <Tabs value={tabIndex} onChange={(e, newValue) => setTabIndex(newValue)}>
@@ -45,18 +51,37 @@ const OrderTab = ({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {orders.map((order, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{order.productName}</TableCell>
-                    <TableCell>{order.brand}</TableCell>
-                    <TableCell>{order.category}</TableCell>
-                    <TableCell>{order.product_segment}</TableCell>
-                    <TableCell>{order.serial_number}</TableCell>
-                    <TableCell>{order.price}</TableCell>
-                    <TableCell>{order.quantity}</TableCell>
-                    <TableCell>{order.totalPrice}</TableCell>
-                  </TableRow>
-                ))}
+                {orders.map((order, index) => {
+                  const deleteIcon = <IconTrash stroke={1.5} size="1.3rem" />;
+                  return (
+                    <TableRow key={index}>
+                      <TableCell>{order.productName}</TableCell>
+                      <TableCell>{order.brand}</TableCell>
+                      <TableCell>{order.category}</TableCell>
+                      <TableCell>{order.product_segment}</TableCell>
+                      <TableCell>{order.serial_number}</TableCell>
+                      <TableCell>{order.price}</TableCell>
+                      <TableCell>{order.quantity}</TableCell>
+                      <TableCell>{order.totalPrice}</TableCell>
+                      <TableCell
+                        sx={{ color: "red" }}
+                        onClick={() => {
+                          handleDelete(order.fakeOrderID);
+                        }}
+                      >
+                        {deleteIcon}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+                <TableRow>
+                  <TableCell colSpan={7}></TableCell>
+                  <TableCell sx={{ fontWeight: "bold", fontSize: 15 }}>
+                    {orders.reduce((tol, val) => {
+                      return (tol += val.totalPrice);
+                    }, 0)}
+                  </TableCell>
+                </TableRow>
               </TableBody>
             </Table>
 
@@ -67,7 +92,7 @@ const OrderTab = ({
               setNewOrder={setNewOrder}
               orders={orders}
               setOrders={setOrders}
-              customer={customer}
+              customer={selectedCustomer}
               selecteddate={selecteddate}
             />
           </>

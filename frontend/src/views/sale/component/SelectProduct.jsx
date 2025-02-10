@@ -22,36 +22,59 @@ const SelectedProduct = ({
   const [status, setStatus] = useState(true);
   const [product, setProduct] = useState(0);
   const [selectProductQty, setSelectProductQty] = useState(0);
+  const [fakeId, setFakeId] = useState(0);
   //   delect p array when real data get
-  const p = [
-    {
-      id: 1,
-      name: "Apple Macbook",
-      brand: "Apple",
-      category: "Laptop",
-      product_segment: "gidhgdh",
-      serial_number: "htghd",
-      price: 100,
-      stock_quantity: 10,
-    },
-    {
-      id: 2,
-      name: "LG Ultra Gear",
-      brand: "LG",
-      category: "Monitor",
-      product_segment: "dgdhhh",
-      serial_number: "ujhrt",
-      price: 200,
-      stock_quantity: 15,
-    },
-  ];
+  // const p = [
+  //   {
+  //     id: 1,
+  //     name: "Apple Macbook",
+  //     brand: "Apple",
+  //     category: "Laptop",
+  //     product_segment: "gidhgdh",
+  //     serial_number: "htghd",
+  //     price: 100,
+  //     stock_quantity: 10,
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "LG Ultra Gear",
+  //     brand: "LG",
+  //     category: "Monitor",
+  //     product_segment: "dgdhhh",
+  //     serial_number: "ujhrt",
+  //     price: 200,
+  //     stock_quantity: 15,
+  //   },
+  // ];
 
   // add order into order list
   const handleAddOrder = () => {
-    setOrders([...orders, newOrder]);
+    const findItem = orders.find(
+      (o) => o.serial_number === newOrder.serial_number
+    );
+    if (findItem) {
+      const updateOrder = orders.map((item) => {
+        return item.serial_number == newOrder.serial_number
+          ? {
+              ...item,
+              quantity: item.quantity + newOrder.quantity,
+              totalPrice: item.totalPrice + newOrder.totalPrice,
+            }
+          : item;
+      });
+      setOrders([...updateOrder]);
+      console.log("okok", updateOrder);
+    } else {
+      setOrders([...orders, newOrder]);
+    }
+
     setNewOrder({
+      fakeOrderID: null,
       date: selecteddate,
-      customer,
+      customer: customer.name,
+      township: customer.township,
+      region: customer.region,
+      phone: customer.phone,
       productName: "",
       brand: "",
       category: "",
@@ -66,11 +89,15 @@ const SelectedProduct = ({
   };
 
   //Select Product to order
+
+  console.log("fakeid", fakeId);
   const handleChange = (e) => {
     // find item from products instead of p
-    const find = p.find((i) => i.id === Number(e.target.value));
+    const find = products.find((i) => i.id === Number(e.target.value));
+    setFakeId(fakeId + 1);
     setNewOrder({
       ...newOrder,
+      fakeOrderID: fakeId,
       productName: find.name,
       brand: find.brand,
       category: find.category,
@@ -106,6 +133,7 @@ const SelectedProduct = ({
       });
     }
   };
+
   console.log("select", newOrder);
   console.log("order", orders);
   return (
@@ -128,7 +156,7 @@ const SelectedProduct = ({
             }}
           >
             {/* use products from prop instead of p  */}
-            {p.map((item) => (
+            {products.map((item) => (
               <MenuItem key={item.id} value={item.id}>
                 <ListItemText primary={item.name} />
               </MenuItem>
@@ -197,7 +225,7 @@ const SelectedProduct = ({
         sx={{ mt: 2 }}
         disabled={status || !newOrder.customer}
       >
-        Add Order
+        Add Item
       </Button>
     </>
   );
