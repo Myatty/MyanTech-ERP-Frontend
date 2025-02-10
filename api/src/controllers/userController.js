@@ -18,18 +18,21 @@ const getAllUsers = async (req, res) => {
 
 // get single  user
 const getUserByName = async (req, res) => {
-    try {
-        const searchUser = req.query.name;
-        const [user] = await pool.query("SELECT * FROM users WHERE name = ?", [searchUser]);
-        if (user.length === 0) return res.status(404).json({ error: "User not found" });
-        res.json(user[0]);
-    } catch (error) {
-        console.error("Error fetching user:", error);
-        res.status(500).json({ error: "Database query failed" });
-    }
+  try {
+    const searchUser = req.query.name;
+    const [user] = await pool.query("SELECT * FROM users WHERE name = ?", [
+      searchUser,
+    ]);
+    if (user.length === 0)
+      return res.status(404).json({ error: "User not found" });
+    res.json(user[0]);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Database query failed" });
+  }
 };
 
-// create new user  
+// create new user
 const createUser = async (req, res) => {
     try {
         const { name, email, password, phone_number, role_name, dept_name } = req.body;
@@ -48,10 +51,8 @@ const createUser = async (req, res) => {
     }
 };
 
-
-
-module.exports = { 
-    getAllUsers, 
-    createUser, 
-    getUserByName 
+module.exports = {
+  getAllUsers,
+  createUser,
+  getUserByName,
 };

@@ -2,52 +2,94 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DataTable from "react-data-table-component";
 import { CSVLink } from "react-csv"; // For exporting CSV
-import { fetchProducts } from "../../actions/productActions";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
+import { Typography } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
-import DialogBox from "./component/dilogBox";
 import PageContainer from "src/components/container/PageContainer";
 import DashboardCard from "../../components/shared/DashboardCard";
 import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
 import { FormControl, InputLabel, Select } from "@mui/material";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
-import { borderRadius, borderTop } from "@mui/system";
+import { fetchOrders } from "../../actions/orderActions";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
-const ProductPage = () => {
+const SaleHistoryPage = () => {
   const dispatch = useDispatch();
-  const { loading, products, error } = useSelector((state) => state.products);
-  const [open, setOpen] = useState(false);
+  const [selecteddate, setSelectedDate] = useState(new Date());
+  //const { loading, orders, error } = useSelector((state) => state.orders);
   const [selectedRows, setSelectedRows] = useState([]);
   const [searchTerm, setSearchTerm] = useState(""); // Search term state
-  const [categoryFilter, setCategoryFilter] = useState(""); // Category filter state
-
-  useEffect(() => {
-    dispatch(fetchProducts());
-  }, []);
-
-  const handleProductCreated = () => {
-    dispatch(fetchProducts());
-  };
-
-  // set yay 
-  const handleEdit = (row) => {
-    alert(`Edit product ID: ${row.product_id || row.id}`);
-  };
-
-  // Get unique categories from products
-  const uniqueCategories = [
-    ...new Set(products?.map((product) => product.category) || []),
+  const [status, setStatus] = useState(""); // Category filter state
+  const [ids, setIds] = useState(0); // Category filter state
+  //delete loading & orders when real data get
+  const loading = false;
+  const orders = [
+    {
+      order_date: "Wed Feb 10 2025 15:40:56 GMT+0630",
+      order_id: 30,
+      customer: "Su Su",
+      product_name: "Apple Mac",
+      qty: 5,
+      totalPrice: 5000,
+      status: "Pending",
+    },
+    {
+      order_date: "Wed Feb 10 2025 15:40:56 GMT+0630",
+      order_id: 20,
+      customer: "Kyaw Kyaw",
+      product_name: "Hp Omen 25L",
+      qty: 10,
+      totalPrice: 10000,
+      status: "Pending",
+    },
+    {
+      order_date: "Wed Feb 11 2025 15:40:56 GMT+0630",
+      order_id: 10,
+      customer: "Tun Tun",
+      product_name: "Hp Omen 25L",
+      qty: 4,
+      totalPrice: 4000,
+      status: "Delivering",
+    },
+    {
+      order_date: "Wed Feb 11 2025 15:40:56 GMT+0630",
+      order_id: 50,
+      customer: "Hla Hla",
+      product_name: "Acer",
+      qty: 2,
+      totalPrice: 1000,
+      status: "Delivered",
+    },
   ];
 
-  // Filtered products based on search & category
-  const filteredProducts = products?.filter(
-    (product) =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (categoryFilter ? product.category === categoryFilter : true)
-  );
+  useEffect(() => {
+    // dispatch(fetchOrders());
+  }, []);
 
+  const handleEdit = (row) => {
+    alert(`Edit product ID: ${row._id || row.id}`);
+  };
+
+  // Get status from order
+  const orderStatus = [...new Set(orders?.map((order) => order.status) || [])];
+
+  // Get orderId from order
+  const orderIds = [...new Set(orders?.map((order) => order.order_id) || [])];
+
+  // Filtered orders based on date & status & orderId
+  const filteredOrders = orders?.filter(
+    (order) =>
+      (selecteddate
+        ? new Date(order.order_date).toLocaleDateString() ===
+          new Date(selecteddate).toLocaleDateString()
+        : true) &&
+      (status ? order.status === status : true) &&
+      (ids ? order.order_id === ids : true)
+  );
+  console.log("date", selecteddate);
+  //
   const csvHeaders = [
     { label: "Item Name", key: "name" },
     { label: "Brand", key: "brand" },
@@ -59,53 +101,52 @@ const ProductPage = () => {
   ];
 
   const csvReport = {
-    data: filteredProducts,
+    data: filteredOrders,
     headers: csvHeaders,
-    filename: "ProductReport.csv",
+    filename: "SaleHistoryReport.csv",
   };
 
-  const columns = [ 
+  const columns = [
     { name: "No", selector: (row, index) => index + 1, width: "60px" },
     {
-      name: "Item Name",
-      selector: (row) => row.name,
+      name: "Date",
+      selector: (row) => new Date(row.order_date).toLocaleDateString(),
       sortable: true,
-      width: "180px",
+      width: "150px",
     },
     {
-      name: "Brand",
-      selector: (row) => row.brand,
-      sortable: true,
-      width: "140px",
-    },
-    {
-      name: "Category",
-      selector: (row) => row.category,
+      name: "Order_id",
+      selector: (row) => row.order_id,
       sortable: true,
       width: "140px",
     },
     {
-      name: "Product Segment",
-      selector: (row) => row.product_segment,
+      name: "Customer",
+      selector: (row) => row.customer,
+      sortable: true,
+      width: "140px",
+    },
+    {
+      name: "Product_Name",
+      selector: (row) => row.product_name,
       sortable: true,
       width: "160px",
     },
     {
-      name: "Serial Number",
-      selector: (row) => row.serial_number,
-      sortable: true,
-      width: "100px",
-    },
-    {
-      name: "Unit Price",
-      selector: (row) => row.price,
+      name: "Quantity",
+      selector: (row) => row.qty,
       sortable: true,
       width: "120px",
-      sortFunction: (a, b) => parseFloat(a.price) - parseFloat(b.price),
     },
     {
-      name: "Qty",
-      selector: (row) => row.stock_quantity,
+      name: "Total_Price",
+      selector: (row) => row.totalPrice,
+      sortable: true,
+      width: "130px",
+    },
+    {
+      name: "Status",
+      selector: (row) => row.status,
       sortable: true,
       width: "100px",
     },
@@ -160,7 +201,7 @@ const ProductPage = () => {
   };
 
   return (
-    <PageContainer title="Product Page" description="this is product page">
+    <PageContainer title="Sale History" description="this is product page">
       <DashboardCard>
         <div
           style={{
@@ -170,7 +211,7 @@ const ProductPage = () => {
             marginBottom: "20px",
           }}
         >
-          <h2>Product List</h2>
+          <h2>Sale History List</h2>
           <div>
             <CSVLink {...csvReport} style={{ textDecoration: "none" }}>
               <Button variant="contained" color="primary">
@@ -180,30 +221,53 @@ const ProductPage = () => {
           </div>
         </div>
 
-        {/* Search & Category Filter Section */}
-        <Box display="flex" sx={{ width: "50%" }} gap={2} mb={2}>
-          {/* Search Box */}
-          <TextField
-            size="small"
-            label="Search Product"
-            variant="outlined"
-            fullWidth
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        {/* Date & order_id & status Filter Section */}
+        <Box
+          display="flex"
+          sx={{ width: "80%", alignItems: "center" }}
+          gap={2}
+          mb={2}
+        >
+          {/* Date */}
+          <Box sx={{ mx: 2, display: "flex", width: 300 }}>
+            <Typography sx={{ mr: 2, fontWeight: "bold" }}>Date</Typography>
+            <DatePicker
+              selected={selecteddate}
+              onChange={(date) => {
+                setSelectedDate(date);
+              }}
+            />
+          </Box>
 
-          {/* Category Dropdown */}
+          {/* status Dropdown */}
           <FormControl variant="outlined" size="small" fullWidth>
-            <InputLabel>Filter by Category</InputLabel>
+            <InputLabel>Filter by Status</InputLabel>
             <Select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              label="Filter by Category"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              label="Filter by Status"
             >
               <MenuItem value="">All Categories</MenuItem>
-              {uniqueCategories.map((category) => (
-                <MenuItem key={category} value={category}>
-                  {category}
+              {orderStatus.map((status) => (
+                <MenuItem key={status} value={status}>
+                  {status}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* order_Id Dropdown */}
+          <FormControl variant="outlined" size="small" fullWidth>
+            <InputLabel>Filter by order_id</InputLabel>
+            <Select
+              value={ids}
+              onChange={(e) => setIds(e.target.value)}
+              label="Filter by order_id"
+            >
+              <MenuItem value="">All Order_Id</MenuItem>
+              {orderIds.map((id) => (
+                <MenuItem key={id} value={id}>
+                  {id}
                 </MenuItem>
               ))}
             </Select>
@@ -229,7 +293,7 @@ const ProductPage = () => {
         ) : (
           <DataTable
             columns={columns}
-            data={filteredProducts} // Use filtered data
+            data={filteredOrders} // Use filtered data
             pagination
             highlightOnHover
             striped
@@ -239,15 +303,9 @@ const ProductPage = () => {
             customStyles={customStyles}
           />
         )}
-
-        <DialogBox
-          open={open}
-          setOpen={setOpen}
-          onProductCreated={handleProductCreated}
-        />
       </DashboardCard>
     </PageContainer>
   );
 };
 
-export default ProductPage;
+export default SaleHistoryPage;
