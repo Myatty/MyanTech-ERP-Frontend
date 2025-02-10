@@ -36,7 +36,7 @@ const getOrder = async (req, res) => {
 const updateOrder = async (req, res) => {
 
     //Commend out this line if you dont want to use login
-    checkPrivilege(req, res, ['Warehouse', 'Sale']);
+    //checkPrivilege(req, res, ['Warehouse', 'Sale']);
 
     try {
         const { status } = req.body;
