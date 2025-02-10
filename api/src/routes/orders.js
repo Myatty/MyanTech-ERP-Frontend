@@ -7,14 +7,14 @@ const {
     addProductToOrder,
     getYearlyBreakup,
     getMonthlyEarnings,
-    viewPendingOrder
+    viewPendingOrders
 } = require("../controllers/orderController");
 
 const router = express.Router();
 
 router.get("/yearly-breakup", getYearlyBreakup);
 router.get("/monthly-earnings/:year", getMonthlyEarnings);
-router.get("/pending", viewPendingOrder);
+router.get("/pending", viewPendingOrders);
 
 router.get("/:id", getOrder);
 router.put("/:id", updateOrder);

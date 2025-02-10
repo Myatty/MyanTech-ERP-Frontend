@@ -36,7 +36,7 @@ const getOrder = async (req, res) => {
 const updateOrder = async (req, res) => {
 
     //Commend out this line if you dont want to use login
-    checkPrivilege(req, res, ['Warehouse','Sale']);
+    checkPrivilege(req, res, ['Warehouse', 'Sale']);
 
     try {
         const { status } = req.body;
@@ -166,10 +166,31 @@ const getMonthlyEarnings = async (req, res) => {
 };
 
 
-// View pending orders
-const viewPendingOrder = async (req, res) => {
+
+// View pending orders with pagination
+const viewPendingOrders = async (req, res) => {
     try {
-        const [pendingOrders] = await pool.query("SELECT * FROM Orders WHERE status = 'pending'");
+        const limit = parseInt(req.query.limit) || 100;
+        const offset = parseInt(req.query.offset) || 0;
+
+        const [pendingOrders] = await pool.query(`
+            SELECT 
+            Orders.order_id,
+            Orders.customer_id,
+            Orders.order_date,
+            Orders.status AS order_status,
+            Orders.total_amount,
+            OrderItems.product_id,
+            OrderItems.quantity,
+            OrderItems.unit_price_at_time,
+            OrderItems.status AS item_status
+            FROM Orders
+            JOIN OrderItems ON Orders.order_id = OrderItems.order_id
+            WHERE Orders.status = 'pending'
+            GROUP BY Orders.customer_id, Orders.order_date, Orders.status, Orders.total_amount, OrderItems.product_id, OrderItems.quantity, OrderItems.unit_price_at_time, OrderItems.status
+            ORDER BY Orders.order_date DESC;
+        `, [limit, offset]);
+
         res.json(pendingOrders);
     } catch (error) {
         console.error("Error fetching pending orders:", error);
@@ -186,5 +207,5 @@ module.exports = {
     addProductToOrder,
     getYearlyBreakup,
     getMonthlyEarnings,
-    viewPendingOrder
+    viewPendingOrders
 };
