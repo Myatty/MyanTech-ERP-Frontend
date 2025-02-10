@@ -37,10 +37,7 @@ const Product = () => {
     dispatch(fetchProducts());
   };
 
-  // set yay 
-  const handleEdit = (row) => {
-    alert(`Edit product ID: ${row.product_id || row.id}`);
-  };
+
 
   // Get unique categories from products
   const uniqueCategories = [
