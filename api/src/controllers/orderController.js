@@ -4,6 +4,9 @@ const { checkPrivilege } = require("../helpers/jwtHelperFunctions");
 
 // Get all orders
 const getAllOrders = async (req, res) => {
+
+    checkPrivilege(req, res, ['Warehouse','Sale']);
+
     try {
         const [orders] = await pool.query("SELECT * FROM Orders");
         res.json(orders);
@@ -25,28 +28,11 @@ const getOrder = async (req, res) => {
     }
 };
 
-// Add new order
-const addOrder = async (req, res) => {
-    try {
-        const { customer_id, order_date, status, total_amount } = req.body;
-        const [result] = await pool.query(
-            "INSERT INTO Orders (customer_id, order_date, status, total_amount) VALUES (?, ?, ?, ?)",
-            [customer_id, order_date, status, total_amount]
-        );
-        res.json({ message: "Order added", order_id: result.insertId });
-    } catch (error) {
-        console.error("Error adding order:", error);
-        res.status(500).json({ error: "Database insert failed" });
-    }
-};
-
-//PUSH testing
-
 // Update order
 const updateOrder = async (req, res) => {
 
     //Commend out this line if you dont want to use login
-    checkPrivilege(req, res, 'Warehouse');
+    checkPrivilege(req, res, ['Warehouse','Sale']);
 
     try {
         const { status } = req.body;
@@ -178,7 +164,6 @@ const getMonthlyEarnings = async (req, res) => {
 module.exports = {
     getAllOrders,
     getOrder,
-    addOrder,
     updateOrder,
     deleteOrder,
     addProductToOrder,
