@@ -1,6 +1,7 @@
 import React, { lazy } from "react";
 import { Navigate } from "react-router-dom";
 import Loadable from "../layouts/full/shared/loadable/Loadable";
+import CreateOrder from "../views/product/CreateProduct.jsx";
 
 /* ***Layouts**** */
 const FullLayout = Loadable(lazy(() => import("../layouts/full/FullLayout")));
@@ -34,6 +35,7 @@ const Router = [
       { path: "/", element: <Navigate to="/dashboard" /> },
       { path: "/dashboard", exact: true, element: <Dashboard /> },
       { path: "/products", exact: true, element: <ProductPage /> },
+      { path: "/products/create", exact: true, element: <CreateOrder /> },
       { path: "/system/users", exact: true, element: <UserRoute /> },
       { path: "/sales/create", exact: true, element: <SalePage /> },
       { path: "/icons", exact: true, element: <Icons /> },

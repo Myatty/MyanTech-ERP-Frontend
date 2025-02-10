@@ -1,20 +1,22 @@
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Dialog,
   DialogTitle,
   DialogContent,
+  DialogActions,
   Box,
   TextField,
-  DialogActions,
   FormControl,
   InputLabel,
-  ListItemText,
   MenuItem,
   Select,
+  Grid,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { fetchUsers } from "../../../actions/userActions";
+import axios from "axios";
+
 const UserDialog = ({
   open,
   setOpen,
@@ -25,27 +27,39 @@ const UserDialog = ({
   const dispatch = useDispatch();
   const [userData, setUserData] = useState({
     name: "",
-    phone: "",
+    phone_number: "",
     email: "",
     password: "",
-    role: "",
-    department: "",
+    role_name: "",
+    // not "department" here because your form uses "department" to update state
+    // but the actual userData field might be "dept_name" (adjust as needed).
+    dept_name: "",
   });
 
   const handleChange = (e) => {
-    setUserData({
-      ...userData,
-      [e.target.name]: e.target.value,
-    });
-    if (e.target.name == "department") {
-      setDepartment(e.target.value);
+    const { name, value } = e.target;
+    setUserData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // If the user is changing the "department" field
+    if (name === "department") {
+      setDepartment(value);
+      // Also update userData with the selected department, if needed
+      setUserData((prev) => ({
+        ...prev,
+        dept_name: value,
+      }));
     }
   };
 
-  // // create new user
+  // Create new user
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Make sure your backend expects these fields:
+      // name, phone_number, email, password, role_name, dept_name, etc.
       await axios.post("http://localhost:4000/api/users", userData);
       setOpen(false);
       dispatch(fetchUsers());
@@ -53,96 +67,115 @@ const UserDialog = ({
       console.error("Error creating user:", error);
     }
   };
-  console.log("data", userData);
+
   return (
-    <>
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>User Registor Form</DialogTitle>
-        <DialogContent sx={{ display: "flex", flexDirection: "column", p: 4 }}>
-          <Box component="form" onSubmit={handleSubmit}>
-            <Box>
-              <h4>Name</h4>
+    <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
+      <DialogTitle sx={{ fontWeight: "bold", fontSize: "1.25rem" }}>
+        User Registration
+      </DialogTitle>
+
+      <Box component="form" onSubmit={handleSubmit}>
+        <DialogContent dividers sx={{ pb: 2 }}>
+          <Grid container spacing={2}>
+            {/* Name */}
+            <Grid item xs={12} sm={6}>
               <TextField
+                label="Name"
                 name="name"
-                sx={{ width: 300 }}
-                placeholder="Name"
+                fullWidth
+                variant="outlined"
+                value={userData.name}
                 onChange={handleChange}
               />
-            </Box>
-            <Box>
-              <h4>Phone</h4>
+            </Grid>
+
+            {/* Phone */}
+            <Grid item xs={12} sm={6}>
               <TextField
-                name="phone"
-                sx={{ width: 300 }}
-                placeholder="Phone"
+                label="Phone"
+                name="phone_number"
+                fullWidth
+                variant="outlined"
+                value={userData.phone_number}
                 onChange={handleChange}
               />
-            </Box>
-            <Box>
-              <h4>Email</h4>
+            </Grid>
+
+            {/* Email */}
+            <Grid item xs={12} sm={6}>
               <TextField
+                label="Email"
                 name="email"
-                sx={{ width: 300 }}
-                placeholder="Email"
+                fullWidth
+                variant="outlined"
+                type="email"
+                value={userData.email}
                 onChange={handleChange}
               />
-            </Box>
-            <Box>
-              <h4>Password</h4>
+            </Grid>
+
+            {/* Password */}
+            <Grid item xs={12} sm={6}>
               <TextField
+                label="Password"
                 name="password"
+                fullWidth
+                variant="outlined"
                 type="password"
-                sx={{ width: 300 }}
-                placeholder="Password"
+                value={userData.password}
                 onChange={handleChange}
               />
-            </Box>
-            <Box>
-              <h4>Role</h4>
-              <TextField
-                name="role"
-                type="Role"
-                sx={{ width: 300 }}
-                placeholder="Role"
-                onChange={handleChange}
-              />
-            </Box>
-            <Box>
-              <h4>Department</h4>
-              <FormControl fullWidth sx={{ mt: 2 }}>
-                <InputLabel>Departments</InputLabel>
+            </Grid>
+
+            {/* Department */}
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel id="department-label">Department</InputLabel>
                 <Select
-                  name="department"
+                  labelId="department-label"
                   label="Department"
+                  name="department"
                   value={department}
                   onChange={handleChange}
                 >
                   {departments.map((item) => (
                     <MenuItem key={item.id} value={item.name}>
-                      <ListItemText primary={item.name} />
+                      {item.name}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
-            </Box>
+            </Grid>
 
-            <DialogActions>
-              <Button
-                variant="contained"
-                onClick={() => {
-                  setOpen(false);
-                }}
-              >
-                Cancle
-              </Button>
-              <Button type="submit" variant="contained">
-                Comfrim
-              </Button>
-            </DialogActions>
-          </Box>
+            {/* Role */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Role"
+                name="role_name"
+                fullWidth
+                variant="outlined"
+                value={userData.role_name}
+                onChange={handleChange}
+              />
+            </Grid>
+          </Grid>
         </DialogContent>
-      </Dialog>
-    </>
+
+        <DialogActions sx={{ p: 2 }}>
+          <Button
+            variant="outlined"
+            onClick={() => setOpen(false)}
+            sx={{ mr: 1 }}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" variant="contained">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Box>
+    </Dialog>
   );
 };
+
 export default UserDialog;
