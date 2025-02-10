@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FormControl, InputLabel, Select, MenuItem, ListItemText, TextField, Button } from '@mui/material';
+import { FormControl, InputLabel, Select, MenuItem, ListItemText, TextField, Button, Box } from '@mui/material';
 
 const SelectedProduct = ({
   products,
@@ -42,7 +42,7 @@ const SelectedProduct = ({
       customer: customer.name,
       township: customer.township,
       region: customer.region,
-      phone: customer.phone,
+      phone: customer.contact_number1,
       productName: "",
       brand: "",
       category: "",
@@ -101,88 +101,99 @@ const SelectedProduct = ({
   console.log("order", orders);
 
   return (
-    <div>
-      <FormControl fullWidth>
-        <InputLabel>Product</InputLabel>
-        <Select
-          name="product"
-          label="Product"
-          value={product}
-          onChange={handleChange}
-        >
-          {products.map((item) => (
-            <MenuItem key={item.product_id} value={item.product_id}>
-              <ListItemText primary={item.name} />
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-      <TextField
-        margin="normal"
-        fullWidth
-        label="Brand"
-        value={newOrder.brand}
-        InputProps={{
-          readOnly: true,
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-evenly",
+          flexWrap: "wrap",
         }}
-      />
-      <TextField
-        margin="normal"
-        fullWidth
-        label="Category"
-        value={newOrder.category}
-        InputProps={{
-          readOnly: true,
-        }}
-      />
-      <TextField
-        margin="normal"
-        fullWidth
-        label="Product Segment"
-        value={newOrder.product_segment}
-        InputProps={{
-          readOnly: true,
-        }}
-      />
-      <TextField
-        margin="normal"
-        fullWidth
-        label="Serial Number"
-        value={newOrder.serial_number}
-        InputProps={{
-          readOnly: true,
-        }}
-      />
-      <TextField
-        margin="normal"
-        fullWidth
-        label="Price"
-        value={newOrder.price}
-        InputProps={{
-          readOnly: true,
-        }}
-      />
-      <TextField
-        margin="normal"
-        fullWidth
-        label="Quantity"
-        type="number"
-        value={newOrder.quantity}
-        onChange={handleOrderQty}
-      />
-      <TextField
-        margin="normal"
-        fullWidth
-        label="Total Price"
-        value={newOrder.totalPrice}
-        InputProps={{
-          readOnly: true,
-        }}
-      />
+      >
+        <FormControl sx={{ mt: 2, width: 300 }}>
+
+          <InputLabel>Product</InputLabel>
+          <Select
+            name="product"
+            label="Product"
+            value={product}
+            onChange={handleChange}
+          >
+            {products.map((item) => (
+              <MenuItem key={item.product_id} value={item.product_id}>
+                <ListItemText primary={item.name} />
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <TextField
+          margin="normal"
+          label="Brand"
+          sx={{ width: 200 }}
+          value={newOrder.brand}
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+        <TextField
+          margin="normal"
+          label="Category"
+          sx={{ width: 200 }}
+          value={newOrder.category}
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+        <TextField
+          margin="normal"
+          sx={{ width: 200 }}
+          label="Product Segment"
+          value={newOrder.product_segment}
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+        <TextField
+          margin="normal"
+          sx={{ width: 200 }}
+          label="Serial Number"
+          value={newOrder.serial_number}
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+        <TextField
+          margin="normal"
+          label="Price"
+          sx={{ width: 200 }}
+          value={newOrder.price}
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+
+        <TextField
+          margin="normal"
+          sx={{ width: 200 }}
+          label="Quantity"
+          type="number"
+          value={newOrder.quantity}
+          onChange={handleOrderQty}
+        />
+        <TextField
+          margin="normal"
+          label="Total Price"
+          value={newOrder.totalPrice}
+          InputProps={{
+            readOnly: true,
+          }}
+          sx={{ width: 200 }}
+        />
+
+      </Box>
       <Button variant="contained" color="primary" onClick={handleAddOrder}>
-        Add Order
+        Add Product
       </Button>
-    </div>
+    </>
   );
 };
 

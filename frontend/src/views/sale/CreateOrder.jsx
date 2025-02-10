@@ -85,10 +85,16 @@ const OrderCreate = () => {
   // create new order
   const handleSubmit = async () => {
     try {
+      const orderData = {
+        customer: selectedCustomer.name,
+        date: selectedDate,
+        orders: orders,
+      };
+      console.log("Order Data:", orderData); // Debugging log
       await axios.post("http://localhost:4000/api/orders", orders);
       dispatch(fetchProducts());
     } catch (error) {
-      console.error("Error creating product:", error);
+      console.error("Error creating order:", error);
     }
   };
 
