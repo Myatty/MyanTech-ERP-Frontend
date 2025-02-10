@@ -1,11 +1,14 @@
 const pool = require("../../config/db");
 const bcryptjs = require('bcryptjs');
 
-
-// Get all users
+// Get all users with pagination
 const getAllUsers = async (req, res) => {
     try {
-        const [users] = await pool.query("SELECT * FROM users");
+        const limit = parseInt(req.query.limit) || 100;
+        const offset = parseInt(req.query.offset) || 0;
+
+        const [users] = await pool.query("SELECT * FROM users ORDER BY name ASC LIMIT ? OFFSET ?", [limit, offset]);
+
         res.json(users);
     } catch (error) {
         console.error("Error fetching users:", error);
