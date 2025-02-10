@@ -17,8 +17,7 @@ import {
 } from "@mui/material";
 import OrderTab from "./component/Tab";
 import { fetchProducts } from "../../actions/productActions";
-import { fetchOrders } from "../../actions/orderActions";
-
+import axios from "axios";
 const OrderCreate = () => {
   const dispatch = useDispatch();
   const { loading, products, error } = useSelector((state) => state.products);
@@ -94,7 +93,7 @@ const OrderCreate = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchOrders());
+    dispatch(fetchProducts());
     setNewOrder({ ...newOrder, date: selecteddate });
   }, [dispatch]);
 
@@ -102,7 +101,7 @@ const OrderCreate = () => {
   const handleSubmit = async () => {
     try {
       await axios.post("http://localhost:4000/api/orders", orders);
-      dispatch(fetchOrders());
+      dispatch(fetchProducts());
     } catch (error) {
       console.error("Error creating product:", error);
     }
