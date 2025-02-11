@@ -4,11 +4,11 @@ import {
   FETCH_WAREHOUSE_ORDERS_FAILURE,
 } from "../actions/warehouseOrderActions";
 
-const initialState = {
-  loading: false,
-  warehouseOrders: [],
-  error: "",
-};
+  const initialState = {
+    loading: false,
+    warehouseOrders: [],
+    error: "",
+  };
 
 const warehouseOrdersReducer = (state = initialState, action) => {
   switch (action.type) {

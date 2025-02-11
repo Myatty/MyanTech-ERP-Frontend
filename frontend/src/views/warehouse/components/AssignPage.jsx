@@ -39,9 +39,9 @@ const AssignTruck = ({
   setSelectOrderId,
   selectOrderId,
   driver_info,
+  trucks
 }) => {
   //fetch drivers , trucks , delivering driverIds & truckIds
-  console.log(`driver_names from assign`, driver_info.driver_names);
 
 
   const [driver, setDriver] = useState(0);
@@ -67,21 +67,6 @@ const AssignTruck = ({
     }
   };
 
-  //delete trucks when real data get
-  const trucks = [
-    {
-      id: 1,
-      name: "9458gffg",
-    },
-    {
-      id: 2,
-      name: "43546retf",
-    },
-    {
-      id: 3,
-      name: "g45tfg",
-    },
-  ];
   //delete deliveringDriverIds & deliveringTruckIds when real data get
   const deliveringDriverIds = [1, 3];
   const deliveringTruckIds = [2];
@@ -176,15 +161,15 @@ const AssignTruck = ({
                       <MenuItem value="">All Trucks</MenuItem>
                       {trucks.map((t) => (
                         <MenuItem
-                          key={t.id}
-                          value={t.id}
+                          key={t.truck_id}
+                          value={t.license_plate}
                           disabled={
                             deliveringTruckIds.find((dt) => dt === t.id)
                               ? true
                               : false
                           }
                         >
-                          {t.name}
+                          {t.license_plate}
                         </MenuItem>
                       ))}
                     </Select>

@@ -12,12 +12,14 @@ import { FormControl, InputLabel, Select, MenuItem, Box } from "@mui/material";
 import AssignTruck from "./components/AssignPage";
 import { fetchWarehouseOrders } from "../../actions/warehouseOrderActions";
 import { fetchDrivers } from "../../actions/driverActions";
+import { fetchTrucks } from "../../actions/truckActions";
 
 export default function CustomizedTables() {
   const dispatch = useDispatch();
   const warehouseOrders = useSelector((state) => state.warehouseOrders.warehouseOrders);
   const drivers = useSelector((state) => state.drivers.drivers);
-  console.log("driverss :", drivers);
+  const trucks = useSelector((state) => state.trucks.trucks);
+  console.log("trucks :", trucks);
 
   const [region, setRegion] = useState("");
   const [township, setTownship] = useState("");
@@ -30,6 +32,7 @@ export default function CustomizedTables() {
   };
 
   useEffect(() => { dispatch(fetchDrivers()) }, [dispatch]);
+  useEffect(() => { dispatch(fetchTrucks()) }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchWarehouseOrders()).then((response) => {
@@ -41,11 +44,13 @@ export default function CustomizedTables() {
 
   // drivers
   const driversList = Array.isArray(drivers) ? drivers : [];
-  console.log("driversList :", driversList);
-
   const driver_names = driversList.map((driver) => driver.driver_name);
-  console.log("driver_name :", driver_names);
 
+  // trucks
+  const trucksList = Array.isArray(trucks) ? trucks : [];
+  const license_plate = trucksList.map((truck) => truck.license_plate);
+
+  // warehouse orders
   const orders = Array.isArray(warehouseOrders) ? warehouseOrders : [];
 
   const orderIds = [...new Set(orders.map((order) => order.order_id))];
@@ -179,6 +184,7 @@ export default function CustomizedTables() {
         setSelectOrderId={setSelectOrderId}
         selectOrderId={selectOrderId}
         driver_info={driversList}
+        trucks={trucksList}
       />
     </>
   );
