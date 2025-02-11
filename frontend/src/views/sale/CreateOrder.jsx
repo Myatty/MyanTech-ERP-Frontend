@@ -42,6 +42,7 @@ const OrderCreate = () => {
   const [customer, setCustomer] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState({
     name: "",
+    customer_id: "",
     township: "",
     region: "",
     contact_number1: "",
@@ -54,10 +55,12 @@ const OrderCreate = () => {
     fakeOrderID: null,
     date: null,
     customer: "",
+    customer_id: "",
     township: "",
     region: "",
     contact_number1: "",
     productName: "",
+    product_id: "",
     brand: "",
     category: "",
     product_segment: "",
@@ -72,6 +75,7 @@ const OrderCreate = () => {
     setSelectedCustomer({
       ...selectedCustomer,
       name: findCus.name,
+      customer_id: findCus.customer_id,
       township: findCus.township,
       region: findCus.region,
       contact_number1: findCus.contact_number1,
@@ -80,6 +84,7 @@ const OrderCreate = () => {
     setNewOrder({
       ...newOrder,
       customer: findCus.name,
+      customer_id: findCus.customer_id,
       region: findCus.region,
       township: findCus.township,
       contact_number1: findCus.contact_number1,
@@ -95,12 +100,18 @@ const OrderCreate = () => {
   const handleSubmit = async () => {
     try {
       const orderData = {
-        customer: selectedCustomer.name,
-        date: selectedDate,
-        orders: orders,
+        customer_name: selectedCustomer.name,
+        customer_id: selectedCustomer.customer_id, // Assuming `selectedCustomer` has an `id` property
+        products: orders.map(order => ({
+          product_id: order.product_id,  // Ensure your `orders` array has `product_id`
+          quantity: order.quantity,  // Ensure your `orders` array has `quantity`
+        })),
       };
+
       console.log("Order Data:", orderData); // Debugging log
-      await axios.post("http://localhost:4000/api/orders", orders);
+
+      await axios.post("http://localhost:4000/api/orders", orderData);
+
       dispatch(fetchProducts());
     } catch (error) {
       console.error("Error creating order:", error);

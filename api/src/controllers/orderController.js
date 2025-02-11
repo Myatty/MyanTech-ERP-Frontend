@@ -68,7 +68,7 @@ const deleteOrder = async (req, res) => {
 // Add products to order
 const addProductToOrder = async (req, res) => {
     console.log("went into order controller");
-    let { customer_id, order_date, status, total_amount, products } = req.body;
+    let { customer_id, order_date, total_amount, products } = req.body;
 
     if (!order_date) {
         order_date = new Date();
@@ -83,8 +83,8 @@ const addProductToOrder = async (req, res) => {
         await connection.beginTransaction();
 
         const [orderResult] = await connection.query(
-            "INSERT INTO Orders (customer_id, order_date, status, total_amount) VALUES (?, ?, ?, ?)",
-            [customer_id, order_date, status, total_amount]
+            "INSERT INTO Orders (customer_id, order_date, total_amount) VALUES (?, ?, ?)",
+            [customer_id, order_date, total_amount]
         );
 
         const orderId = orderResult.insertId;
@@ -187,6 +187,40 @@ const getMonthlyEarnings = async (req, res) => {
         res.status(500).json({ error: "Database query failed" });
     }
 };
+
+
+
+// View pending orders with pagination
+const viewPendingOrders = async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit) || 100;
+        const offset = parseInt(req.query.offset) || 0;
+
+        const [pendingOrders] = await pool.query(`
+            SELECT 
+            Orders.order_id,
+            Orders.customer_id,
+            Orders.order_date,
+            Orders.status AS order_status,
+            Orders.total_amount,
+            OrderItems.product_id,
+            OrderItems.quantity,
+            OrderItems.unit_price_at_time,
+            OrderItems.status AS item_status
+            FROM Orders
+            JOIN OrderItems ON Orders.order_id = OrderItems.order_id
+            WHERE Orders.status = 'pending'
+            GROUP BY Orders.customer_id, Orders.order_date, Orders.status, Orders.total_amount, OrderItems.product_id, OrderItems.quantity, OrderItems.unit_price_at_time, OrderItems.status
+            ORDER BY Orders.order_date DESC;
+        `, [limit, offset]);
+
+        res.json(pendingOrders);
+    } catch (error) {
+        console.error("Error fetching pending orders:", error);
+        res.status(500).json({ error: "Database query failed" });
+    }
+};
+
 
 module.exports = {
     getAllOrders,
