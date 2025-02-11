@@ -83,7 +83,7 @@ const User = () => {
   // Helper to get department name
   const getDepartmentName = (deptId) => {
     const dept = departments.find((d) => d.id === deptId);
-    return dept ? dept.name : "N/A";
+    return dept ? dept.dept_name : "N/A";
   };
 
   // If there's an error, display it
@@ -433,9 +433,10 @@ const User = () => {
                       <TableCell>{row.name}</TableCell>
                       <TableCell>{row.email}</TableCell>
                       <TableCell align="center">{row.phone_number}</TableCell>
-                      <TableCell align="center">
+                      <TableCell align="center">{row.dept_name}</TableCell>
+                      {/* <TableCell align="center">
                         {getDepartmentName(row.department_id)}
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell align="center">{row.role_name}</TableCell>
                       <TableCell align="center">
                         <IconPencil

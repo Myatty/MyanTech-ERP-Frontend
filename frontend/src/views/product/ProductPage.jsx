@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DataTable from "react-data-table-component";
 import { CSVLink } from "react-csv"; // For exporting CSV
-import { fetchProducts } from "../../actions/productActions";
+import { fetchProducts, updateProduct, deleteProduct } from "../../actions/productActions";
 import {
   Button,
   TextField,
@@ -13,6 +13,10 @@ import {
   InputLabel,
   Select,
   Typography,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 
@@ -25,6 +29,9 @@ const Product = () => {
   const { loading, products, error } = useSelector((state) => state.products);
 
   const [open, setOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [productToDelete, setProductToDelete] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
   const [searchTerm, setSearchTerm] = useState(""); // Search term
   const [categoryFilter, setCategoryFilter] = useState(""); // Category filter
@@ -37,7 +44,7 @@ const Product = () => {
     dispatch(fetchProducts());
   };
 
-  // Unique categories from product list
+  // Get unique categories from products
   const uniqueCategories = [
     ...new Set(products?.map((product) => product.category) || []),
   ];
@@ -67,7 +74,30 @@ const Product = () => {
   };
 
   const handleEdit = (row) => {
-    alert(`Edit product ID: ${row._id || row.id}`);
+    setSelectedProduct({
+      ...row,
+      id: row.product_id || row.id,
+    });
+    setOpen(true);
+  };
+
+  const handleDelete = (row) => {
+    setProductToDelete(row);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    dispatch(deleteProduct(productToDelete.product_id || productToDelete.id));
+    setDeleteDialogOpen(false);
+  };
+
+  const handleUpdateProduct = () => {
+    if (selectedProduct && selectedProduct.id) {
+      dispatch(updateProduct(selectedProduct));
+      setOpen(false);
+    } else {
+      console.error("Product ID is missing");
+    }
   };
 
   // DataTable columns
@@ -108,6 +138,7 @@ const Product = () => {
       selector: (row) => row.price,
       sortable: true,
       width: "120px",
+      sortFunction: (a, b) => parseFloat(a.price) - parseFloat(b.price),
     },
     {
       name: "Qty",
@@ -129,7 +160,7 @@ const Product = () => {
             stroke={1.5}
             size="1.3rem"
             style={{ cursor: "pointer", color: "red" }}
-            onClick={() => handleEdit(row)}
+            onClick={() => handleDelete(row)}
           />
         </>
       ),
@@ -270,6 +301,130 @@ const Product = () => {
           setOpen={setOpen}
           onProductCreated={handleProductCreated}
         />
+
+        {/* Edit Product Dialog */}
+        <Dialog open={open} onClose={() => setOpen(false)}>
+          <DialogTitle>Edit Product</DialogTitle>
+          <DialogContent>
+            <TextField
+              margin="dense"
+              label="Item Name"
+              type="text"
+              fullWidth
+              value={selectedProduct?.name || ""}
+              onChange={(e) =>
+                setSelectedProduct({
+                  ...selectedProduct,
+                  name: e.target.value,
+                })
+              }
+            />
+            <TextField
+              margin="dense"
+              label="Brand"
+              type="text"
+              fullWidth
+              value={selectedProduct?.brand || ""}
+              onChange={(e) =>
+                setSelectedProduct({
+                  ...selectedProduct,
+                  brand: e.target.value,
+                })
+              }
+            />
+            <TextField
+              margin="dense"
+              label="Category"
+              type="text"
+              fullWidth
+              value={selectedProduct?.category || ""}
+              onChange={(e) =>
+                setSelectedProduct({
+                  ...selectedProduct,
+                  category: e.target.value,
+                })
+              }
+            />
+            <TextField
+              margin="dense"
+              label="Product Segment"
+              type="text"
+              fullWidth
+              value={selectedProduct?.product_segment || ""}
+              onChange={(e) =>
+                setSelectedProduct({
+                  ...selectedProduct,
+                  product_segment: e.target.value,
+                })
+              }
+            />
+            <TextField
+              margin="dense"
+              label="Serial Number"
+              type="text"
+              fullWidth
+              value={selectedProduct?.serial_number || ""}
+              onChange={(e) =>
+                setSelectedProduct({
+                  ...selectedProduct,
+                  serial_number: e.target.value,
+                })
+              }
+            />
+            <TextField
+              margin="dense"
+              label="Unit Price"
+              type="number"
+              fullWidth
+              value={selectedProduct?.price || ""}
+              onChange={(e) =>
+                setSelectedProduct({
+                  ...selectedProduct,
+                  price: e.target.value,
+                })
+              }
+            />
+            <TextField
+              margin="dense"
+              label="Quantity"
+              type="number"
+              fullWidth
+              value={selectedProduct?.stock_quantity || ""}
+              onChange={(e) =>
+                setSelectedProduct({
+                  ...selectedProduct,
+                  stock_quantity: e.target.value,
+                })
+              }
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpen(false)} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleUpdateProduct} color="primary">
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+          <DialogTitle>Confirm Delete</DialogTitle>
+          <DialogContent>
+            <Typography>
+              Are you sure you want to delete product ID: {productToDelete?.product_id || productToDelete?.id}?
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDeleteDialogOpen(false)} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={confirmDelete} color="primary">
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
       </DashboardCard>
     </PageContainer>
   );

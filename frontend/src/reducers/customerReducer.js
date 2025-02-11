@@ -17,7 +17,7 @@ const customersReducer = (state = initialState, action) => {
     case FETCH_CUSTOMERS_SUCCESS:
       return { loading: false, customers: action.payload, error: "" };
     case FETCH_CUSTOMERS_FAILURE:
-      return { loading: false, CUSTOMERS: [], error: action.error };
+      return { loading: false, customers: [], error: action.error };
     default:
       return state;
   }

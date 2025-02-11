@@ -13,8 +13,7 @@ import {
   Alert,
 } from "@mui/material";
 import PageContainer from "src/components/container/PageContainer";
-import { createProduct } from "../../actions/productActions";
-import { fetchProducts } from "../../actions/productActions"; // Ensure list updates
+import { createProduct,fetchProducts } from "../../actions/productActions";
 
 const CreateProduct = () => {
   const dispatch = useDispatch();

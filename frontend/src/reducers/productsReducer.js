@@ -25,7 +25,7 @@ const productsReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        products: [...state.products, action.payload], // Append new product
+        products: [...state.products, action.payload],
         error: "",
       };
     case CREATE_PRODUCT_FAILURE:

@@ -17,42 +17,37 @@ import {
 } from "@mui/material";
 import OrderTab from "./component/Tab";
 import { fetchProducts } from "../../actions/productActions";
+import { fetchCustomers } from "../../actions/customerActions";
 import axios from "axios";
+
 const OrderCreate = () => {
   const dispatch = useDispatch();
+
   const { loading, products, error } = useSelector((state) => state.products);
-  // delete cus when real customer data get
-  const cus = [
-    {
-      id: 1,
-      name: "Su Su",
-      township: "A lon",
-      region: "yangon",
-      phone: "093764547",
-    },
-    {
-      id: 2,
-      name: "Hla Hla",
-      township: "Sanchung",
-      region: "yangon",
-      phone: "094654735",
-    },
-    {
-      id: 3,
-      name: "Kyaw kyaw",
-      township: "Bahan",
-      region: "yangon",
-      phone: "097453455",
-    },
-  ];
+  const { customers } = useSelector((state) => state.customers);
+
+  useEffect(() => {
+    dispatch(fetchCustomers());
+  }, [dispatch]);
+
+  // useEffect(() => {
+  //   const testFetch = async () => {
+  //     const result = await dispatch(fetchCustomers());
+  //     console.log("Fetched Customers:", result); // Check if it returns anything
+  //   };
+
+  //   testFetch();
+  // }, [dispatch]);
+
   const [customer, setCustomer] = useState("");
-  const [selectdedCustomer, setSelectedCustomer] = useState({
+  const [selectedCustomer, setSelectedCustomer] = useState({
     name: "",
+    customer_id: "",
     township: "",
     region: "",
-    phone: "",
+    contact_number1: "",
   });
-  const [selecteddate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [tabIndex, setTabIndex] = useState(0);
   const [orders, setOrders] = useState([]);
 
@@ -60,10 +55,12 @@ const OrderCreate = () => {
     fakeOrderID: null,
     date: null,
     customer: "",
+    customer_id: "",
     township: "",
     region: "",
-    phone: "",
+    contact_number1: "",
     productName: "",
+    product_id: "",
     brand: "",
     category: "",
     product_segment: "",
@@ -74,36 +71,50 @@ const OrderCreate = () => {
   });
 
   const handleCustomer = (e) => {
-    const findCus = cus.find((c) => c.id === Number(e.target.value));
+    const findCus = customers.find((c) => c.customer_id === Number(e.target.value));
     setSelectedCustomer({
-      ...selectdedCustomer,
+      ...selectedCustomer,
       name: findCus.name,
+      customer_id: findCus.customer_id,
       township: findCus.township,
       region: findCus.region,
-      phone: findCus.phone,
+      contact_number1: findCus.contact_number1,
     });
     setCustomer(e.target.value);
     setNewOrder({
       ...newOrder,
       customer: findCus.name,
+      customer_id: findCus.customer_id,
       region: findCus.region,
       township: findCus.township,
-      phone: findCus.phone,
+      contact_number1: findCus.contact_number1,
     });
   };
 
   useEffect(() => {
     dispatch(fetchProducts());
-    setNewOrder({ ...newOrder, date: selecteddate });
+    setNewOrder({ ...newOrder, date: selectedDate });
   }, [dispatch]);
 
   // create new order
   const handleSubmit = async () => {
     try {
-      await axios.post("http://localhost:4000/api/orders", orders);
+      const orderData = {
+        customer_name: selectedCustomer.name,
+        customer_id: selectedCustomer.customer_id, // Assuming `selectedCustomer` has an `id` property
+        products: orders.map(order => ({
+          product_id: order.product_id,  // Ensure your `orders` array has `product_id`
+          quantity: order.quantity,  // Ensure your `orders` array has `quantity`
+        })),
+      };
+
+      console.log("Order Data:", orderData); // Debugging log
+
+      await axios.post("http://localhost:4000/api/orders", orderData);
+
       dispatch(fetchProducts());
     } catch (error) {
-      console.error("Error creating product:", error);
+      console.error("Error creating order:", error);
     }
   };
 
@@ -114,6 +125,7 @@ const OrderCreate = () => {
   if (error) {
     return <div>Error: {error}</div>;
   }
+
   return (
     <Container maxWidth="lg">
       <Paper elevation={3} sx={{ p: 3, mt: 3, position: "relative" }}>
@@ -132,7 +144,7 @@ const OrderCreate = () => {
         <Box sx={{ mx: 2, display: "flex", mt: 4, width: 300 }}>
           <Typography sx={{ mr: 2, fontWeight: "bold" }}>Date</Typography>
           <DatePicker
-            selected={selecteddate}
+            selected={selectedDate}
             onChange={(date) => {
               setSelectedDate(date);
               setNewOrder({ ...newOrder, date });
@@ -162,8 +174,8 @@ const OrderCreate = () => {
                     handleCustomer(e);
                   }}
                 >
-                  {cus.map((item) => (
-                    <MenuItem key={item.id} value={item.id}>
+                  {customers.map((item) => (
+                    <MenuItem key={item.customer_id} value={item.customer_id}>
                       <ListItemText primary={item.name} />
                     </MenuItem>
                   ))}
@@ -173,17 +185,26 @@ const OrderCreate = () => {
             <TextField
               margin="normal"
               sx={{ width: 200 }}
-              value={selectdedCustomer.township}
+              value={selectedCustomer.township}
+              InputProps={{
+                readOnly: true,
+              }}
             />
             <TextField
               margin="normal"
               sx={{ width: 200 }}
-              value={selectdedCustomer.region}
+              value={selectedCustomer.region}
+              InputProps={{
+                readOnly: true,
+              }}
             />
             <TextField
               margin="normal"
               sx={{ width: 200 }}
-              value={selectdedCustomer.phone}
+              value={selectedCustomer.contact_number1}
+              InputProps={{
+                readOnly: true,
+              }}
             />
           </Box>
         </Paper>
@@ -196,8 +217,8 @@ const OrderCreate = () => {
           orders={orders}
           setOrders={setOrders}
           products={products}
-          selectedCustomer={selectdedCustomer}
-          selecteddate={selecteddate}
+          selectedCustomer={selectedCustomer}
+          selectedDate={selectedDate}
         />
       </Paper>
     </Container>
