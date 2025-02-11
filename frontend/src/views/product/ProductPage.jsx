@@ -39,8 +39,8 @@ const Product = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [productToDelete, setProductToDelete] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(""); // Search term
-  const [categoryFilter, setCategoryFilter] = useState(""); // Category filter
+  const [searchTerm, setSearchTerm] = useState(""); 
+  const [categoryFilter, setCategoryFilter] = useState(""); 
 
   useEffect(() => {
     dispatch(fetchProducts());

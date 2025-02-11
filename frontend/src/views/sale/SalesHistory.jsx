@@ -9,16 +9,20 @@ import PageContainer from "src/components/container/PageContainer";
 import DashboardCard from "../../components/shared/DashboardCard";
 import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
-import { FormControl, InputLabel, Select } from "@mui/material";
+import { FormControl, InputLabel, Select, TextField } from "@mui/material";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 import { fetchOrders } from "../../actions/orderActions";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const SaleHistoryPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { loading, orders, error } = useSelector((state) => state.orders);
   const [selectedRows, setSelectedRows] = useState([]);
-  const [status, setStatus] = useState(""); // Category filter state
-  const [ids, setIds] = useState(""); // Initialize with an empty string
+  const [status, setStatus] = useState("");
+  const [finanaceStatusState, finanaceSetStatusState] = useState("");
+  const [ids, setIds] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     dispatch(fetchOrders());
@@ -32,18 +36,24 @@ const SaleHistoryPage = () => {
     alert(`Edit product ID: ${row.order_id}`);
   };
 
-  // Get status from order
-  const orderStatus = [...new Set(orders?.map((order) => order.status) || [])];
+  // set finance_status to null if the value is undefined
+  const transformedOrders = orders?.map((order) => ({
+    ...order,
+    finance_status: order.finance_status || "N/A",
+  }));
 
-  // Get orderId from order
-  const orderIds = [...new Set(orders?.map((order) => order.order_id) || [])];
+  const orderStatus = [...new Set(transformedOrders?.map((order) => order.status) || [])];
+  const financeStatus = [...new Set(transformedOrders?.map((order) => order.finance_status) || [])];
+  const orderIds = [...new Set(transformedOrders?.map((order) => order.order_id) || [])];
 
   // Filtered orders based on status & orderId
-  const filteredOrders = orders?.filter((order) => {
+  const filteredOrders = transformedOrders?.filter((order) => {
     const statusMatch = status ? order.status === status : true;
+    const financeStatusMatch = finanaceStatusState ? order.finance_status === finanaceStatusState : true;
     const idMatch = ids ? order.order_id === Number(ids) : true;
+    const searchMatch = searchTerm ? order.order_id.toString().includes(searchTerm) : true;
 
-    return statusMatch && idMatch;
+    return statusMatch && financeStatusMatch && idMatch && searchMatch;
   });
 
   console.log("Filtered Orders:", filteredOrders); // Debugging log
@@ -65,64 +75,56 @@ const SaleHistoryPage = () => {
   const columns = [
     { name: "No", selector: (row, index) => index + 1, width: "60px" },
     {
+      name: "SO Number",
+      selector: (row) => {
+        const today = new Date();
+        const formattedDate = `${today.getFullYear()}${(today.getMonth() + 1).toString().padStart(2, '0')}${today.getDate().toString().padStart(2, '0')}`;
+        const formattedHour = today.getHours().toString().padStart(2, '0');
+        return (
+          <NavLink to={`/order-details/${row.order_id}`} style={{ textDecoration: "none", color: "inherit" }}>
+            SO{formattedDate}-{row.order_id}
+          </NavLink>
+        );
+      },
+      sortable: true,
+      width: "200px",
+    },
+    {
+      name: "Customer Name",
+      selector: (row) => row.customer_name,
+      sortable: true,
+      width: "180px",
+    },
+    {
       name: "Date",
       selector: (row) => new Date(row.order_date).toLocaleDateString(),
       sortable: true,
       width: "150px",
     },
     {
-      name: "Order ID",
-      selector: (row) => row.order_id,
-      sortable: true,
-      width: "140px",
-    },
-    {
-      name: "Customer ID",
-      selector: (row) => row.customer_id,
-      sortable: true,
-      width: "140px",
-    },
-    {
-      name: "Status",
+      name: "Delivery Status",
       selector: (row) => row.status,
       sortable: true,
-      width: "100px",
+      width: "140px",
+    },
+    {
+      name: "Payment Status",
+      selector: (row) => row.finance_status,
+      sortable: true,
+      width: "150px",
     },
     {
       name: "Total Amount",
       selector: (row) => row.total_amount,
       sortable: true,
-      width: "130px",
-    },
-    {
-      name: "Action",
-      cell: (row) => (
-        <>
-          <IconPencil
-            stroke={1.5}
-            size="1.3rem"
-            style={{ cursor: "pointer", color: "blue", marginRight: "10px" }}
-            onClick={() => handleEdit(row)}
-          />
-
-          <IconTrash
-            stroke={1.5}
-            size="1.3rem"
-            style={{ cursor: "pointer", color: "red" }}
-            onClick={() => handleEdit(row)}
-          />
-        </>
-      ),
-      ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
+      width: "140px",
     },
   ];
 
   const customStyles = {
     headRow: {
       style: {
-        backgroundColor: "#5D87FF", // Change this to your desired color
+        backgroundColor: "#5D87FF",
         minHeight: "56px",
         borderTopRightRadius: "8px",
         borderTopLeftRadius: "8px",
@@ -130,7 +132,7 @@ const SaleHistoryPage = () => {
     },
     headCells: {
       style: {
-        color: "#FFF", // Text color
+        color: "#FFF",
         fontSize: "14px",
         fontWeight: "bold",
         "&:not(:last-of-type)": {
@@ -142,6 +144,10 @@ const SaleHistoryPage = () => {
 
   const handleSelectedRowsChange = (state) => {
     setSelectedRows(state.selectedRows);
+  };
+
+  const handleRowClicked = (row) => {
+    navigate(`/order-details/${row.order_id}`);
   };
 
   return (
@@ -168,17 +174,17 @@ const SaleHistoryPage = () => {
         {/* Status & order_id Filter Section */}
         <Box
           display="flex"
-          sx={{ width: "80%", alignItems: "center" }}
+          sx={{ width: "60%", alignItems: "center" }}
           gap={2}
           mb={2}
         >
-          {/* status Dropdown */}
+          {/* delivery status Dropdown */}
           <FormControl variant="outlined" size="small" fullWidth>
-            <InputLabel>Filter by Status</InputLabel>
+            <InputLabel>Filter by Delivery Status</InputLabel>
             <Select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              label="Filter by Status"
+              label="Filter by Delivery Status"
             >
               <MenuItem value="">All Categories</MenuItem>
               {orderStatus.map((status) => (
@@ -189,15 +195,42 @@ const SaleHistoryPage = () => {
             </Select>
           </FormControl>
 
-          {/* order_Id Dropdown */}
+          {/* finance status Dropdown */}
           <FormControl variant="outlined" size="small" fullWidth>
-            <InputLabel>Filter by order_id</InputLabel>
+            <InputLabel>Filter by Finance Status</InputLabel>
+            <Select
+              value={finanaceStatusState}
+              onChange={(e) => finanaceSetStatusState(e.target.value)}
+              label="Filter by Finance Status"
+            >
+              <MenuItem value="">All Categories</MenuItem>
+              {financeStatus.map((finance_status) => (
+                <MenuItem key={finance_status} value={finance_status}>
+                  {finance_status}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* Finance status search*/}
+          <TextField
+            size="small"
+            label="Search Order ID"
+            variant="outlined"
+            fullWidth
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+
+          {/* order_Id Dropdown 
+          <FormControl variant="outlined" size="small" fullWidth>
+            <InputLabel>Filter by SO Number</InputLabel>
             <Select
               value={ids}
               onChange={(e) => setIds(e.target.value)}
-              label="Filter by Order ID"
+              label="Filter by SO Number"
             >
-              <MenuItem value="">All Order_Id</MenuItem>
+              <MenuItem value="">All Orders</MenuItem>
               {orderIds.map((id) => (
                 <MenuItem key={id} value={id}>
                   {id}
@@ -205,6 +238,7 @@ const SaleHistoryPage = () => {
               ))}
             </Select>
           </FormControl>
+          */}
         </Box>
 
         {/* Show Skeleton while Loading */}
@@ -226,12 +260,13 @@ const SaleHistoryPage = () => {
         ) : (
           <DataTable
             columns={columns}
-            data={filteredOrders} // Use filtered data
+            data={filteredOrders}
             pagination
             highlightOnHover
             striped
             selectableRows
             onSelectedRowsChange={handleSelectedRowsChange}
+            onRowClicked={handleRowClicked}
             subHeaderAlign="center"
             customStyles={customStyles}
           />
