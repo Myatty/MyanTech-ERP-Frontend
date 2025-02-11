@@ -22,6 +22,10 @@ const SalePage = Loadable(lazy(() => import("../views/sale/CreateOrder.jsx")));
 const SaleHistoryPage = Loadable(
   lazy(() => import("../views/sale/SalesHistory.jsx"))
 );
+const SaleDetails = Loadable(
+  lazy(() => import("../views/sale/SaleDetails.jsx"))
+);
+
 const Icons = Loadable(lazy(() => import("../views/icons/Icons")));
 const TypographyPage = Loadable(
   lazy(() => import("../views/utilities/TypographyPage"))
@@ -45,6 +49,10 @@ const Router = [
       { path: "/system/users", exact: true, element: <UserRoute /> },
       { path: "/sales/create", exact: true, element: <SalePage /> },
       { path: "/sales/history", exact: true, element: <SaleHistoryPage /> },
+      {
+        path: "/sales/details/:order_id",
+        element: <SaleDetails />,
+      },
       { path: "/system/customers", exact: true, element: <CustomerRoute /> },
       { path: "/icons", exact: true, element: <Icons /> },
       { path: "/ui/typography", exact: true, element: <TypographyPage /> },
