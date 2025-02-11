@@ -26,11 +26,9 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { IconTrash } from "@tabler/icons-react";
 
-// Example actions for fetching data
 import { fetchProducts } from "../../actions/productActions";
 import { fetchCustomers } from "../../actions/customerActions";
 
-// A custom Autocomplete for products
 import ProductAutocomplete from "./component/ProductAutoComplete";
 import CustomerAutoComplete from "./component/CustomerAutoComplete";
 
@@ -82,22 +80,6 @@ const OrderCreate = () => {
     dispatch(fetchCustomers());
     dispatch(fetchProducts());
   }, [dispatch]);
-
-  // Handle customer change
-  const handleCustomerChange = (e) => {
-    const cid = Number(e.target.value);
-    const found = customers.find((c) => c.customer_id === cid);
-    if (found) {
-      setCustomer(e.target.value);
-      setSelectedCustomer({
-        name: found.name,
-        customer_id: found.customer_id,
-        township: found.township,
-        region: found.region,
-        contact_number1: found.contact_number1,
-      });
-    }
-  };
 
   // Submit the order
   const handleSubmit = async () => {
