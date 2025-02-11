@@ -17,6 +17,7 @@ const ProductRoute = Loadable(
 const UserRoute = Loadable(lazy(() => import("../views/system/UserPage.jsx")));
 const CustomerRoute = Loadable(
   lazy(() => import("../views/system/CustomerPage.jsx"))
+);
 const SalePage = Loadable(lazy(() => import("../views/sale/CreateOrder.jsx")));
 const SaleHistoryPage = Loadable(
   lazy(() => import("../views/sale/SalesHistory.jsx"))
