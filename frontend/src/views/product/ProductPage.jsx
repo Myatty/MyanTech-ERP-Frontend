@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DataTable from "react-data-table-component";
 import { CSVLink } from "react-csv"; // For exporting CSV
-import { fetchProducts, updateProduct, deleteProduct } from "../../actions/productActions";
+import {
+  fetchProducts,
+  updateProduct,
+  deleteProduct,
+} from "../../actions/productActions";
 import {
   Button,
   TextField,
@@ -27,6 +31,8 @@ import DashboardCard from "../../components/shared/DashboardCard";
 const Product = () => {
   const dispatch = useDispatch();
   const { loading, products, error } = useSelector((state) => state.products);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10); // Default page size
 
   const [open, setOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -102,7 +108,11 @@ const Product = () => {
 
   // DataTable columns
   const columns = [
-    { name: "No", selector: (row, index) => index + 1, width: "60px" },
+    {
+      name: "No",
+      selector: (row, index) => index + 1 + (currentPage - 1) * rowsPerPage,
+      width: "60px",
+    },
     {
       name: "Item Name",
       selector: (row) => row.name,
@@ -291,6 +301,11 @@ const Product = () => {
             striped
             selectableRows
             onSelectedRowsChange={handleSelectedRowsChange}
+            paginationPerPage={rowsPerPage}
+            onChangePage={(page) => setCurrentPage(page)} // Track the current page
+            onChangeRowsPerPage={(currentRowsPerPage) =>
+              setRowsPerPage(currentRowsPerPage)
+            }
             subHeaderAlign="center"
             customStyles={customStyles}
           />
@@ -409,11 +424,15 @@ const Product = () => {
         </Dialog>
 
         {/* Delete Confirmation Dialog */}
-        <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <Dialog
+          open={deleteDialogOpen}
+          onClose={() => setDeleteDialogOpen(false)}
+        >
           <DialogTitle>Confirm Delete</DialogTitle>
           <DialogContent>
             <Typography>
-              Are you sure you want to delete product ID: {productToDelete?.product_id || productToDelete?.id}?
+              Are you sure you want to delete product ID:{" "}
+              {productToDelete?.product_id || productToDelete?.id}?
             </Typography>
           </DialogContent>
           <DialogActions>
