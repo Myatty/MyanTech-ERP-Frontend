@@ -5,12 +5,16 @@ import productsReducer from "./reducers/productsReducer";
 import usersReducer from "./reducers/userReducer";
 import ordersReducer from "./reducers/orderReducer";
 import customersReducer from "./reducers/customerReducer";
+import warehouseOrdersReducer from "./reducers/warehouseOrdersReducer";
+import driversReducer from "./reducers/driverReducer";
 
 const rootReducer = combineReducers({
   products: productsReducer,
   users: usersReducer,
   orders: ordersReducer,
   customers: customersReducer,
+  warehouseOrders: warehouseOrdersReducer,
+  drivers: driversReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
