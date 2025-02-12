@@ -69,10 +69,10 @@ const SaleDetails = () => {
     0
   );
 
-  // Handle return action
+  // Handle return 
   const handleReturn = () => {
     console.log("Returning order:", order_id);
-    // Add your return logic here
+    // return logic here
   };
 
   return (
@@ -113,6 +113,33 @@ const SaleDetails = () => {
                   value={orderDetails.customer_name || ""}
                   InputProps={{ readOnly: true }}
                 />
+                <TextField
+                  fullWidth
+                  variant="standard"
+                  size="small"
+                  margin="dense"
+                  placeholder="Township"
+                  value={orderDetails.township || ""}
+                  InputProps={{ readOnly: true }}
+                />
+                <TextField
+                  fullWidth
+                  variant="standard"
+                  size="small"
+                  margin="dense"
+                  placeholder="Region"
+                  value={orderDetails.region || ""}
+                  InputProps={{ readOnly: true }}
+                />
+                <TextField
+                  fullWidth
+                  variant="standard"
+                  size="small"
+                  margin="dense"
+                  placeholder="Contact Number"
+                  value={orderDetails.contact_number1 || ""}
+                  InputProps={{ readOnly: true }}
+                />
               </Grid>
             </Grid>
           </Grid>
@@ -127,7 +154,7 @@ const SaleDetails = () => {
                 </Typography>
                 <DatePicker
                   selected={new Date(orderDetails.order_date)}
-                  onChange={(dt) => {}}
+                  onChange={(dt) => { }}
                   dateFormat="dd/MM/yyyy"
                   customInput={
                     <TextField
@@ -138,6 +165,24 @@ const SaleDetails = () => {
                       InputProps={{ readOnly: true }}
                     />
                   }
+                />
+                <TextField
+                  fullWidth
+                  variant="standard"
+                  size="small"
+                  margin="dense"
+                  placeholder="Delivery Status"
+                  value={`Delivery Status - ${orderDetails.order_status.charAt(0).toUpperCase() + orderDetails.order_status.slice(1)}` || ""}
+                  InputProps={{ readOnly: true }}
+                />
+                <TextField
+                  fullWidth
+                  variant="standard"
+                  size="small"
+                  margin="dense"
+                  placeholder="Payment Status"
+                  value={`Payment Status - ${orderDetails.invoice_status ? orderDetails.invoice_status.charAt(0).toUpperCase() + orderDetails.invoice_status.slice(1) : "N/A"}`}
+                  InputProps={{ readOnly: true }}
                 />
               </Grid>
             </Grid>
