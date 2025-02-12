@@ -50,10 +50,11 @@ const YearlyBreakup = () => {
         }
 
         if (data.length > 1) {
-          const increasePercentage = Math.abs(((data[0].total_amount - data[1].total_amount) / data[0].total_amount) * 100);
+          const increasePercentage = Math.abs(((data[0].total_amount - data[1].total_amount) / data[1].total_amount) * 100);
           setSaleIncreasePrecentage(increasePercentage);
           console.log('Sale Increase Percentage:', increasePercentage);
         }
+        
 
       } catch (error) {
         console.error('Error fetching yearly sales:', error);
