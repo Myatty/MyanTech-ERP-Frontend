@@ -29,6 +29,9 @@ const SaleDetails = Loadable(
   lazy(() => import("../views/sale/SaleDetails.jsx"))
 );
 
+const DeliverOrder = Loadable(
+  lazy(() => import("../views/warehouse/DeliveredRecord.jsx"))
+);
 const Icons = Loadable(lazy(() => import("../views/icons/Icons")));
 const TypographyPage = Loadable(
   lazy(() => import("../views/utilities/TypographyPage"))
@@ -57,6 +60,7 @@ const Router = [
         path: "/sales/details/:order_id",
         element: <SaleDetails />,
       },
+      { path: "/warehouse/delivery", exact: true, element: <DeliverOrder /> },
       { path: "/system/customers", exact: true, element: <CustomerRoute /> },
       { path: "/icons", exact: true, element: <Icons /> },
       { path: "/ui/typography", exact: true, element: <TypographyPage /> },
