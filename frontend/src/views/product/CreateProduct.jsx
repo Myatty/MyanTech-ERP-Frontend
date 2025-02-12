@@ -29,7 +29,7 @@ const CreateProduct = () => {
     product_segment: "",
   });
 
-  const [openToast, setOpenToast] = useState(false); // Toast visibility state
+  const [openToast, setOpenToast] = useState(false); 
 
   const categories = ["Electronics", "Laptops", "Phones", "Accessories"];
   const brands = ["Apple", "Samsung", "HP", "Dell", "Sony"];
@@ -210,7 +210,6 @@ const CreateProduct = () => {
         </form>
       </Box>
 
-      {/* ✅ Snackbar (Toast) for Success Message */}
       <Snackbar
         open={openToast}
         autoHideDuration={3000}

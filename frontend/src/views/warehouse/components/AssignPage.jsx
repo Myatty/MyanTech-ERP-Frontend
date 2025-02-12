@@ -7,8 +7,7 @@ import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { Paper, Button } from "@mui/material/";
-import { FormControl, InputLabel, Select, MenuItem, Box } from "@mui/material";
+import { Paper, Button, Snackbar, Alert, Skeleton, Box, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import axios from "axios";
 import { IconTrash } from "@tabler/icons-react";
 
@@ -39,10 +38,13 @@ const AssignTruck = ({
   driver_info,
   trucks,
 }) => {
-  //fetch drivers , trucks , delivering driverIds & truckIds
-
-  const [driver, setDriver] = useState(0);
-  const [truck, setTruck] = useState(0);
+  const [driver, setDriver] = useState("");
+  const [truck, setTruck] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [openToast, setOpenToast] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   //func for clicking delete icon
   const handleDelete = (orderId) => {
@@ -51,22 +53,55 @@ const AssignTruck = ({
     setAssignOrderId(deleteAssignOrder);
     setSelectOrderId(deleteSelectOrder);
   };
+
   //func for clicking Assign Truck
   const handleAssign = async () => {
+    if (!driver || !truck) {
+      console.error("Missing driverId or truckId");
+      setSnackbarMessage("Missing driverId or truckId");
+      setSnackbarSeverity("error");
+      setOpenToast(true);
+      return;
+    }
+
+    console.log("driverId", driver);
+    console.log("truckId", truck);
+    console.log("Order IDs ", assignOrderId);
+
+    setLoading(true);
+
     try {
       await axios.post(
-        //replace with correct endpoint
-        `http://localhost:4000/api/assign?driverId=${driver}&truckId=${truck}`,
-        assignOrderId
+        `http://localhost:4000/api/deliveries`,
+        {
+          order_ids: assignOrderId,
+        },
+        {
+          params: {
+            driverId: driver,
+            truckId: truck,
+          },
+        }
       );
+      // Show success toast
+      setSnackbarMessage("Truck assigned successfully!");
+      setSnackbarSeverity("success");
+      setOpenToast(true);
+      // Route to the same page
+      window.location.reload();
     } catch (error) {
-      console.error("Error creating product:", error);
+      console.error("Error Assigning Truck:", error);
+      setSnackbarMessage("Error assigning truck");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
+    } finally {
+      setLoading(false);
     }
   };
 
-  //delete deliveringDriverIds & deliveringTruckIds when real data get
-  const deliveringDriverIds = [1, 3];
-  const deliveringTruckIds = [2];
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
 
   return (
     <>
@@ -89,7 +124,7 @@ const AssignTruck = ({
                 const od = orders.find((of) => of.order_id === assignId);
                 const deleteIcon = <IconTrash stroke={1.5} size="1.3rem" />;
                 return (
-                  <StyledTableRow>
+                  <StyledTableRow key={od.order_id}>
                     <StyledTableCell>{od.order_id}</StyledTableCell>
                     <StyledTableCell align="left">
                       {od.customer_name}
@@ -119,67 +154,74 @@ const AssignTruck = ({
             <FormControl variant="outlined" size="small" sx={{ minWidth: 180 }}>
               <InputLabel>Trucks</InputLabel>
               <Select
-                value={truck}
-                onChange={(e) => setTruck(e.target.value)}
+                value={truck}  
+                onChange={(e) => setTruck(e.target.value)}  
                 label="Filter by Township"
               >
                 <MenuItem value="">All Trucks</MenuItem>
                 {trucks.map((t) => (
                   <MenuItem
-                    key={t.truck_id}
-                    value={t.license_plate}
-                    disabled={
-                      deliveringTruckIds.find((dt) => dt === t.id)
-                        ? true
-                        : false
-                    }
+                    key={t.truck_id}  
+                    value={t.truck_id}  
                   >
                     {t.license_plate}
                   </MenuItem>
                 ))}
               </Select>
+
             </FormControl>
             <FormControl variant="outlined" size="small" sx={{ minWidth: 180 }}>
               <InputLabel>Drivers</InputLabel>
               <Select
-                value={driver}
-                onChange={(e) => setDriver(e.target.value)}
+                value={driver}  
+                onChange={(e) => setDriver(e.target.value)}  
                 label="Drivers"
               >
                 <MenuItem value="">All Drivers</MenuItem>
-                {driver_info.map(
-                  (d) => (
-                    console.log(`d`, d),
-                    (
-                      <MenuItem
-                        key={d.driver_id}
-                        value={d.driver_name}
-                        // disabled={
-                        //   deliveringDriverIds.find((dd) => dd === d.id)
-                        //     ? true
-                        //     : false
-                        // }
-                      >
-                        {d.driver_name}
-                      </MenuItem>
-                    )
-                  )
-                )}
+                {driver_info.map((d) => (
+                  <MenuItem
+                    key={d.driver_id}  
+                    value={d.driver_id}  
+                  >
+                    {d.driver_name}
+                  </MenuItem>
+                ))}
               </Select>
+
             </FormControl>
             <Button
               variant="contained"
               size="small"
-              onClick={() => {
-                handleAssign();
-              }}
+              onClick={handleAssign}
+              disabled={loading}
             >
-              Assign Truck
+              {loading ? <Skeleton width={80} /> : "Assign Truck"}
             </Button>
           </Box>
         </TableContainer>
       </Box>
+      <Snackbar
+        open={openToast}
+        autoHideDuration={3000}
+        onClose={() => setOpenToast(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={() => setOpenToast(false)}
+          severity={snackbarSeverity}
+          sx={{
+            width: "100%",
+            backgroundColor: snackbarSeverity === "success" ? "#4A90E2" : undefined,
+            color: "#fff",
+            fontWeight: "bold",
+            borderRadius: "8px",
+          }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
+
 export default AssignTruck;

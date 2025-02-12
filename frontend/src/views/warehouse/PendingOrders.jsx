@@ -137,7 +137,7 @@ export default function CustomizedTables() {
               const findData = filteredOrders.filter((o) => o.order_id === id);
               if (!findData.length) return null;
               return findData.map((find, index) => (
-                <TableRow key={id}>
+                <TableRow key={`${id}-${index}`}>
                   {index === 0 && (
                     <>
                       <TableCell
