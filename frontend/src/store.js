@@ -9,6 +9,8 @@ import warehouseOrdersReducer from "./reducers/warehouseOrdersReducer";
 import driversReducer from "./reducers/driverReducer";
 import trucksReducer from "./reducers/truckReducer";
 import saleDetailReducer from "./reducers/saleDetailReducer";
+import allDriverReducer from "./reducers/allDriverReducer";
+import deliveryReducer from "./reducers/deliveryReducer";
 
 const rootReducer = combineReducers({
   products: productsReducer,
@@ -18,7 +20,9 @@ const rootReducer = combineReducers({
   warehouseOrders: warehouseOrdersReducer,
   drivers: driversReducer,
   trucks: trucksReducer,
-  saleDetails: saleDetailReducer
+  saleDetails: saleDetailReducer,
+  allDrivers: allDriverReducer,
+  deliveries: deliveryReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));

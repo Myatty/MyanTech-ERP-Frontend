@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Button,
   Box,
@@ -19,145 +19,91 @@ import { CSVLink } from "react-csv";
 import PageContainer from "src/components/container/PageContainer";
 import DashboardCard from "../../components/shared/DashboardCard";
 import Skeleton from "@mui/material/Skeleton";
-
-const allOrders = [
-  {
-    order_id: 1,
-    customer_name: "Su Su",
-    status: "Delivering",
-    order_date: "Wed Feb 11 2025 13:40:56 GMT+0630",
-    township: "ALone",
-    region: "Yangon",
-    driver: "U Ba",
-    truck: "YGN/245",
-  },
-  {
-    order_id: 2,
-    customer_name: "Hla Hla",
-    status: "Delivering",
-    order_date: "Wed Feb 11 2025 13:40:56 GMT+0630",
-    township: "Bahan",
-    region: "Yangon",
-    driver: "U Ba",
-    truck: "YGN/245",
-  },
-  {
-    order_id: 3,
-    customer_name: "Mg Mg",
-    status: "Delivered",
-    order_date: "Wed Feb 11 2025 13:40:56 GMT+0630",
-    township: "Sanchaung",
-    region: "Yangon",
-    driver: "U Hla",
-    truck: "YGN/945",
-  },
-  {
-    order_id: 4,
-    customer_name: "Kyaw Kyaw",
-    status: "Delivering",
-    order_date: "Wed Feb 13 2025 12:40:56 GMT+0630",
-    township: "ALone",
-    region: "Yangon",
-    driver: "U Mg",
-    truck: "YGN/115",
-  },
-  {
-    order_id: 5,
-    customer_name: "Ye Ye",
-    status: "Delivered",
-    order_date: "Wed Feb 14 2025 12:40:56 GMT+0630",
-    township: "Tamwe",
-    region: "Yangon",
-    driver: "U Taung",
-    truck: "YGN/145",
-  },
-  {
-    order_id: 6,
-    customer_name: "Gu GU",
-    status: "Delivering",
-    order_date: "Wed Mar 11 2025 12:40:56 GMT+0630",
-    township: "Tamwe",
-    region: "Yangon",
-    driver: "U Taung",
-    truck: "YGN/145",
-  },
-];
+import { fetchAllDrivers } from "../../actions/allDriverActions";
+import { fetchDeliveries } from "../../actions/deliveryActions";
 
 const DeliverHistory = () => {
   const dispatch = useDispatch();
-  const [orders, setOrders] = useState([]);
-  const [driver, setDriver] = useState("");
   const [status, setStatus] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [driver, setDriver] = useState("");
+
+  const allDrivers = useSelector((state) => state.allDrivers.allDrivers);
+  const driversLoading = useSelector((state) => state.allDrivers.loading);
+  const driversError = useSelector((state) => state.allDrivers.error);
+  const allDeliveries = useSelector((state) => state.deliveries.deliveries);
+  const deliveriesLoading = useSelector((state) => state.deliveries.loading);
+  const deliveriesError = useSelector((state) => state.deliveries.error);
 
   useEffect(() => {
-    // Simulate fetching data
-    setTimeout(() => {
-      setOrders(allOrders);
-      setLoading(false);
-    }, 1000);
-  }, []);
+    dispatch(fetchAllDrivers());
+    dispatch(fetchDeliveries());
+  }, [dispatch]);
 
-  const handleClick = async (orderId) => {
-    const changeStatus = orders.map((item) =>
-      item.order_id === orderId ? { ...item, status: "Delivered" } : item
+  useEffect(() => {
+    console.log("All Drivers:", allDrivers);
+    console.log("Drivers Loading:", driversLoading);
+    console.log("Drivers Error:", driversError);
+    console.log("All Deliveries:", allDeliveries);
+    console.log("Deliveries Loading:", deliveriesLoading);
+    console.log("Deliveries Error:", deliveriesError);
+  }, [allDrivers, driversLoading, driversError, allDeliveries, deliveriesLoading, deliveriesError]);
+
+  const handleClick = async (deliveryId) => {
+    const changeStatus = allDeliveries.map((item) =>
+      item.delivery_id === deliveryId ? { ...item, status: "Delivered" } : item
     );
-    setOrders(changeStatus);
+    dispatch({ type: 'UPDATE_DELIVERIES', payload: changeStatus });
     try {
-      await axios.post(`http://localhost:4000/api/status`, [orderId]);
+      await axios.post(`http://localhost:4000/api/status`, [deliveryId]);
     } catch (error) {
       console.error("Error changing status:", error);
     }
   };
 
   const handleAllClick = async () => {
-    const allOrderIds = filteredOrders
-      .filter((item) => item.status === "Delivering")
-      .map((o) => o.order_id);
-    const changeStatus = orders.map((item) =>
-      allOrderIds.includes(item.order_id)
+    const allDeliveryIds = filteredDeliveries
+      .filter((item) => item.status === "delivering")
+      .map((o) => o.delivery_id);
+    const changeStatus = allDeliveries.map((item) =>
+      allDeliveryIds.includes(item.delivery_id)
         ? { ...item, status: "Delivered" }
         : item
     );
-    setOrders(changeStatus);
+    dispatch({ type: 'UPDATE_DELIVERIES', payload: changeStatus });
     try {
-      await axios.post(`http://localhost:4000/api/status`, allOrderIds);
+      await axios.post(`http://localhost:4000/api/status`, allDeliveryIds);
     } catch (error) {
       console.error("Error changing status:", error);
     }
   };
 
-  const drivers = [...new Set(orders?.map((order) => order.driver) || [])];
-  const order_status = [...new Set(orders?.map((order) => order.status) || [])];
+  const order_status = [...new Set(allDeliveries?.map((delivery) => delivery.status) || [])];
 
-  const filteredOrders = orders?.filter((order) => {
-    const DriverMatch = driver ? order.driver === driver : true;
-    const StatusMatch = status ? order.status === status : true;
+  const filteredDeliveries = allDeliveries?.filter((delivery) => {
+    const DriverMatch = driver ? delivery.driver_id === driver : true;
+    const StatusMatch = status ? delivery.status === status : true;
     const DateMatch =
       startDate || endDate
-        ? new Date(order.order_date).getTime() >=
+        ? new Date(delivery.departure_time).getTime() >=
             new Date(startDate).getTime() &&
-          new Date(order.order_date).getTime() <= new Date(endDate).getTime()
+          new Date(delivery.departure_time).getTime() <= new Date(endDate).getTime()
         : true;
 
     return DateMatch && DriverMatch && StatusMatch;
   });
 
   const csvHeaders = [
-    { label: "Order ID", key: "order_id" },
-    { label: "Customer Name", key: "customer_name" },
+    { label: "Delivery ID", key: "delivery_id" },
+    { label: "Driver ID", key: "driver_id" },
+    { label: "Truck ID", key: "truck_id" },
+    { label: "Departure Time", key: "departure_time" },
     { label: "Status", key: "status" },
-    { label: "Order Date", key: "order_date" },
-    { label: "Township", key: "township" },
-    { label: "Region", key: "region" },
-    { label: "Driver", key: "driver" },
-    { label: "Truck No", key: "truck" },
   ];
 
   const csvReport = {
-    data: filteredOrders,
+    data: filteredDeliveries,
     headers: csvHeaders,
     filename: "DeliveryHistoryReport.csv",
   };
@@ -166,43 +112,25 @@ const DeliverHistory = () => {
     { name: "No", selector: (row, index) => index + 1, width: "60px" },
     {
       name: "Date",
-      selector: (row) => new Date(row.order_date).toLocaleDateString(),
+      selector: (row) => new Date(row.departure_time).toLocaleDateString(),
       sortable: true,
       width: "150px",
     },
     {
-      name: "Driver",
-      selector: (row) => row.driver,
+      name: "Driver ID",
+      selector: (row) => row.driver_id,
       sortable: true,
       width: "150px",
     },
     {
-      name: "Truck No",
-      selector: (row) => row.truck,
+      name: "Truck ID",
+      selector: (row) => row.truck_id,
       sortable: true,
       width: "150px",
     },
     {
-      name: "Order No",
-      selector: (row) => row.order_id,
-      sortable: true,
-      width: "150px",
-    },
-    {
-      name: "Customer",
-      selector: (row) => row.customer_name,
-      sortable: true,
-      width: "150px",
-    },
-    {
-      name: "Township",
-      selector: (row) => row.township,
-      sortable: true,
-      width: "150px",
-    },
-    {
-      name: "Region",
-      selector: (row) => row.region,
+      name: "Delivery ID",
+      selector: (row) => row.delivery_id,
       sortable: true,
       width: "150px",
     },
@@ -217,7 +145,7 @@ const DeliverHistory = () => {
       cell: (row) => (
         <Button
           variant="contained"
-          onClick={() => handleClick(row.order_id)}
+          onClick={() => handleClick(row.delivery_id)}
           disabled={row.status === "Delivered"}
         >
           {row.status === "Delivered" ? (
@@ -290,9 +218,9 @@ const DeliverHistory = () => {
               label="Filter by Driver"
             >
               <MenuItem value="">All Drivers</MenuItem>
-              {drivers.map((d) => (
-                <MenuItem key={d} value={d}>
-                  {d}
+              {allDrivers.map((d) => (
+                <MenuItem key={d.driver_id} value={d.driver_id}>
+                  {d.driver_name}
                 </MenuItem>
               ))}
             </Select>
@@ -315,7 +243,7 @@ const DeliverHistory = () => {
           </FormControl>
         </Box>
 
-        {loading ? (
+        {deliveriesLoading ? (
           <Box>
             {[...Array(6)].map((_, index) => (
               <Box key={index} display="flex" alignItems="center" gap={2} p={1}>
@@ -333,7 +261,7 @@ const DeliverHistory = () => {
         ) : (
           <DataTable
             columns={columns}
-            data={filteredOrders}
+            data={filteredDeliveries}
             pagination
             highlightOnHover
             striped
