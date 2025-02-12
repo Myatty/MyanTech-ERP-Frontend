@@ -7,8 +7,7 @@ import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { Paper, Button, Snackbar, Alert } from "@mui/material/";
-import { FormControl, InputLabel, Select, MenuItem, Box } from "@mui/material";
+import { Paper, Button, Snackbar, Alert, Skeleton, Box, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import axios from "axios";
 import { IconTrash } from "@tabler/icons-react";
 
@@ -45,6 +44,7 @@ const AssignTruck = ({
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [openToast, setOpenToast] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   //func for clicking delete icon
   const handleDelete = (orderId) => {
@@ -60,13 +60,15 @@ const AssignTruck = ({
       console.error("Missing driverId or truckId");
       setSnackbarMessage("Missing driverId or truckId");
       setSnackbarSeverity("error");
-      setOpenSnackbar(true);
+      setOpenToast(true);
       return;
     }
 
     console.log("driverId", driver);
     console.log("truckId", truck);
     console.log("Order IDs ", assignOrderId);
+
+    setLoading(true);
 
     try {
       await axios.post(
@@ -84,14 +86,16 @@ const AssignTruck = ({
       // Show success toast
       setSnackbarMessage("Truck assigned successfully!");
       setSnackbarSeverity("success");
-      setOpenSnackbar(true);
+      setOpenToast(true);
       // Route to the same page
       window.location.reload();
     } catch (error) {
-      console.error("Error creating product:", error);
+      console.error("Error Assigning Truck:", error);
       setSnackbarMessage("Error assigning truck");
       setSnackbarSeverity("error");
       setOpenSnackbar(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -150,15 +154,15 @@ const AssignTruck = ({
             <FormControl variant="outlined" size="small" sx={{ minWidth: 180 }}>
               <InputLabel>Trucks</InputLabel>
               <Select
-                value={truck}  // This will hold the selected truck_id
-                onChange={(e) => setTruck(e.target.value)}  // Updates the state with the selected truck_id
+                value={truck}  
+                onChange={(e) => setTruck(e.target.value)}  
                 label="Filter by Township"
               >
                 <MenuItem value="">All Trucks</MenuItem>
                 {trucks.map((t) => (
                   <MenuItem
-                    key={t.truck_id}  // Unique key for each MenuItem
-                    value={t.truck_id}  // Set the truck_id as the value
+                    key={t.truck_id}  
+                    value={t.truck_id}  
                   >
                     {t.license_plate}
                   </MenuItem>
@@ -169,15 +173,15 @@ const AssignTruck = ({
             <FormControl variant="outlined" size="small" sx={{ minWidth: 180 }}>
               <InputLabel>Drivers</InputLabel>
               <Select
-                value={driver}  // This will hold the selected driver_id
-                onChange={(e) => setDriver(e.target.value)}  // Updates the state with the selected driver_id
+                value={driver}  
+                onChange={(e) => setDriver(e.target.value)}  
                 label="Drivers"
               >
                 <MenuItem value="">All Drivers</MenuItem>
                 {driver_info.map((d) => (
                   <MenuItem
-                    key={d.driver_id}  // Set a unique key for each MenuItem
-                    value={d.driver_id}  // Set the driver_id as the value
+                    key={d.driver_id}  
+                    value={d.driver_id}  
                   >
                     {d.driver_name}
                   </MenuItem>
@@ -188,11 +192,10 @@ const AssignTruck = ({
             <Button
               variant="contained"
               size="small"
-              onClick={() => {
-                handleAssign();
-              }}
+              onClick={handleAssign}
+              disabled={loading}
             >
-              Assign Truck
+              {loading ? <Skeleton width={80} /> : "Assign Truck"}
             </Button>
           </Box>
         </TableContainer>
@@ -205,16 +208,16 @@ const AssignTruck = ({
       >
         <Alert
           onClose={() => setOpenToast(false)}
-          severity="success"
+          severity={snackbarSeverity}
           sx={{
             width: "100%",
-            backgroundColor: "#4A90E2", // Custom Background (Blue)
-            color: "#fff", // White Text
-            fontWeight: "bold", // Make Text Bold
+            backgroundColor: snackbarSeverity === "success" ? "#4A90E2" : undefined,
+            color: "#fff",
+            fontWeight: "bold",
             borderRadius: "8px",
           }}
         >
-          Product created successfully!
+          {snackbarMessage}
         </Alert>
       </Snackbar>
     </>
