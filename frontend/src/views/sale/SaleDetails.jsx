@@ -170,9 +170,9 @@ const SaleDetails = () => {
           {/* Left Column (Date) */}
           <Grid item xs={12} sm={6}>
             <Grid container spacing={2}>
-              <Grid item sm={8}></Grid>
+              <Grid item sm={7}></Grid>
               {/* Date Field */}
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={5}>
                 <Typography variant="subtitle2" fontWeight="bold">
                   Date
                 </Typography>

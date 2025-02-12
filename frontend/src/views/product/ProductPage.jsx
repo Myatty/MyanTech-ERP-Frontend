@@ -221,7 +221,7 @@ const Product = () => {
             gap: "16px",
             justifyContent: "space-between",
             alignItems: "baseline",
-            marginBottom: "20px",
+            marginBottom: "10px",
             flexWrap: "wrap", // in case screen is small
           }}
         >

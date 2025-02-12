@@ -23,7 +23,7 @@ import { IconPencil, IconTrash } from "@tabler/icons-react";
 
 import PageContainer from "src/components/container/PageContainer";
 import DashboardCard from "src/components/shared/DashboardCard";
-import CustomerDialog from "./component/CustomerDialog";
+import CustomerDialog from "./components/CustomerDialog";
 
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCustomers } from "../../actions/customerActions";

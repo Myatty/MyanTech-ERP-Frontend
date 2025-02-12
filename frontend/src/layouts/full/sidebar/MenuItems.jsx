@@ -59,12 +59,6 @@ const Menuitems = [
     href: "/sales/history",
   },
   {
-    id: uniqueId(),
-    title: "Create Sale Return",
-    icon: IconBasketSearch,
-    href: "/sales/return",
-  },
-  {
     navlabel: true,
     subheader: "Warehouse",
   },
