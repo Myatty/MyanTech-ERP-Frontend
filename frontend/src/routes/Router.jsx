@@ -25,6 +25,9 @@ const SaleHistoryPage = Loadable(
 const PendingOrder = Loadable(
   lazy(() => import("../views/warehouse/PendingOrders.jsx"))
 );
+const DeliverOrder = Loadable(
+  lazy(() => import("../views/warehouse/DeliveredRecord.jsx"))
+);
 const Icons = Loadable(lazy(() => import("../views/icons/Icons")));
 const TypographyPage = Loadable(
   lazy(() => import("../views/utilities/TypographyPage"))
@@ -49,6 +52,7 @@ const Router = [
       { path: "/sales/create", exact: true, element: <SalePage /> },
       { path: "/sales/history", exact: true, element: <SaleHistoryPage /> },
       { path: "/warehouse/pending", exact: true, element: <PendingOrder /> },
+      { path: "/warehouse/delivery", exact: true, element: <DeliverOrder /> },
       { path: "/system/customers", exact: true, element: <CustomerRoute /> },
       { path: "/icons", exact: true, element: <Icons /> },
       { path: "/ui/typography", exact: true, element: <TypographyPage /> },
