@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
   Typography,
@@ -14,53 +15,57 @@ import {
   Container,
   Grid,
   TextField,
-  IconButton,
 } from "@mui/material";
-import { IconArrowLeft, IconTrash } from "@tabler/icons-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { fetchSaleDetail } from "../../actions/saleDetailActions";
 
 const SaleDetails = () => {
   const { order_id } = useParams();
+  const dispatch = useDispatch();
+  const orderDetails = useSelector((state) => state.saleDetails.order);
+  const orderItems = useSelector((state) => state.saleDetails.details);
+  const loading = useSelector((state) => state.saleDetails.loading);
+  const error = useSelector((state) => state.saleDetails.error);
 
-  // Mock data for the order details
-  const [orderDetails, setOrderDetails] = useState({
-    order_id: order_id,
-    customer_name: "John Doe",
-    customer_id: "12345",
-    township: "Downtown",
-    region: "Yangon",
-    contact_number1: "09123456789",
-    order_date: new Date(),
-    products: [
-      {
-        product_id: "1",
-        productName: "Product A",
-        brand: "Brand X",
-        category: "Category 1",
-        product_segment: "Segment A",
-        serial_number: "SN123",
-        price: 100,
-        quantity: 2,
-        totalPrice: 200,
-      },
-      {
-        product_id: "2",
-        productName: "Product B",
-        brand: "Brand Y",
-        category: "Category 2",
-        product_segment: "Segment B",
-        serial_number: "SN456",
-        price: 150,
-        quantity: 1,
-        totalPrice: 150,
-      },
-    ],
-  });
+  useEffect(() => {
+    dispatch(fetchSaleDetail(order_id));
+  }, [dispatch, order_id]);
+
+  useEffect(() => {
+    console.log("sale details:", orderDetails);
+    console.log("order items:", orderItems);
+  }, [orderDetails, orderItems]);
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <Typography variant="h5" color="error">
+          {error}
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (!orderDetails) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <Typography variant="h5">Order not found</Typography>
+      </Box>
+    );
+  }
 
   // Calculate grand total
-  const grandTotal = orderDetails.products.reduce(
-    (acc, product) => acc + product.totalPrice,
+  const grandTotal = orderItems.reduce(
+    (acc, item) => acc + item.price_at_order * item.quantity,
     0
   );
 
@@ -108,33 +113,6 @@ const SaleDetails = () => {
                   value={orderDetails.customer_name || ""}
                   InputProps={{ readOnly: true }}
                 />
-                <TextField
-                  fullWidth
-                  variant="standard"
-                  size="small"
-                  margin="dense"
-                  placeholder="Township"
-                  value={orderDetails.township || ""}
-                  InputProps={{ readOnly: true }}
-                />
-                <TextField
-                  fullWidth
-                  variant="standard"
-                  size="small"
-                  margin="dense"
-                  placeholder="Region"
-                  value={orderDetails.region || ""}
-                  InputProps={{ readOnly: true }}
-                />
-                <TextField
-                  fullWidth
-                  variant="standard"
-                  size="small"
-                  margin="dense"
-                  placeholder="Contact Number"
-                  value={orderDetails.contact_number1 || ""}
-                  InputProps={{ readOnly: true }}
-                />
               </Grid>
             </Grid>
           </Grid>
@@ -175,8 +153,6 @@ const SaleDetails = () => {
               <TableCell>Item Name</TableCell>
               <TableCell>Brand</TableCell>
               <TableCell>Category</TableCell>
-              <TableCell>Segment</TableCell>
-              <TableCell>Serial #</TableCell>
               <TableCell align="right">Unit Price</TableCell>
               <TableCell align="right">Qty</TableCell>
               <TableCell align="right">Subtotal</TableCell>
@@ -184,16 +160,14 @@ const SaleDetails = () => {
           </TableHead>
           <TableBody>
             {/* Existing lines */}
-            {orderDetails.products.map((product, idx) => (
+            {orderItems.map((item, idx) => (
               <TableRow key={idx}>
-                <TableCell>{product.productName}</TableCell>
-                <TableCell>{product.brand}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell>{product.product_segment}</TableCell>
-                <TableCell>{product.serial_number}</TableCell>
-                <TableCell align="right">{product.price}</TableCell>
-                <TableCell align="right">{product.quantity}</TableCell>
-                <TableCell align="right">{product.totalPrice}</TableCell>
+                <TableCell>{item.product_name}</TableCell>
+                <TableCell>{item.brand}</TableCell>
+                <TableCell>{item.category}</TableCell>
+                <TableCell align="right">{item.price_at_order}</TableCell>
+                <TableCell align="right">{item.quantity}</TableCell>
+                <TableCell align="right">{item.price_at_order * item.quantity}</TableCell>
               </TableRow>
             ))}
           </TableBody>
