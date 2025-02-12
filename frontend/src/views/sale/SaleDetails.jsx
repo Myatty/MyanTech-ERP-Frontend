@@ -17,17 +17,24 @@ import {
   TextField,
 } from "@mui/material";
 import { IconArrowLeft } from "@tabler/icons-react";
+import ReturnDialog from "./components/ReturnDialog";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { fetchSaleDetail } from "../../actions/saleDetailActions";
 
 const SaleDetails = () => {
+  const [returnDialogOpen, setOpenReturnDialog] = useState(false);
   const { order_id } = useParams();
   const dispatch = useDispatch();
   const orderDetails = useSelector((state) => state.saleDetails.order);
   const orderItems = useSelector((state) => state.saleDetails.details);
   const loading = useSelector((state) => state.saleDetails.loading);
   const error = useSelector((state) => state.saleDetails.error);
+  const handleReturnClick = () => setOpenReturnDialog(true);
+
+  const handleConfirmReturn = (selectedReturns) => {
+    console.log("Selected Returns:", selectedReturns);
+  };
 
   useEffect(() => {
     dispatch(fetchSaleDetail(order_id));
@@ -112,7 +119,7 @@ const SaleDetails = () => {
         <Typography variant="h3" sx={{ ml: 2 }}>
           Sale Details - Order #{order_id}
         </Typography>
-        <Button variant="contained" color="secondary" onClick={handleReturn}>
+        <Button variant="contained" color="primary" onClick={handleReturnClick}>
           Return
         </Button>
       </Box>
@@ -226,8 +233,8 @@ const SaleDetails = () => {
 
       {/* Order Lines */}
       <Paper sx={{ p: 2, mt: 2 }}>
-        <Table size="small">
-          <TableHead>
+        <Table>
+          <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
             <TableRow>
               <TableCell>Item Name</TableCell>
               <TableCell>Brand</TableCell>
@@ -253,12 +260,12 @@ const SaleDetails = () => {
             ))}
             <TableRow>
               <TableCell colSpan={4}></TableCell>
-              <TableCell align="right">Total Qty</TableCell>
+              <TableCell align="right">Total Qty &nbsp;:</TableCell>
               <TableCell align="right">{grandQty}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell colSpan={4}></TableCell>
-              <TableCell align="right">Total Amount</TableCell>
+              <TableCell align="right">Total Amount &nbsp;:</TableCell>
               <TableCell align="right">
                 {Number(grandTotal).toLocaleString()}
               </TableCell>
@@ -266,6 +273,12 @@ const SaleDetails = () => {
           </TableBody>
         </Table>
       </Paper>
+      <ReturnDialog
+        open={returnDialogOpen}
+        onClose={() => setOpenReturnDialog(false)}
+        orderItems={orderItems}
+        onConfirm={handleConfirmReturn}
+      />
     </Container>
   );
 };
