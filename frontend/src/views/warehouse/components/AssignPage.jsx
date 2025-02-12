@@ -14,12 +14,10 @@ import { IconTrash } from "@tabler/icons-react";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
+    backgroundColor: "#5D87FF",
     color: theme.palette.common.white,
   },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
+  [`&.${tableCellClasses.body}`]: {},
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
@@ -39,10 +37,9 @@ const AssignTruck = ({
   setSelectOrderId,
   selectOrderId,
   driver_info,
-  trucks
+  trucks,
 }) => {
   //fetch drivers , trucks , delivering driverIds & truckIds
-
 
   const [driver, setDriver] = useState(0);
   const [truck, setTruck] = useState(0);
@@ -73,18 +70,18 @@ const AssignTruck = ({
 
   return (
     <>
-      <Box>
+      <Box sx={{ position: "sticky", top: 70, zIndex: 1 }}>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
               <TableRow>
-                <StyledTableCell>Order_Id</StyledTableCell>
-                <StyledTableCell align="right">Customer</StyledTableCell>
-                <StyledTableCell align="right">Township</StyledTableCell>
-                <StyledTableCell align="right">Region</StyledTableCell>
-                <StyledTableCell align="right"> Address</StyledTableCell>
-                <StyledTableCell align="right"> Contact no</StyledTableCell>
-                <StyledTableCell align="right"> </StyledTableCell>
+                <StyledTableCell>Order No</StyledTableCell>
+                <StyledTableCell align="left">Customer</StyledTableCell>
+                <StyledTableCell align="left">Township</StyledTableCell>
+                <StyledTableCell align="left">Region</StyledTableCell>
+                <StyledTableCell align="left"> Address</StyledTableCell>
+                <StyledTableCell align="left"> Contact No</StyledTableCell>
+                <StyledTableCell align="left"> </StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -94,21 +91,19 @@ const AssignTruck = ({
                 return (
                   <StyledTableRow>
                     <StyledTableCell>{od.order_id}</StyledTableCell>
-                    <StyledTableCell align="right">
+                    <StyledTableCell align="left">
                       {od.customer_name}
                     </StyledTableCell>
-                    <StyledTableCell align="right">
+                    <StyledTableCell align="left">
                       {od.township}
                     </StyledTableCell>
-                    <StyledTableCell align="right">{od.region}</StyledTableCell>
-                    <StyledTableCell align="right">
-                      {od.address}
-                    </StyledTableCell>
-                    <StyledTableCell align="right">
+                    <StyledTableCell align="left">{od.region}</StyledTableCell>
+                    <StyledTableCell align="left">{od.address}</StyledTableCell>
+                    <StyledTableCell align="left">
                       {od.contact_number}
                     </StyledTableCell>
                     <StyledTableCell
-                      sx={{ color: "red" }}
+                      sx={{ color: "red", cursor: "pointer" }}
                       onClick={() => {
                         handleDelete(od.order_id);
                       }}
@@ -118,77 +113,70 @@ const AssignTruck = ({
                   </StyledTableRow>
                 );
               })}
-              <TableRow>
-                <TableCell colSpan={3}></TableCell>
-                <TableCell>
-                  {/*Drivers Dropdown*/}
-                  <FormControl variant="outlined" size="small" fullWidth>
-                    <InputLabel>Drivers</InputLabel>
-                    <Select
-                      value={driver}
-                      onChange={(e) => setDriver(e.target.value)}
-                      label="Drivers"
-                    >
-                      <MenuItem value="">All Drivers</MenuItem>
-                      {driver_info.map((d) => (
-                        console.log(`d`, d),
-
-                        <MenuItem
-                          key={d.driver_id}
-                          value={d.driver_name}
-                          // disabled={
-                          //   deliveringDriverIds.find((dd) => dd === d.id)
-                          //     ? true
-                          //     : false
-                          // }
-                        >
-                          {d.driver_name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </TableCell>
-
-                <TableCell>
-                  {/*Trucks Dropdrown*/}
-                  <FormControl variant="outlined" size="small" fullWidth>
-                    <InputLabel>Trucks</InputLabel>
-                    <Select
-                      value={truck}
-                      onChange={(e) => setTruck(e.target.value)}
-                      label="Filter by Township"
-                    >
-                      <MenuItem value="">All Trucks</MenuItem>
-                      {trucks.map((t) => (
-                        <MenuItem
-                          key={t.truck_id}
-                          value={t.license_plate}
-                          disabled={
-                            deliveringTruckIds.find((dt) => dt === t.id)
-                              ? true
-                              : false
-                          }
-                        >
-                          {t.license_plate}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </TableCell>
-                <TableCell align="center">
-                  <Button
-                    variant="contained"
-                    size="small"
-                    onClick={() => {
-                      handleAssign();
-                    }}
-                  >
-                    Assign Truck
-                  </Button>
-                </TableCell>
-              </TableRow>
             </TableBody>
           </Table>
+          <Box sx={{ p: 2, display: "flex", gap: 2, justifyContent: "end" }}>
+            <FormControl variant="outlined" size="small" sx={{ minWidth: 180 }}>
+              <InputLabel>Trucks</InputLabel>
+              <Select
+                value={truck}
+                onChange={(e) => setTruck(e.target.value)}
+                label="Filter by Township"
+              >
+                <MenuItem value="">All Trucks</MenuItem>
+                {trucks.map((t) => (
+                  <MenuItem
+                    key={t.truck_id}
+                    value={t.license_plate}
+                    disabled={
+                      deliveringTruckIds.find((dt) => dt === t.id)
+                        ? true
+                        : false
+                    }
+                  >
+                    {t.license_plate}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl variant="outlined" size="small" sx={{ minWidth: 180 }}>
+              <InputLabel>Drivers</InputLabel>
+              <Select
+                value={driver}
+                onChange={(e) => setDriver(e.target.value)}
+                label="Drivers"
+              >
+                <MenuItem value="">All Drivers</MenuItem>
+                {driver_info.map(
+                  (d) => (
+                    console.log(`d`, d),
+                    (
+                      <MenuItem
+                        key={d.driver_id}
+                        value={d.driver_name}
+                        // disabled={
+                        //   deliveringDriverIds.find((dd) => dd === d.id)
+                        //     ? true
+                        //     : false
+                        // }
+                      >
+                        {d.driver_name}
+                      </MenuItem>
+                    )
+                  )
+                )}
+              </Select>
+            </FormControl>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => {
+                handleAssign();
+              }}
+            >
+              Assign Truck
+            </Button>
+          </Box>
         </TableContainer>
       </Box>
     </>
