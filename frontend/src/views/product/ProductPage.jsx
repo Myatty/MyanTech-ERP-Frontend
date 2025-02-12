@@ -24,7 +24,7 @@ import {
 } from "@mui/material";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 
-import DialogBox from "./component/dilogBox";
+import DialogBox from "./components/dilogBox";
 import PageContainer from "src/components/container/PageContainer";
 import DashboardCard from "../../components/shared/DashboardCard";
 
@@ -39,8 +39,8 @@ const Product = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [productToDelete, setProductToDelete] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(""); 
-  const [categoryFilter, setCategoryFilter] = useState(""); 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
 
   useEffect(() => {
     dispatch(fetchProducts());
