@@ -22,6 +22,9 @@ const SalePage = Loadable(lazy(() => import("../views/sale/CreateOrder.jsx")));
 const SaleHistoryPage = Loadable(
   lazy(() => import("../views/sale/SalesHistory.jsx"))
 );
+const PendingOrder = Loadable(
+  lazy(() => import("../views/warehouse/PendingOrders.jsx"))
+);
 const SaleDetails = Loadable(
   lazy(() => import("../views/sale/SaleDetails.jsx"))
 );
@@ -49,6 +52,7 @@ const Router = [
       { path: "/system/users", exact: true, element: <UserRoute /> },
       { path: "/sales/create", exact: true, element: <SalePage /> },
       { path: "/sales/history", exact: true, element: <SaleHistoryPage /> },
+      { path: "/warehouse/pending", exact: true, element: <PendingOrder /> },
       {
         path: "/sales/details/:order_id",
         element: <SaleDetails />,
