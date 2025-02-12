@@ -42,16 +42,26 @@ const SaleHistoryPage = () => {
     finance_status: order.finance_status || "N/A",
   }));
 
-  const orderStatus = [...new Set(transformedOrders?.map((order) => order.status) || [])];
-  const financeStatus = [...new Set(transformedOrders?.map((order) => order.finance_status) || [])];
-  const orderIds = [...new Set(transformedOrders?.map((order) => order.order_id) || [])];
+  const orderStatus = [
+    ...new Set(transformedOrders?.map((order) => order.status) || []),
+  ];
+  const financeStatus = [
+    ...new Set(transformedOrders?.map((order) => order.finance_status) || []),
+  ];
+  const orderIds = [
+    ...new Set(transformedOrders?.map((order) => order.order_id) || []),
+  ];
 
   // Filtered orders based on status & orderId
   const filteredOrders = transformedOrders?.filter((order) => {
     const statusMatch = status ? order.status === status : true;
-    const financeStatusMatch = finanaceStatusState ? order.finance_status === finanaceStatusState : true;
+    const financeStatusMatch = finanaceStatusState
+      ? order.finance_status === finanaceStatusState
+      : true;
     const idMatch = ids ? order.order_id === Number(ids) : true;
-    const searchMatch = searchTerm ? order.order_id.toString().includes(searchTerm) : true;
+    const searchMatch = searchTerm
+      ? order.order_id.toString().includes(searchTerm)
+      : true;
 
     return statusMatch && financeStatusMatch && idMatch && searchMatch;
   });
@@ -75,14 +85,18 @@ const SaleHistoryPage = () => {
   const columns = [
     { name: "No", selector: (row, index) => index + 1, width: "60px" },
     {
-      name: "SO Number",
+      name: "Order Number",
       selector: (row) => {
-        const today = new Date();
-        const formattedDate = `${today.getFullYear()}${(today.getMonth() + 1).toString().padStart(2, '0')}${today.getDate().toString().padStart(2, '0')}`;
-        const formattedHour = today.getHours().toString().padStart(2, '0');
+        // const today = new Date();
+        // const formattedDate = `${today.getFullYear()}${(today.getMonth() + 1)
+        //   .toString()
+        //   .padStart(2, "0")}${today.getDate().toString().padStart(2, "0")}`;
         return (
-          <NavLink to={`/order-details/${row.order_id}`} style={{ textDecoration: "none", color: "inherit" }}>
-            SO{formattedDate}-{row.order_id}
+          <NavLink
+            to={`/sales/details/${row.order_id}`}
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            Order #{row.order_id}
           </NavLink>
         );
       },
@@ -147,7 +161,7 @@ const SaleHistoryPage = () => {
   };
 
   const handleRowClicked = (row) => {
-    navigate(`/order-details/${row.order_id}`);
+    navigate(`/sales/details/${row.order_id}`);
   };
 
   return (
