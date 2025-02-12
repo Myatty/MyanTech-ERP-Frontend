@@ -9,10 +9,17 @@ import PageContainer from "src/components/container/PageContainer";
 import DashboardCard from "../../components/shared/DashboardCard";
 import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
-import { FormControl, InputLabel, Select, TextField } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  TextField,
+  Chip,
+} from "@mui/material";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 import { fetchOrders } from "../../actions/orderActions";
 import { NavLink, useNavigate } from "react-router-dom";
+import { textAlign } from "@mui/system";
 
 const SaleHistoryPage = () => {
   const dispatch = useDispatch();
@@ -82,8 +89,26 @@ const SaleHistoryPage = () => {
     filename: "SaleHistoryReport.csv",
   };
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "pending":
+        return "error";
+      case "N/A":
+        return "default";
+      case "paid":
+        return "success";
+      default:
+        return "default";
+    }
+  };
+
   const columns = [
-    { name: "No", selector: (row, index) => index + 1, width: "60px" },
+    {
+      name: "Date",
+      selector: (row) => new Date(row.order_date).toLocaleDateString(),
+      sortable: true,
+      width: "150px",
+    },
     {
       name: "Order Number",
       selector: (row) => {
@@ -101,7 +126,7 @@ const SaleHistoryPage = () => {
         );
       },
       sortable: true,
-      width: "200px",
+      width: "150px",
     },
     {
       name: "Customer Name",
@@ -110,28 +135,35 @@ const SaleHistoryPage = () => {
       width: "180px",
     },
     {
-      name: "Date",
-      selector: (row) => new Date(row.order_date).toLocaleDateString(),
-      sortable: true,
-      width: "150px",
-    },
-    {
       name: "Delivery Status",
-      selector: (row) => row.status,
+      selector: (row) => (
+        <Chip
+          label={row.status.charAt(0).toUpperCase() + row.status.slice(1)}
+          color={row.status === "delivering" ? "success" : "warning"}
+        />
+      ),
       sortable: true,
-      width: "140px",
+      width: "170px",
     },
     {
       name: "Payment Status",
-      selector: (row) => row.finance_status,
+      selector: (row) => (
+        <Chip
+          label={
+            row.finance_status.charAt(0).toUpperCase() +
+            row.finance_status.slice(1)
+          }
+          color={getStatusColor(row.finance_status)}
+        />
+      ),
       sortable: true,
-      width: "150px",
+      width: "170px",
     },
     {
       name: "Total Amount",
-      selector: (row) => row.total_amount,
+      selector: (row) => Number(row.total_amount).toLocaleString() + " MMK",
       sortable: true,
-      width: "140px",
+      width: "180px",
     },
   ];
 
@@ -192,6 +224,15 @@ const SaleHistoryPage = () => {
           gap={2}
           mb={2}
         >
+          {/* Finance status search*/}
+          <TextField
+            size="small"
+            label="Search Order ID"
+            variant="outlined"
+            fullWidth
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
           {/* delivery status Dropdown */}
           <FormControl variant="outlined" size="small" fullWidth>
             <InputLabel>Filter by Delivery Status</InputLabel>
@@ -225,34 +266,6 @@ const SaleHistoryPage = () => {
               ))}
             </Select>
           </FormControl>
-
-          {/* Finance status search*/}
-          <TextField
-            size="small"
-            label="Search Order ID"
-            variant="outlined"
-            fullWidth
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-
-          {/* order_Id Dropdown 
-          <FormControl variant="outlined" size="small" fullWidth>
-            <InputLabel>Filter by SO Number</InputLabel>
-            <Select
-              value={ids}
-              onChange={(e) => setIds(e.target.value)}
-              label="Filter by SO Number"
-            >
-              <MenuItem value="">All Orders</MenuItem>
-              {orderIds.map((id) => (
-                <MenuItem key={id} value={id}>
-                  {id}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          */}
         </Box>
 
         {/* Show Skeleton while Loading */}

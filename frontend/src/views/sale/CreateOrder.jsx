@@ -29,8 +29,8 @@ import { IconTrash } from "@tabler/icons-react";
 import { fetchProducts } from "../../actions/productActions";
 import { fetchCustomers } from "../../actions/customerActions";
 
-import ProductAutocomplete from "./component/ProductAutoComplete";
-import CustomerAutoComplete from "./component/CustomerAutoComplete";
+import ProductAutocomplete from "./components/ProductAutoComplete";
+import CustomerAutoComplete from "./components/CustomerAutoComplete";
 
 const OrderCreate = () => {
   const [openToast, setOpenToast] = useState(false);
@@ -503,6 +503,11 @@ const OrderCreate = () => {
                   </TableCell>
                 </TableRow>
               )}
+              <TableRow>
+                <TableCell colSpan={6}></TableCell>
+                <TableCell>Total: </TableCell>
+                <TableCell>{grandTotal}</TableCell>
+              </TableRow>
             </TableBody>
           </Table>
 

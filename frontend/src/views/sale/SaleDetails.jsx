@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
@@ -16,6 +16,7 @@ import {
   Grid,
   TextField,
 } from "@mui/material";
+import { IconArrowLeft } from "@tabler/icons-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { fetchSaleDetail } from "../../actions/saleDetailActions";
@@ -39,7 +40,12 @@ const SaleDetails = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
         <CircularProgress />
       </Box>
     );
@@ -47,7 +53,12 @@ const SaleDetails = () => {
 
   if (error) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
         <Typography variant="h5" color="error">
           {error}
         </Typography>
@@ -57,7 +68,12 @@ const SaleDetails = () => {
 
   if (!orderDetails) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
         <Typography variant="h5">Order not found</Typography>
       </Box>
     );
@@ -69,7 +85,9 @@ const SaleDetails = () => {
     0
   );
 
-  // Handle return 
+  const grandQty = orderItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  // Handle return
   const handleReturn = () => {
     console.log("Returning order:", order_id);
     // return logic here
@@ -85,6 +103,12 @@ const SaleDetails = () => {
         mt={2}
         mb={2}
       >
+        <Link
+          to="/sales/history"
+          style={{ textDecoration: "none", color: "black" }}
+        >
+          <IconArrowLeft />
+        </Link>
         <Typography variant="h3" sx={{ ml: 2 }}>
           Sale Details - Order #{order_id}
         </Typography>
@@ -154,7 +178,7 @@ const SaleDetails = () => {
                 </Typography>
                 <DatePicker
                   selected={new Date(orderDetails.order_date)}
-                  onChange={(dt) => { }}
+                  onChange={(dt) => {}}
                   dateFormat="dd/MM/yyyy"
                   customInput={
                     <TextField
@@ -172,7 +196,12 @@ const SaleDetails = () => {
                   size="small"
                   margin="dense"
                   placeholder="Delivery Status"
-                  value={`Delivery Status - ${orderDetails.order_status.charAt(0).toUpperCase() + orderDetails.order_status.slice(1)}` || ""}
+                  value={
+                    `Delivery Status - ${
+                      orderDetails.order_status.charAt(0).toUpperCase() +
+                      orderDetails.order_status.slice(1)
+                    }` || ""
+                  }
                   InputProps={{ readOnly: true }}
                 />
                 <TextField
@@ -181,7 +210,12 @@ const SaleDetails = () => {
                   size="small"
                   margin="dense"
                   placeholder="Payment Status"
-                  value={`Payment Status - ${orderDetails.invoice_status ? orderDetails.invoice_status.charAt(0).toUpperCase() + orderDetails.invoice_status.slice(1) : "N/A"}`}
+                  value={`Payment Status - ${
+                    orderDetails.invoice_status
+                      ? orderDetails.invoice_status.charAt(0).toUpperCase() +
+                        orderDetails.invoice_status.slice(1)
+                      : "N/A"
+                  }`}
                   InputProps={{ readOnly: true }}
                 />
               </Grid>
@@ -212,16 +246,25 @@ const SaleDetails = () => {
                 <TableCell>{item.category}</TableCell>
                 <TableCell align="right">{item.price_at_order}</TableCell>
                 <TableCell align="right">{item.quantity}</TableCell>
-                <TableCell align="right">{item.price_at_order * item.quantity}</TableCell>
+                <TableCell align="right">
+                  {Number(item.price_at_order * item.quantity).toLocaleString()}
+                </TableCell>
               </TableRow>
             ))}
+            <TableRow>
+              <TableCell colSpan={4}></TableCell>
+              <TableCell align="right">Total Qty</TableCell>
+              <TableCell align="right">{grandQty}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell colSpan={4}></TableCell>
+              <TableCell align="right">Total Amount</TableCell>
+              <TableCell align="right">
+                {Number(grandTotal).toLocaleString()}
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
-
-        {/* Grand total */}
-        <Box sx={{ mt: 2, fontWeight: "bold", textAlign: "right", mr: 13 }}>
-          Total: {grandTotal}
-        </Box>
       </Paper>
     </Container>
   );
