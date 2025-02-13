@@ -13,7 +13,6 @@ import {
   CardContent,
   Chip,
 } from "@mui/material";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { IconProgressCheck } from "@tabler/icons-react";
 import axios from "axios";
@@ -231,7 +230,7 @@ const DeliverHistory = () => {
           {row.status === "Delivered" ? (
             <IconProgressCheck stroke={1.5} size="1.6rem" />
           ) : (
-            "Complete"
+            "Completed"
           )}
         </Button>
       ),
@@ -282,13 +281,6 @@ const DeliverHistory = () => {
           }}
         >
           <h2>Delivery Records List</h2>
-          <div>
-            <CSVLink {...csvReport} style={{ textDecoration: "none" }}>
-              <Button variant="contained" color="primary">
-                Export
-              </Button>
-            </CSVLink>
-          </div>
         </div>
 
         <Grid container spacing={2} sx={{ mb: 2 }}>
@@ -359,9 +351,14 @@ const DeliverHistory = () => {
               </Select>
             </FormControl>
           </Box>
-          <Box>
+          <Box gap={2} sx={{ display: "flex", alignItems: "center" }}>
+            <CSVLink {...csvReport} style={{ textDecoration: "none" }}>
+              <Button variant="outlined" color="primary">
+                Export
+              </Button>
+            </CSVLink>
             <Button fullWidth variant="contained" onClick={handleAllClick}>
-              Complete All
+              Completed All
             </Button>
           </Box>
         </Box>
