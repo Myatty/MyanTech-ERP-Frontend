@@ -75,8 +75,6 @@ const Return = () => {
 
   useEffect(() => {
     dispatch(fetchReturnInfo());
-
-
   }, [dispatch]);
 
 
@@ -84,8 +82,13 @@ const Return = () => {
   console.log("returnInfo", returnInfo);
   console.log('ret info array ', returnInfo);
 
-  const totalReturn = returnInfo.total;
-  console.log('total return ', totalReturn);
+  const totalReturn = returnInfo?.total || 0;
+  const serviceCount = returnInfo?.serviceCount || 0;
+  const pendingCount = returnInfo?.pendingCount || 0;
+  const pickUpCount = returnInfo?.pickupCount || 0;
+  const collectedCount = returnInfo?.collectedCount || 0;
+  const resolvedCount = returnInfo?.resolvedCount || 0;
+  console.log('service ', pickUpCount);
 
   const results = returnInfo?.results || [];
   console.log('results ', results);
@@ -101,10 +104,10 @@ const Return = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
 
   const statusOptions = {
-    Pending: ["Pick_Up"],
-    Pick_Up: ["Collected"],
-    Collected: ["Service_Center", "Resolved"],
-    Service_Center: ["Resolved"],
+    Pending: ["picked_up"],
+    Pick_Up: ["collected"],
+    Collected: ["service", "resolved"],
+    Service_Center: ["resolved"],
   };
 
   const handleClick = (event) => {
@@ -128,8 +131,8 @@ const Return = () => {
       //call fetch
       try {
         await axios.post(
-          //replace with correct endpoint
-          `http://localhost:4000/api/return`,
+
+          `${apiUrl}/api/return`,
           { ...obj, status: status }
         );
       } catch (error) {
@@ -158,14 +161,11 @@ const Return = () => {
   // Get status from returnOrder
   const order_status = [
     ...new Set(results?.map((order) => order.status) || []),
-  ];const filteredReturnOrders = results?.filter((order) => {
-    // Compare the single selected reason to the order's reason
+  ]; const filteredReturnOrders = results?.filter((order) => {
     const ReasonMatch = reason ? order.return_reason === reason : true;
-    // Compare the single selected status to the order's status
     const StatusMatch = status ? order.status === status : true;
-    // Compare the single selected orderId to the order's return_id
     const OrderIdMatch = orderId ? order.order_id === orderId : true;
-  
+
     return ReasonMatch && StatusMatch && OrderIdMatch;
   });
 
@@ -199,7 +199,7 @@ const Return = () => {
             <Card variant="outlined" sx={{ backgroundColor: "#FFCCBC" }}>
               <CardContent>
                 <Typography variant="subtitle1">Pending</Typography>
-                <Typography variant="h5">6</Typography>
+                <Typography variant="h5">{pendingCount}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -207,7 +207,7 @@ const Return = () => {
             <Card variant="outlined" sx={{ backgroundColor: "#FFF9C4" }}>
               <CardContent>
                 <Typography variant="subtitle1">Pick Up</Typography>
-                <Typography variant="h5">6</Typography>
+                <Typography variant="h5">{pickUpCount}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -215,7 +215,7 @@ const Return = () => {
             <Card variant="outlined" sx={{ backgroundColor: "#C8E6C9" }}>
               <CardContent>
                 <Typography variant="subtitle1">Collected</Typography>
-                <Typography variant="h5">6</Typography>
+                <Typography variant="h5">{collectedCount}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -223,7 +223,7 @@ const Return = () => {
             <Card variant="outlined" sx={{ backgroundColor: "#E1BEE7" }}>
               <CardContent>
                 <Typography variant="subtitle1">Service Center</Typography>
-                <Typography variant="h5">6</Typography>
+                <Typography variant="h5">{serviceCount}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -231,7 +231,7 @@ const Return = () => {
             <Card variant="outlined" sx={{ backgroundColor: "#B3E5FC" }}>
               <CardContent>
                 <Typography variant="subtitle1">Resolved</Typography>
-                <Typography variant="h5">6</Typography>
+                <Typography variant="h5">{resolvedCount}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -260,11 +260,11 @@ const Return = () => {
 
           {/* reason dropdown */}
           <FormControl variant="outlined" size="small" sx={{ width: 200 }}>
-            <InputLabel>Filter by reasons</InputLabel>
+            <InputLabel>Filter by Reasons</InputLabel>
             <Select
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              label="Filter by reason"
+              label="Filter by Reasons"
             >
               <MenuItem value="">All reason</MenuItem>
               {reasons.map((r) => (
@@ -300,10 +300,11 @@ const Return = () => {
                 <StyledTableCell>Order no</StyledTableCell>
                 <StyledTableCell>Return Date</StyledTableCell>
                 <StyledTableCell>Customer</StyledTableCell>
-                <StyledTableCell>Product</StyledTableCell>
+                <StyledTableCell>Product Name</StyledTableCell>
                 <StyledTableCell>Quantity</StyledTableCell>
                 <StyledTableCell>Return Reason</StyledTableCell>
                 <StyledTableCell>Status</StyledTableCell>
+                <StyledTableCell>Actions</StyledTableCell>
                 <StyledTableCell></StyledTableCell>
               </TableRow>
             </TableHead>
@@ -312,6 +313,10 @@ const Return = () => {
                 const completeIcon = (
                   <IconProgressCheck stroke={1.5} size="1.6rem" />
                 );
+                const itemOptions = statusOptions[item.status] || [];
+                console.log("itemOptions", itemOptions);
+                  console.log('intm', item.status);
+                  
                 return (
                   <StyledTableRow key={item.return_id}>
 
@@ -326,43 +331,40 @@ const Return = () => {
                     <StyledTableCell>{item.return_reason}</StyledTableCell>
                     <StyledTableCell>{item.status}</StyledTableCell>
                     <StyledTableCell align="center">
-                      {item.status === "Resolved" ? (
-                        <Button>{completeIcon}</Button>
-                      ) : (
-                        <div>
-                          <Button
-                            variant="contained"
-                            onClick={(e) => {
-                              handleClick(e),
-                                setObj({
-                                  ...obj,
-                                  return_id: item.return_id,
-                                  order_id: item.order_id,
-                                  order_item_id: item.order_item_id,
-                                });
-                            }}
-                          >
-                            Change Status
-                          </Button>
-                          <Menu
-                            anchorEl={anchorEl}
-                            open={Boolean(anchorEl)}
-                            onClose={() => {
-                              handleClose(null);
-                            }}
-                          >
-                            {/* {statusOptions[item.status].map((option) => (
-                              <MenuItem
-                                key={option}
-                                onClick={() => handleClose(option)}
-                              >
-                                {option}
-                              </MenuItem>
-                            ))} */}
-                          </Menu>
-                        </div>
-                      )}
-                    </StyledTableCell>
+          {item.status === "resolved" ? (
+            <Button>{completeIcon}</Button>
+          ) : (
+            <div>
+              <Button
+                variant="contained"
+                onClick={(e) => {
+                  handleClick(e),
+                    setObj({
+                      ...obj,
+                      return_id: item.return_id,
+                      order_id: item.order_id,
+                      order_item_id: item.order_item_id,
+                    });
+                }}
+              >
+                Change Status
+              </Button>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={() => {
+                  handleClose(null);
+                }}
+              >
+                {itemOptions.map((option) => (
+                  <MenuItem key={option} onClick={() => handleClose(option)}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Menu>
+            </div>
+          )}
+        </StyledTableCell>
                   </StyledTableRow>
                 );
               })}
