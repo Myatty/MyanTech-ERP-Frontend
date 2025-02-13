@@ -18,6 +18,8 @@ import {
   IconButton,
 } from "@mui/material";
 import { IconTrash } from "@tabler/icons-react";
+import axios from "axios";
+const apiUrl = import.meta.env.VITE_APP_API_URL;
 
 const ReturnDialog = ({ open, onClose, orderItems, onConfirm }) => {
   const [returnItems, setReturnItems] = useState([]);
@@ -26,8 +28,8 @@ const ReturnDialog = ({ open, onClose, orderItems, onConfirm }) => {
       setReturnItems(
         orderItems.map((item) => ({
           ...item,
-          returnQty: item.quantity, // Default to full quantity
-          returnReason: "", // Reason for return
+          returnQty: item.quantity, 
+          returnReason: "", 
         }))
       );
     }
@@ -57,14 +59,20 @@ const ReturnDialog = ({ open, onClose, orderItems, onConfirm }) => {
   };
 
   // Handle confirm return
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const selectedReturns = returnItems.map((item) => ({
-      product_id: item.product_id,
-      returnQty: item.returnQty,
-      returnReason: item.returnReason,
+      order_item_id: item.order_item_id,
+      quantity: item.returnQty,
+      return_reason: item.returnReason,
     }));
-    onConfirm(selectedReturns);
-    onClose();
+
+    try {
+      await axios.post(`${apiUrl}/api/returns`, selectedReturns);
+      onConfirm(selectedReturns);
+      onClose();
+    } catch (error) {
+      console.error('Error posting return items:', error);
+    }
   };
 
   return (
@@ -109,9 +117,9 @@ const ReturnDialog = ({ open, onClose, orderItems, onConfirm }) => {
                       }
                       label="Reason"
                     >
-                      <MenuItem value="Damaged">Damaged</MenuItem>
-                      <MenuItem value="Wrong Item">Wrong Item</MenuItem>
-                      <MenuItem value="Other">Other</MenuItem>
+                      <MenuItem value="damage">damage</MenuItem>
+                      <MenuItem value="wrong_item">wrong_item</MenuItem>
+                      <MenuItem value="other">other</MenuItem>
                     </Select>
                   </FormControl>
                 </TableCell>

@@ -72,6 +72,7 @@ const StatusModel = ({
         `${apiUrl}/api/returns/assign-pickup`,
         obj
       );
+      
     } catch (error) {
       console.error("Error changing status:", error);
     }
