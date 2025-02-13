@@ -213,6 +213,7 @@ const OrderCreate = () => {
 
   // Sum of all line totals
   const grandTotal = lines.reduce((acc, ln) => acc + ln.totalPrice, 0);
+  const grandQty = lines.reduce((acc, ln) => acc + ln.quantity, 0);
 
   if (loading || isSubmitting) {
     return (
@@ -456,7 +457,7 @@ const OrderCreate = () => {
                         required
                         sx={{ width: 110 }}
                         type="text"
-                        value={draftLine.price}
+                        value={Number(draftLine.price).toLocaleString()}
                         onChange={(e) =>
                           handleDraftChange("price", e.target.value)
                         }
@@ -481,7 +482,7 @@ const OrderCreate = () => {
                         label="Subtotal"
                         required
                         sx={{ width: 120 }}
-                        value={draftLine.totalPrice}
+                        value={Number(draftLine.totalPrice).toLocaleString()}
                         InputProps={{ readOnly: true }}
                       />
 
@@ -503,11 +504,6 @@ const OrderCreate = () => {
                   </TableCell>
                 </TableRow>
               )}
-              <TableRow>
-                <TableCell colSpan={6}></TableCell>
-                <TableCell>Total: </TableCell>
-                <TableCell>{grandTotal}</TableCell>
-              </TableRow>
             </TableBody>
           </Table>
 
@@ -527,8 +523,18 @@ const OrderCreate = () => {
           )}
 
           {/* Grand total */}
-          <Box sx={{ mt: 2, fontWeight: "bold", textAlign: "right", mr: 13 }}>
-            Total: {grandTotal}
+          <Box sx={{ mt: 2, fontWeight: "bold", textAlign: "right" }}>
+            <Table>
+              <TableBody>
+                <TableRow>
+                  <TableCell colSpan={8}></TableCell>
+                  <TableCell align="right">Total Qty &nbsp;: </TableCell>
+                  <TableCell>{grandQty}</TableCell>
+                  <TableCell align="right">Total Amount &nbsp;:</TableCell>
+                  <TableCell align="left">{grandTotal}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
           </Box>
         </Paper>
       )}

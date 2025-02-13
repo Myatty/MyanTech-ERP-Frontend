@@ -24,7 +24,7 @@ import { CSVLink } from "react-csv";
 
 import PageContainer from "src/components/container/PageContainer";
 import DashboardCard from "../../components/shared/DashboardCard";
-import UserDialog from "./components/UserDialog";
+import UserDialog from "./component/UserDialog";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUsers } from "../../actions/userActions";
 
