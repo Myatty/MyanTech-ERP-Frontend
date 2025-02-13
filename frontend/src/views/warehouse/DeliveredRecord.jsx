@@ -11,6 +11,7 @@ import {
   MenuItem,
   Card,
   CardContent,
+  Chip,
 } from "@mui/material";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -210,7 +211,12 @@ const DeliverHistory = () => {
     },
     {
       name: "Status",
-      selector: (row) => row.status,
+      selector: (row) => (
+        <Chip
+          label={row.status}
+          color={row.status === "Delivered" ? "success" : "warning"}
+        />
+      ),
       sortable: true,
       width: "150px",
     },
