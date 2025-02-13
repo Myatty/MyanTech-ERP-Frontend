@@ -54,7 +54,7 @@ const FinanceInvoice = () => {
   const [orderId, setOrderId] = useState(0);
   const [status, setStatus] = useState("");
   const [invoices, setInvoices] = useState([]);
-  const [data, setData] = useState({ inv: null, status: "" });
+  const [data, setData] = useState({ invoice_id: null, status: "" });
   // const allInvoicess = [
   //   {
   //     inv: "INV#12",
@@ -223,7 +223,7 @@ const FinanceInvoice = () => {
                       <StyledTableCell>{inv.amount}</StyledTableCell>
                       <StyledTableCell>{inv.status}</StyledTableCell>
                       <StyledTableCell align="center">
-                        {inv.status === "Paid" ? (
+                        {inv.status === "paid" ? (
                           <Button>{completeIcon}</Button>
                         ) : (
                           <div>
@@ -233,7 +233,7 @@ const FinanceInvoice = () => {
                                 handleClick(e),
                                   setData({
                                     ...data,
-                                    inv: inv.inv,
+                                    invoice_id: inv.inv,
                                   });
                               }}
                             >

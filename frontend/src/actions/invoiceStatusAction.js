@@ -27,7 +27,7 @@ export const updateInvoice = (inv) => {
   return async (dispatch) => {
     try {
       dispatch({ type: UPDATE_INVOICE_STATUS_REQUEST });
-      const response = await axios.put(`${apiUrl}/api/invoices}`, inv);
+      const response = await axios.put(`${apiUrl}/api/invoices/status`, inv);
       dispatch({ type: UPDATE_INVOICE_STATUS_SUCCESS, payload: response.data });
       dispatch(fetchInvoice());
     } catch (error) {
