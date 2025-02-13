@@ -12,15 +12,16 @@ import {
 import Slide from "@mui/material/Slide";
 import { IconFileInvoice, IconCheck, IconX } from "@tabler/icons-react";
 import { useDispatch } from "react-redux";
+import { createInvoice } from "../../../actions/invoiceActions";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { fetchOrders } from "../../../actions/orderActions";
 
 // MUI Slide Transition
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function InvoiceDialog() {
+export default function InvoiceDialog({ orderId }) {
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false); // New Loading State
   const dispatch = useDispatch();
@@ -34,22 +35,14 @@ export default function InvoiceDialog() {
     setOpen(false);
   };
 
-  // Confirm Invoice Generation
   const handleConfirm = async () => {
-    setLoading(true); // Show loader
+    setLoading(true);
     try {
-      // Assuming the backend API is something like this:
-      await axios.post("http://localhost:4000/api/invoices", {
-        orderId: 197, // This should be dynamic based on your app
-      });
-
-      // Dispatch Redux action if needed
-      dispatch({ type: "INVOICE_CREATED", payload: 197 });
-
-      // Navigate to /sales/history after successful API call
+      await dispatch(createInvoice(orderId));
+      await dispatch(fetchOrders());
       navigate("/sales/history");
     } catch (error) {
-      console.error("Error creating invoice:", error);
+      console.error("Invoice creation error:", error);
     } finally {
       setLoading(false);
       setOpen(false);

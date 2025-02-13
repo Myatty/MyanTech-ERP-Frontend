@@ -129,17 +129,16 @@ const SaleDetails = () => {
           >
             Return
           </Button>
-          <InvoiceDialog />
+          {orderDetails.invoice_status === null && (
+            <InvoiceDialog orderId={order_id} />
+          )}
         </Box>
       </Box>
 
-      {/* Customer & date info */}
       <Paper sx={{ p: 3, mb: 2, borderRadius: 2, boxShadow: 2 }}>
         <Grid container spacing={2}>
-          {/* Right Column (Additional Customer Info) */}
           <Grid item xs={12} sm={6}>
             <Grid container spacing={2}>
-              {/* Customer Info */}
               <Grid item xs={12} sm={6} sx={{ ml: 1 }}>
                 <Typography variant="subtitle2" fontWeight="bold">
                   Customer Info

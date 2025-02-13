@@ -17,13 +17,12 @@ import {
   Select,
   MenuItem,
   Box,
-  Typography,
 } from "@mui/material";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 
 import PageContainer from "src/components/container/PageContainer";
 import DashboardCard from "src/components/shared/DashboardCard";
-import CustomerDialog from "./component/CustomerDialog";
+import CustomerDialog from "./components/CustomerDialog";
 
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCustomers } from "../../actions/customerActions";
@@ -32,16 +31,12 @@ const Customer = () => {
   const dispatch = useDispatch();
   const { loading, customers, error } = useSelector((state) => state.customers);
 
-  // Dialog open/close
   const [open, setOpen] = useState(false);
 
-  // Text search by "name"
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Region filter
   const [selectedRegion, setSelectedRegion] = useState("All");
 
-  // Pagination
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -49,24 +44,20 @@ const Customer = () => {
     dispatch(fetchCustomers());
   }, [dispatch]);
 
-  // Handlers for opening the Create Customer dialog
   const handleOpenDialog = () => {
     setOpen(true);
   };
 
-  // Search filter handler
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
     setPage(0);
   };
 
-  // Region filter handler
   const handleRegionChange = (e) => {
     setSelectedRegion(e.target.value);
     setPage(0);
   };
 
-  // Pagination handlers
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -75,24 +66,18 @@ const Customer = () => {
     setPage(0);
   };
 
-  // Error display
   if (error) {
     return <div>Error: {error}</div>;
   }
 
-  // --- REGION FILTER ---
-  // If "All" is selected, do not filter by region. Otherwise, match exact region.
   const regionFilteredCustomers =
     selectedRegion === "All"
       ? customers
       : customers.filter((c) => c.region === selectedRegion);
 
-  // --- NAME SEARCH FILTER ---
   const filteredCustomers = regionFilteredCustomers.filter((c) =>
     c.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // --- PAGINATION ---
   const startIndex = page * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
   const paginatedCustomers =
@@ -100,7 +85,6 @@ const Customer = () => {
       ? filteredCustomers.slice(startIndex, endIndex)
       : filteredCustomers;
 
-  // Create a list of unique regions. Include "All" at the front for convenience.
   const uniqueRegions = [
     "All",
     ...new Set(customers.map((customer) => customer.region).filter(Boolean)),
@@ -108,15 +92,8 @@ const Customer = () => {
 
   // --- CSV EXPORT ---
   const handleExportCSV = () => {
-    /*
-      You can decide whether to export:
-        1) Only the filtered list (filteredCustomers)
-        2) The entire customer list (customers)
-      Below, we export the currently filtered list.
-    */
     const dataToExport = filteredCustomers;
 
-    // CSV Header
     const headers = [
       "No",
       "Name",
@@ -127,7 +104,6 @@ const Customer = () => {
       "Region",
     ];
 
-    // Build CSV rows
     const rows = dataToExport.map((customer, index) => [
       index + 1,
       customer.name,
@@ -138,14 +114,12 @@ const Customer = () => {
       customer.region,
     ]);
 
-    // Combine headers and rows into a CSV string
     let csvContent =
       "data:text/csv;charset=utf-8," +
       headers.join(",") +
       "\n" +
       rows.map((row) => row.join(",")).join("\n");
 
-    // Download the CSV file
     const link = document.createElement("a");
     link.href = encodeURI(csvContent);
     link.setAttribute("download", "customers.csv");
@@ -160,7 +134,6 @@ const Customer = () => {
       description="This is the Customer page"
     >
       <DashboardCard>
-        {/* TOP SECTION: Stats and Controls */}
         <Box
           display="flex"
           alignItems={{ xs: "flex-start", sm: "center" }}
@@ -169,22 +142,9 @@ const Customer = () => {
           gap={2}
           marginBottom={2}
         >
-          {/* Left: Stats */}
-          <Box
-            sx={{
-              backgroundColor: "#F0F0F0",
-              padding: "16px",
-              borderRadius: "8px",
-            }}
-          >
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              Total Customers: {filteredCustomers.length}
-            </Typography>
-          </Box>
+          <h2>Customer List</h2>
 
-          {/* Right: Filters & Buttons */}
           <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
-            {/* Region Filter */}
             <FormControl size="small">
               <InputLabel>Region Filter</InputLabel>
               <Select
@@ -200,8 +160,6 @@ const Customer = () => {
                 ))}
               </Select>
             </FormControl>
-
-            {/* Name Search */}
             <TextField
               label="Search by Name"
               variant="outlined"
@@ -209,22 +167,17 @@ const Customer = () => {
               value={searchTerm}
               onChange={handleSearch}
             />
-
-            {/* Create Customer */}
             <Button variant="contained" onClick={handleOpenDialog}>
               Create New Customer
             </Button>
 
-            {/* Export CSV */}
             <Button variant="outlined" onClick={handleExportCSV}>
               Export
             </Button>
           </Box>
         </Box>
 
-        {/* TABLE SECTION */}
         {loading ? (
-          /* SKELETON LOADING STATE */
           <TableContainer
             component={Paper}
             sx={{ borderRadius: 2, overflow: "hidden" }}
@@ -270,7 +223,6 @@ const Customer = () => {
             </Table>
           </TableContainer>
         ) : (
-          /* REAL TABLE WHEN NOT LOADING */
           <TableContainer
             component={Paper}
             sx={{ borderRadius: 2, overflow: "hidden" }}
@@ -372,7 +324,6 @@ const Customer = () => {
                         backgroundColor: isOddRow ? "action.hover" : "inherit",
                       }}
                     >
-                      {/* Sequential number (e.g. 1, 2, 3, ... across pages) */}
                       <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                       <TableCell>{customer.name}</TableCell>
                       <TableCell>{customer.contact_number1}</TableCell>
@@ -410,7 +361,7 @@ const Customer = () => {
                       25,
                       { label: "All", value: -1 },
                     ]}
-                    colSpan={8} // match total columns
+                    colSpan={8}
                     count={filteredCustomers.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
@@ -428,8 +379,6 @@ const Customer = () => {
             </Table>
           </TableContainer>
         )}
-
-        {/* Dialog for creating/editing customers */}
         <CustomerDialog open={open} setOpen={setOpen} />
       </DashboardCard>
     </PageContainer>

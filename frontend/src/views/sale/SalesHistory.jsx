@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import DataTable, { Alignment } from "react-data-table-component";
+import DataTable from "react-data-table-component";
 import { CSVLink } from "react-csv";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
@@ -15,7 +15,6 @@ import {
   TextField,
   Chip,
 } from "@mui/material";
-import { IconPencil, IconTrash } from "@tabler/icons-react";
 import { fetchOrders } from "../../actions/orderActions";
 import { NavLink, useNavigate } from "react-router-dom";
 
@@ -70,8 +69,6 @@ const SaleHistoryPage = () => {
 
     return statusMatch && financeStatusMatch && idMatch && searchMatch;
   });
-
-  console.log("Filtered Orders:", filteredOrders); // Debugging log
 
   const csvHeaders = [
     { label: "Order ID", key: "order_id" },
