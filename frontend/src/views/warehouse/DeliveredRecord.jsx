@@ -259,10 +259,6 @@ const DeliverHistory = () => {
       },
     },
   };
-
-  // Example stats (based on the entire orders array):
-
-  // Example stats (based on the fetched deliveries array):
   const totalOrders = allDeliveries.length;
   const deliveredCount = allDeliveries.filter((o) => o.status === "completed").length;
   const deliveringCount = allDeliveries.filter((o) => o.status === "delivering").length;
