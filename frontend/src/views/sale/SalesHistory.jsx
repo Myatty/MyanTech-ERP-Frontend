@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import DataTable, { Alignment } from "react-data-table-component";
+import DataTable from "react-data-table-component";
 import { CSVLink } from "react-csv";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
@@ -8,20 +8,27 @@ import PageContainer from "src/components/container/PageContainer";
 import DashboardCard from "../../components/shared/DashboardCard";
 import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import {
   FormControl,
   InputLabel,
   Select,
   TextField,
   Chip,
+  Grid,
+  Typography,
+  Card,
+  CardContent,
 } from "@mui/material";
-import { IconPencil, IconTrash } from "@tabler/icons-react";
 import { fetchOrders } from "../../actions/orderActions";
 import { NavLink, useNavigate } from "react-router-dom";
 
 const SaleHistoryPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const { loading, orders, error } = useSelector((state) => state.orders);
   const [selectedRows, setSelectedRows] = useState([]);
   const [status, setStatus] = useState("");
@@ -59,6 +66,11 @@ const SaleHistoryPage = () => {
 
   // Filtered orders based on status & orderId
   const filteredOrders = transformedOrders?.filter((order) => {
+    const orderDate = new Date(order.order_date);
+    const dateMatch =
+      startDate && endDate
+        ? orderDate >= startDate && orderDate <= endDate
+        : true;
     const statusMatch = status ? order.status === status : true;
     const financeStatusMatch = finanaceStatusState
       ? order.finance_status === finanaceStatusState
@@ -68,10 +80,20 @@ const SaleHistoryPage = () => {
       ? order.order_id.toString().includes(searchTerm)
       : true;
 
-    return statusMatch && financeStatusMatch && idMatch && searchMatch;
+    return (
+      statusMatch && financeStatusMatch && idMatch && searchMatch && dateMatch
+    );
   });
 
-  console.log("Filtered Orders:", filteredOrders); // Debugging log
+  const totalOrders = filteredOrders.length;
+  const totalAmount = filteredOrders.reduce(
+    (acc, order) => acc + Number(order.total_amount),
+    0
+  );
+  const totalQty = filteredOrders.reduce(
+    (acc, order) => acc + (order.total_qty || 0),
+    0
+  );
 
   const csvHeaders = [
     { label: "Order ID", key: "order_id" },
@@ -90,9 +112,20 @@ const SaleHistoryPage = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "pending":
+        return "warning";
+      case "delivered":
+        return "success";
+      default:
+        return "info";
+    }
+  };
+
+  const getPaymentStatus = (status) => {
+    switch (status) {
+      case "pending":
+        return "warning";
+      case "suspended":
         return "error";
-      case "N/A":
-        return "default";
       case "paid":
         return "success";
       default:
@@ -137,7 +170,7 @@ const SaleHistoryPage = () => {
       selector: (row) => (
         <Chip
           label={row.status.charAt(0).toUpperCase() + row.status.slice(1)}
-          color={row.status === "delivering" ? "success" : "warning"}
+          color={getStatusColor(row.status)}
         />
       ),
       sortable: true,
@@ -151,7 +184,7 @@ const SaleHistoryPage = () => {
             row.finance_status.charAt(0).toUpperCase() +
             row.finance_status.slice(1)
           }
-          color={getStatusColor(row.finance_status)}
+          color={getPaymentStatus(row.finance_status)}
         />
       ),
       sortable: true,
@@ -210,64 +243,142 @@ const SaleHistoryPage = () => {
           }}
         >
           <h2>Sale History List</h2>
-          <div>
-            <CSVLink {...csvReport} style={{ textDecoration: "none" }}>
-              <Button variant="contained" color="primary">
-                Export
-              </Button>
-            </CSVLink>
-          </div>
         </div>
+
+        <Grid container spacing={2} sx={{ mb: 2 }}>
+          <Grid item xs={12} sm={6} md={4}>
+            <Card variant="outlined" sx={{ backgroundColor: "#BBDEFB" }}>
+              <CardContent>
+                <Typography variant="subtitle1">Total Orders</Typography>
+                <Typography variant="h5">{totalOrders}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Card variant="outlined" sx={{ backgroundColor: "#C8E6C9" }}>
+              <CardContent>
+                <Typography variant="subtitle1">Total Amount</Typography>
+                <Typography variant="h5">
+                  {Number(totalAmount).toLocaleString()} MMK
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Card variant="outlined" sx={{ backgroundColor: "#FFF9C4" }}>
+              <CardContent>
+                <Typography variant="subtitle1">Total Qty</Typography>
+                <Typography variant="h5">{totalQty}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
 
         {/* Status & order_id Filter Section */}
         <Box
           display="flex"
-          sx={{ width: "60%", alignItems: "center" }}
           gap={2}
           mb={2}
+          sx={{ justifyContent: "space-between" }}
         >
-          {/* Finance status search*/}
-          <TextField
-            size="small"
-            label="Search Order ID"
-            variant="outlined"
-            fullWidth
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          {/* delivery status Dropdown */}
-          <FormControl variant="outlined" size="small" fullWidth>
-            <InputLabel>Filter by Delivery Status</InputLabel>
-            <Select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              label="Filter by Delivery Status"
-            >
-              <MenuItem value="">All Categories</MenuItem>
-              {orderStatus.map((status) => (
-                <MenuItem key={status} value={status}>
-                  {status}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Box
+            display="flex"
+            gap={2}
+            sx={{ width: "60%", alignItems: "center" }}
+          >
+            {/* Finance status search*/}
+            <TextField
+              size="small"
+              label="Search Order ID"
+              variant="outlined"
+              fullWidth
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {/* delivery status Dropdown */}
+            <FormControl variant="outlined" size="small" fullWidth>
+              <InputLabel>Filter by Delivery Status</InputLabel>
+              <Select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                label="Filter by Delivery Status"
+              >
+                <MenuItem value="">All Categories</MenuItem>
+                {orderStatus.map((status) => (
+                  <MenuItem key={status} value={status}>
+                    {status}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-          {/* finance status Dropdown */}
-          <FormControl variant="outlined" size="small" fullWidth>
-            <InputLabel>Filter by Finance Status</InputLabel>
-            <Select
-              value={finanaceStatusState}
-              onChange={(e) => finanaceSetStatusState(e.target.value)}
-              label="Filter by Finance Status"
+            {/* finance status Dropdown */}
+            <FormControl variant="outlined" size="small" fullWidth>
+              <InputLabel>Filter by Finance Status</InputLabel>
+              <Select
+                value={finanaceStatusState}
+                onChange={(e) => finanaceSetStatusState(e.target.value)}
+                label="Filter by Finance Status"
+              >
+                <MenuItem value="">All Categories</MenuItem>
+                {financeStatus.map((finance_status) => (
+                  <MenuItem key={finance_status} value={finance_status}>
+                    {finance_status}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Box display="flex" gap={2} mb={2}>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="caption" display="block" gutterBottom>
+                  Start Date
+                </Typography>
+                <DatePicker
+                  selected={startDate}
+                  onChange={(date) => setStartDate(date)}
+                  dateFormat="MM/dd/yyyy"
+                  placeholderText="Start Date"
+                  style={{
+                    height: 40,
+                    width: "100%",
+                    padding: "8px",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                  }}
+                />
+              </Box>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="caption" display="block" gutterBottom>
+                  End Date
+                </Typography>
+                <DatePicker
+                  selected={endDate}
+                  onChange={(date) => setEndDate(date)}
+                  dateFormat="MM/dd/yyyy"
+                  placeholderText="End Date"
+                  style={{
+                    height: 40,
+                    width: "100%",
+                    padding: "8px",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                  }}
+                />
+              </Box>
+            </Box>
+
+            <CSVLink
+              {...csvReport}
+              style={{ textDecoration: "none", marginTop: 10 }}
             >
-              <MenuItem value="">All Categories</MenuItem>
-              {financeStatus.map((finance_status) => (
-                <MenuItem key={finance_status} value={finance_status}>
-                  {finance_status}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              <Button variant="contained" color="primary">
+                Export
+              </Button>
+            </CSVLink>
+          </Box>
         </Box>
 
         {/* Show Skeleton while Loading */}

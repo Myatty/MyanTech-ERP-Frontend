@@ -13,6 +13,10 @@ import allDriverReducer from "./reducers/allDriverReducer";
 import deliveryReducer from "./reducers/deliveryReducer";
 import allTruckReducer from "./reducers/allTruckReducer";
 import returnInfoReducer from "./reducers/returnInfoReducer";
+import returnOrderReducer from "./reducers/returnOrderReducer";
+import serviceCenterReducer from "./reducers/serviceCenterReducer";
+import invoicesStatusReducer from "./reducers/invoiceStatusReducer";
+import authReducer from "./reducers/authReducers";
 
 const rootReducer = combineReducers({
   products: productsReducer,
@@ -27,6 +31,10 @@ const rootReducer = combineReducers({
   allTrucks: allTruckReducer,
   deliveries: deliveryReducer,
   returnInfo: returnInfoReducer,
+  returnOrder: returnOrderReducer,
+  serviceCenter: serviceCenterReducer,
+  invoiceStatus: invoicesStatusReducer,
+  auth: authReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));

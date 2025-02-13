@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import Chart from 'react-apexcharts';
-import { useTheme } from '@mui/material/styles';
-import { Grid, Stack, Typography, Avatar } from '@mui/material';
-import { IconArrowUpLeft, IconArrowUpRight, IconArrowDownRight } from '@tabler/icons-react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import Chart from "react-apexcharts";
+import { useTheme } from "@mui/material/styles";
+import { Grid, Stack, Typography, Avatar } from "@mui/material";
+import {
+  IconArrowUpLeft,
+  IconArrowUpRight,
+  IconArrowDownRight,
+} from "@tabler/icons-react";
+import axios from "axios";
 
-import DashboardCard from '../../../components/shared/DashboardCard';
+import DashboardCard from "../../../components/shared/DashboardCard";
 const YearlyBreakup = () => {
   const [currentYearSale, setCurrentYearSale] = useState(0);
   const [currentYear, setCurrentYear] = useState(0);
@@ -32,8 +36,9 @@ const YearlyBreakup = () => {
   useEffect(() => {
     const fetchYearlySales = async () => {
       try {
-
-        const response = await axios.get('http://localhost:4000/api/orders/yearly-breakup');
+        const response = await axios.get(
+          "http://localhost:4000/api/orders/yearly-breakup"
+        );
         const data = response.data;
 
         if (data.length > 0) {
@@ -43,27 +48,26 @@ const YearlyBreakup = () => {
         if (data.length > 1) {
           setPreviousYearSale(data[1].total_amount);
           setPreviousYear(data[1].year);
-          console.log(data[1].total_amount);
         }
         if (data.length > 2) {
           setTwoYearsAgoSale(data[2].total_amount);
         }
 
         if (data.length > 1) {
-          const increasePercentage = Math.abs(((data[0].total_amount - data[1].total_amount) / data[1].total_amount) * 100);
+          const increasePercentage = Math.abs(
+            ((data[0].total_amount - data[1].total_amount) /
+              data[1].total_amount) *
+              100
+          );
           setSaleIncreasePrecentage(increasePercentage);
-          console.log('Sale Increase Percentage:', increasePercentage);
         }
-        
-
       } catch (error) {
-        console.error('Error fetching yearly sales:', error);
+        console.error("Error fetching yearly sales:", error);
       }
     };
 
     fetchYearlySales();
   }, []);
-
 
   // chart color
   const theme = useTheme();

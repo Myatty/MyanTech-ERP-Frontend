@@ -7,7 +7,18 @@ import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { Paper, Button, Snackbar, Alert, Skeleton, Box, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import {
+  Paper,
+  Button,
+  Snackbar,
+  Alert,
+  Skeleton,
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import axios from "axios";
 import { IconTrash } from "@tabler/icons-react";
 
@@ -63,10 +74,6 @@ const AssignTruck = ({
       setOpenToast(true);
       return;
     }
-
-    console.log("driverId", driver);
-    console.log("truckId", truck);
-    console.log("Order IDs ", assignOrderId);
 
     setLoading(true);
 
@@ -125,7 +132,7 @@ const AssignTruck = ({
                 const deleteIcon = <IconTrash stroke={1.5} size="1.3rem" />;
                 return (
                   <StyledTableRow key={od.order_id}>
-                    <StyledTableCell>{od.order_id}</StyledTableCell>
+                    <StyledTableCell>Order#{od.order_id}</StyledTableCell>
                     <StyledTableCell align="left">
                       {od.customer_name}
                     </StyledTableCell>
@@ -154,40 +161,32 @@ const AssignTruck = ({
             <FormControl variant="outlined" size="small" sx={{ minWidth: 180 }}>
               <InputLabel>Trucks</InputLabel>
               <Select
-                value={truck}  
-                onChange={(e) => setTruck(e.target.value)}  
+                value={truck}
+                onChange={(e) => setTruck(e.target.value)}
                 label="Filter by Township"
               >
                 <MenuItem value="">All Trucks</MenuItem>
                 {trucks.map((t) => (
-                  <MenuItem
-                    key={t.truck_id}  
-                    value={t.truck_id}  
-                  >
+                  <MenuItem key={t.truck_id} value={t.truck_id}>
                     {t.license_plate}
                   </MenuItem>
                 ))}
               </Select>
-
             </FormControl>
             <FormControl variant="outlined" size="small" sx={{ minWidth: 180 }}>
               <InputLabel>Drivers</InputLabel>
               <Select
-                value={driver}  
-                onChange={(e) => setDriver(e.target.value)}  
+                value={driver}
+                onChange={(e) => setDriver(e.target.value)}
                 label="Drivers"
               >
                 <MenuItem value="">All Drivers</MenuItem>
                 {driver_info.map((d) => (
-                  <MenuItem
-                    key={d.driver_id}  
-                    value={d.driver_id}  
-                  >
+                  <MenuItem key={d.driver_id} value={d.driver_id}>
                     {d.driver_name}
                   </MenuItem>
                 ))}
               </Select>
-
             </FormControl>
             <Button
               variant="contained"
@@ -211,7 +210,8 @@ const AssignTruck = ({
           severity={snackbarSeverity}
           sx={{
             width: "100%",
-            backgroundColor: snackbarSeverity === "success" ? "#4A90E2" : undefined,
+            backgroundColor:
+              snackbarSeverity === "success" ? "#4A90E2" : undefined,
             color: "#fff",
             fontWeight: "bold",
             borderRadius: "8px",

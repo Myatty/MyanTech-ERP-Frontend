@@ -12,8 +12,6 @@ import {
   TablePagination,
   TextField,
   Skeleton,
-  Box,
-  Typography,
   FormControl,
   InputLabel,
   Select,
@@ -21,10 +19,9 @@ import {
 } from "@mui/material";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 import { CSVLink } from "react-csv";
-
 import PageContainer from "src/components/container/PageContainer";
 import DashboardCard from "../../components/shared/DashboardCard";
-import UserDialog from "./component/UserDialog";
+import UserDialog from "./components/UserDialog";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUsers } from "../../actions/userActions";
 
@@ -35,17 +32,13 @@ const User = () => {
   const [open, setOpen] = useState(false);
   const [department, setDepartment] = useState("");
 
-  // Search term state
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Role filter state
   const [roleFilter, setRoleFilter] = useState("");
 
-  // Pagination states
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // Example departments array
   const departments = [
     { id: 1, name: "Sale" },
     { id: 2, name: "Warehouse" },
@@ -63,12 +56,12 @@ const User = () => {
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
-    setPage(0); // Reset to first page on new search
+    setPage(0);
   };
 
   const handleRoleFilter = (e) => {
     setRoleFilter(e.target.value);
-    setPage(0); // Reset to first page on new filter
+    setPage(0);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -80,26 +73,20 @@ const User = () => {
     setPage(0);
   };
 
-  // Helper to get department name
   const getDepartmentName = (deptId) => {
     const dept = departments.find((d) => d.id === deptId);
     return dept ? dept.dept_name : "N/A";
   };
 
-  // If there's an error, display it
   if (error) {
     return <div>Error: {error}</div>;
   }
 
-  // 1) Create a unique list of roles from the fetched users
-  //    We'll provide an "All Roles" option to disable the filter
   const uniqueRoles = [
     "All",
     ...new Set(users.map((user) => user.role_name).filter(Boolean)),
   ];
 
-  // 2) Filter the data by search term and role
-  //    If roleFilter is "All" or empty => show all roles, else filter by that role
   const filteredUsers = users.filter((user) => {
     const matchesName = user.name
       .toLowerCase()
@@ -110,15 +97,11 @@ const User = () => {
     return matchesName && matchesRole;
   });
 
-  // 3) Slice the data for pagination
   const startIndex = page * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
   const paginatedUsers =
     rowsPerPage > 0 ? filteredUsers.slice(startIndex, endIndex) : filteredUsers;
 
-  // 4) CSV Export Setup:
-  //    We'll export the *filtered* data here.
-  //    If you want to export all users, change to `users` instead.
   const csvHeaders = [
     { label: "ID", key: "employee_id" },
     { label: "Name", key: "name" },
@@ -126,17 +109,14 @@ const User = () => {
     { label: "Phone", key: "phone_number" },
     {
       label: "Department",
-      // We'll store the "id" in the data, but for CSV we want the department name
       key: "department_id",
     },
     { label: "Role", key: "role_name" },
   ];
 
-  // Transform data to show the actual department name in CSV (not just ID).
-  // We'll map each user into a new object for CSV so `department_id` becomes the dept name.
   const csvData = filteredUsers.map((user) => ({
     ...user,
-    department_id: getDepartmentName(user.department_id), // replace ID with the name
+    department_id: getDepartmentName(user.department_id),
   }));
 
   const csvReport = {
@@ -148,7 +128,6 @@ const User = () => {
   return (
     <PageContainer title="User Page" description="this is user page">
       <DashboardCard>
-        {/* Header with Title, Search Box, Create Button, and Role Filter + CSV Export */}
         <div
           style={{
             display: "flex",
@@ -159,18 +138,7 @@ const User = () => {
             marginBottom: 16,
           }}
         >
-          <Box
-            sx={{
-              backgroundColor: "#F0F0F0",
-              padding: "16px",
-              borderRadius: "8px",
-            }}
-          >
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              Total Users: {filteredUsers.length}
-            </Typography>
-          </Box>
-
+          <h2>User List</h2>
           {/* Right side actions */}
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             {/* Role Filter */}
@@ -212,10 +180,6 @@ const User = () => {
         </div>
 
         {loading ? (
-          /* 
-            SKELETON LOADING STATE
-            We render a table layout but replace cell content with Skeletons 
-          */
           <TableContainer
             component={Paper}
             sx={{ borderRadius: 2, overflow: "hidden" }}
@@ -330,9 +294,6 @@ const User = () => {
             </Table>
           </TableContainer>
         ) : (
-          /* 
-            REAL TABLE WHEN NOT LOADING 
-          */
           <TableContainer
             component={Paper}
             sx={{ borderRadius: 2, overflow: "hidden" }}
@@ -420,7 +381,6 @@ const User = () => {
 
               <TableBody>
                 {paginatedUsers.map((row, index) => {
-                  // For alternating row background color:
                   const isOddRow = index % 2 !== 0;
                   return (
                     <TableRow
@@ -434,9 +394,6 @@ const User = () => {
                       <TableCell>{row.email}</TableCell>
                       <TableCell align="center">{row.phone_number}</TableCell>
                       <TableCell align="center">{row.dept_name}</TableCell>
-                      {/* <TableCell align="center">
-                        {getDepartmentName(row.department_id)}
-                      </TableCell> */}
                       <TableCell align="center">{row.role_name}</TableCell>
                       <TableCell align="center">
                         <IconPencil
@@ -485,7 +442,6 @@ const User = () => {
           </TableContainer>
         )}
 
-        {/* Dialog for creating new users */}
         <UserDialog
           open={open}
           setOpen={setOpen}
