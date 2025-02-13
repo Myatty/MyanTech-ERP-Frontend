@@ -27,6 +27,7 @@ import DashboardCard from "../../components/shared/DashboardCard";
 import Skeleton from "@mui/material/Skeleton";
 import { fetchAllDrivers } from "../../actions/allDriverActions";
 import { fetchDeliveries } from "../../actions/deliveryActions";
+import { fetchAllTrucks } from "../../actions/allTruckActions";
 
 const DeliverHistory = () => {
   const dispatch = useDispatch();
@@ -34,6 +35,7 @@ const DeliverHistory = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [driver, setDriver] = useState("");
+  const [truck, setTruck] = useState("");
   const [loading, setLoading] = useState(true);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [openToast, setOpenToast] = useState(false);
@@ -43,6 +45,7 @@ const DeliverHistory = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const allDrivers = useSelector((state) => state.allDrivers.allDrivers);
+  const allTrucks = useSelector((state) => state.allTrucks.allTrucks);
   const driversLoading = useSelector((state) => state.allDrivers.loading);
   const driversError = useSelector((state) => state.allDrivers.error);
   const allDeliveries = useSelector((state) => state.deliveries.deliveries);
@@ -54,6 +57,7 @@ const DeliverHistory = () => {
 
   useEffect(() => {
     dispatch(fetchAllDrivers());
+    dispatch(fetchAllTrucks());
     dispatch(fetchDeliveries());
   }, [dispatch]);
 
@@ -64,30 +68,18 @@ const DeliverHistory = () => {
   }, [driversLoading, deliveriesLoading]);
 
   useEffect(() => {
-    console.log("All Drivers:", allDrivers);
-    console.log("Drivers Loading:", driversLoading);
-    console.log("Drivers Error:", driversError);
-    console.log("All Deliveries:", allDeliveries);
-    console.log("Deliveries Loading:", deliveriesLoading);
-    console.log("Deliveries Error:", deliveriesError);
-  }, [allDrivers, driversLoading, driversError, allDeliveries, deliveriesLoading, deliveriesError]);
-
-  useEffect(() => {
     if (snackbarOpen) {
       dispatch(fetchDeliveries());
     }
   }, [snackbarOpen, dispatch]);
 
   const handleClick = async (deliveryId) => {
-    console.log("Before Update:", allDeliveries);
 
     try {
       const updatedDeliveries = allDeliveries.map((item) =>
         item.delivery_id === deliveryId ? { ...item, status: "completed" } : item
       );
       dispatch({ type: "UPDATE_DELIVERIES", payload: updatedDeliveries });
-
-      console.log("After Dispatch:", updatedDeliveries); // Check if state is updated
 
       await axios.put(`${apiUrl}/api/deliveries/update/${deliveryId}`, { status: "completed" });
 
@@ -97,7 +89,6 @@ const DeliverHistory = () => {
       dispatch(fetchDeliveries());
 
     } catch (error) {
-      console.error("Error changing status:", error);
       setSnackbarMessage("Error updating delivery status");
       setSnackbarSeverity("error");
       setOpenToast(true);
@@ -122,7 +113,6 @@ const DeliverHistory = () => {
     );
     dispatch({ type: 'UPDATE_DELIVERIES', payload: changeStatus });
     try {
-      console.log(`PUT requests to ${apiUrl}/api/update/ for delivery IDs:`, allDeliveryIds);
       await Promise.all(
         allDeliveryIds.map((deliveryId) =>
           axios.put(`${apiUrl}/api/deliveries/update/${deliveryId}`, { status: "completed" })
@@ -144,6 +134,7 @@ const DeliverHistory = () => {
 
   const filteredDeliveries = allDeliveries?.filter((delivery) => {
     const DriverMatch = driver ? delivery.driver_id === driver : true;
+    const TruckMatch = truck ? delivery.truck_id === truck : true;
     const StatusMatch = status ? delivery.status === status : true;
     const DateMatch =
       startDate || endDate
@@ -152,7 +143,7 @@ const DeliverHistory = () => {
         new Date(delivery.departure_time).getTime() <= new Date(endDate).getTime()
         : true;
 
-    return DateMatch && DriverMatch && StatusMatch;
+    return DateMatch && DriverMatch && StatusMatch && TruckMatch;
   });
 
   const csvHeaders = [
@@ -263,10 +254,6 @@ const DeliverHistory = () => {
   const deliveredCount = allDeliveries.filter((o) => o.status === "completed").length;
   const deliveringCount = allDeliveries.filter((o) => o.status === "delivering").length;
 
-  console.log("Total Orders:", totalOrders);
-  console.log("Delivered Count:", deliveredCount);
-  console.log("Delivering Count:", deliveringCount);
-
   return (
     <PageContainer
       title="Delivery History"
@@ -337,6 +324,20 @@ const DeliverHistory = () => {
                 {allDrivers.map((d) => (
                   <MenuItem key={d.driver_id} value={d.driver_id}>
                     {d.driver_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl variant="outlined" size="small" fullWidth>
+              <InputLabel>Filter by Truck</InputLabel>
+              <Select
+                value={truck}
+                onChange={(e) => setTruck(e.target.value)}
+                label="Filter by Truck"
+              >       <MenuItem value="">All Trucks</MenuItem>
+                {allTrucks.map((d) => (
+                  <MenuItem key={d.truck_id} value={d.truck_id}>
+                    {d.license_plate}
                   </MenuItem>
                 ))}
               </Select>
