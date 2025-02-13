@@ -74,10 +74,7 @@ export default function CustomizedTables() {
         driver_info={drivers}
         trucks={trucks}
       />
-
-      {/* 🔍 Search Order No + Filters */}
       <Box sx={{ display: "flex", my: 2, gap: 2, alignItems: "center" }}>
-        {/* 🔍 Search Order Number TextField */}
         <TextField
           size="small"
           label="Search Order No"
@@ -86,8 +83,6 @@ export default function CustomizedTables() {
           value={searchOrder}
           onChange={(e) => setSearchOrder(e.target.value)}
         />
-
-        {/* 🌍 Region Dropdown */}
         <FormControl variant="outlined" size="small" sx={{ minWidth: 200 }}>
           <InputLabel sx={{ zIndex: 0 }}>Filter by Region</InputLabel>
           <Select value={region} onChange={(e) => setRegion(e.target.value)}>
@@ -99,8 +94,6 @@ export default function CustomizedTables() {
             ))}
           </Select>
         </FormControl>
-
-        {/* 🏙 Township Dropdown */}
         <FormControl variant="outlined" size="small" sx={{ minWidth: 200 }}>
           <InputLabel sx={{ zIndex: 0 }}>Filter by Township</InputLabel>
           <Select
@@ -116,8 +109,6 @@ export default function CustomizedTables() {
           </Select>
         </FormControl>
       </Box>
-
-      {/* 📋 Order Table */}
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead sx={{ backgroundColor: "#f5f5f5" }}>

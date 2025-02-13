@@ -3,12 +3,14 @@ import { useDispatch } from "react-redux";
 import {
   Button,
   Box,
+  Grid,
   Typography,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  TextField,
+  Card,
+  CardContent,
 } from "@mui/material";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -146,7 +148,7 @@ const DeliverHistory = () => {
   });
 
   const csvHeaders = [
-    { label: "Order ID", key: "order_id" },
+    { label: "Order No", key: "order_id" },
     { label: "Customer Name", key: "customer_name" },
     { label: "Status", key: "status" },
     { label: "Order Date", key: "order_date" },
@@ -252,6 +254,13 @@ const DeliverHistory = () => {
     },
   };
 
+  // Example stats (based on the entire orders array):
+  const totalOrders = orders.length;
+  const deliveredCount = orders.filter((o) => o.status === "Delivered").length;
+  const deliveringCount = orders.filter(
+    (o) => o.status === "Delivering"
+  ).length;
+
   return (
     <PageContainer
       title="Delivery History"
@@ -266,7 +275,7 @@ const DeliverHistory = () => {
             marginBottom: "20px",
           }}
         >
-          <h2>Delivery History List</h2>
+          <h2>Delivery Records List</h2>
           <div>
             <CSVLink {...csvReport} style={{ textDecoration: "none" }}>
               <Button variant="contained" color="primary">
@@ -276,43 +285,79 @@ const DeliverHistory = () => {
           </div>
         </div>
 
-        <Box
-          display="flex"
-          sx={{ width: "60%", alignItems: "center" }}
-          gap={2}
-          mb={2}
-        >
-          <FormControl variant="outlined" size="small" fullWidth>
-            <InputLabel>Filter by Driver</InputLabel>
-            <Select
-              value={driver}
-              onChange={(e) => setDriver(e.target.value)}
-              label="Filter by Driver"
-            >
-              <MenuItem value="">All Drivers</MenuItem>
-              {drivers.map((d) => (
-                <MenuItem key={d} value={d}>
-                  {d}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+        <Grid container spacing={2} sx={{ mb: 2 }}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card variant="outlined" sx={{ backgroundColor: "#BBDEFB" }}>
+              <CardContent>
+                <Typography variant="subtitle1">Total Orders</Typography>
+                <Typography variant="h5">{totalOrders}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
-          <FormControl variant="outlined" size="small" fullWidth>
-            <InputLabel>Filter by Status</InputLabel>
-            <Select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              label="Filter by Status"
-            >
-              <MenuItem value="">All Status</MenuItem>
-              {order_status.map((s) => (
-                <MenuItem key={s} value={s}>
-                  {s}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card variant="outlined" sx={{ backgroundColor: "#C8E6C9" }}>
+              <CardContent>
+                <Typography variant="subtitle1">Completed</Typography>
+                <Typography variant="h5">{deliveredCount}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <Card variant="outlined" sx={{ backgroundColor: "#FFE082" }}>
+              <CardContent>
+                <Typography variant="subtitle1">Delivering</Typography>
+                <Typography variant="h5">{deliveringCount}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Box
+            display="flex"
+            sx={{ width: "60%", alignItems: "center" }}
+            gap={2}
+            mb={2}
+          >
+            <FormControl variant="outlined" size="small" fullWidth>
+              <InputLabel>Filter by Driver</InputLabel>
+              <Select
+                value={driver}
+                onChange={(e) => setDriver(e.target.value)}
+                label="Filter by Driver"
+              >
+                <MenuItem value="">All Drivers</MenuItem>
+                {drivers.map((d) => (
+                  <MenuItem key={d} value={d}>
+                    {d}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl variant="outlined" size="small" fullWidth>
+              <InputLabel>Filter by Status</InputLabel>
+              <Select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                label="Filter by Status"
+              >
+                <MenuItem value="">All Status</MenuItem>
+                {order_status.map((s) => (
+                  <MenuItem key={s} value={s}>
+                    {s}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+          <Box>
+            <Button fullWidth variant="contained" onClick={handleAllClick}>
+              Complete All
+            </Button>
+          </Box>
         </Box>
 
         {loading ? (

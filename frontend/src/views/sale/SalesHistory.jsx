@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import DataTable from "react-data-table-component";
+import DataTable, { Alignment } from "react-data-table-component";
 import { CSVLink } from "react-csv";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
@@ -162,6 +162,10 @@ const SaleHistoryPage = () => {
       selector: (row) => Number(row.total_amount).toLocaleString() + " MMK",
       sortable: true,
       width: "180px",
+      right: true, // Aligns content to the end
+      style: {
+        textAlign: "right", // Ensures right alignment
+      },
     },
   ];
 

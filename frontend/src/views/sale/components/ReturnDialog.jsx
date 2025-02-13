@@ -21,8 +21,6 @@ import { IconTrash } from "@tabler/icons-react";
 
 const ReturnDialog = ({ open, onClose, orderItems, onConfirm }) => {
   const [returnItems, setReturnItems] = useState([]);
-
-  // Reset state when orderItems changes (i.e., when dialog is reopened)
   useEffect(() => {
     if (open) {
       setReturnItems(
