@@ -43,8 +43,8 @@ const CreateProduct = () => {
     const success = await dispatch(createProduct(productData));
 
     if (success) {
-      setOpenToast(true); // Show success toast
-      dispatch(fetchProducts()); // Update product list
+      setOpenToast(true);
+      dispatch(fetchProducts()); 
       setProductData({
         name: "",
         category: "",
@@ -53,7 +53,7 @@ const CreateProduct = () => {
         serial_number: "",
         stock_quantity: "",
         product_segment: "",
-      }); // Reset form
+      }); 
     }
   };
 
@@ -95,7 +95,6 @@ const CreateProduct = () => {
 
             <Grid item xs={12} md={6}>
               <TextField
-                select
                 fullWidth
                 label="Category *"
                 name="category"
@@ -103,17 +102,16 @@ const CreateProduct = () => {
                 onChange={handleChange}
                 required
               >
-                {categories.map((category) => (
+                {/* {categories.map((category) => (
                   <MenuItem key={category} value={category}>
                     {category}
                   </MenuItem>
-                ))}
+                ))} */}
               </TextField>
             </Grid>
 
             <Grid item xs={12} md={6}>
               <TextField
-                select
                 fullWidth
                 label="Brand *"
                 name="brand"
@@ -121,11 +119,11 @@ const CreateProduct = () => {
                 onChange={handleChange}
                 required
               >
-                {brands.map((brand) => (
+                {/* {brands.map((brand) => (
                   <MenuItem key={brand} value={brand}>
                     {brand}
                   </MenuItem>
-                ))}
+                ))} */}
               </TextField>
             </Grid>
 
@@ -221,9 +219,9 @@ const CreateProduct = () => {
           severity="success"
           sx={{
             width: "100%",
-            backgroundColor: "#4A90E2", // Custom Background (Blue)
-            color: "#fff", // White Text
-            fontWeight: "bold", // Make Text Bold
+            backgroundColor: "#4A90E2", 
+            color: "#fff", 
+            fontWeight: "bold", 
             borderRadius: "8px",
           }}
         >

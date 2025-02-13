@@ -35,6 +35,9 @@ const DeliverOrder = Loadable(
 const ReturnOrderPage = Loadable(
   lazy(() => import("../views/warehouse/ReturnOrders.jsx"))
 );
+const InvoicePage = Loadable(
+  lazy(() => import("../views/finance/Invoice.jsx"))
+);
 const Icons = Loadable(lazy(() => import("../views/icons/Icons")));
 const TypographyPage = Loadable(
   lazy(() => import("../views/utilities/TypographyPage"))
@@ -65,6 +68,7 @@ const Router = [
       },
       { path: "/warehouse/delivery", exact: true, element: <DeliverOrder /> },
       { path: "/warehouse/return", exact: true, element: <ReturnOrderPage /> },
+      { path: "/finance/invoice", exact: true, element: <InvoicePage /> },
       { path: "/system/customers", exact: true, element: <CustomerRoute /> },
       { path: "/icons", exact: true, element: <Icons /> },
       { path: "/ui/typography", exact: true, element: <TypographyPage /> },

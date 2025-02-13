@@ -38,12 +38,12 @@ const OrderCreate = () => {
   const [toastSeverity, setToastSeverity] = useState("success");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch = useDispatch();
+  const apiUrl = import.meta.env.VITE_APP_API_URL;
 
-  // Redux data
+
   const { loading, products, error } = useSelector((state) => state.products);
   const { customers } = useSelector((state) => state.customers);
 
-  // Basic form states
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [customer, setCustomer] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState({
@@ -54,16 +54,12 @@ const OrderCreate = () => {
     contact_number1: "",
   });
 
-  // Tab index
   const [tabIndex, setTabIndex] = useState(0);
 
-  // Existing lines array
   const [lines, setLines] = useState([]);
 
-  // Whether we show the new line row
   const [showNewLine, setShowNewLine] = useState(false);
 
-  // Draft line for the “new row”
   const [draftLine, setDraftLine] = useState({
     product_id: "",
     productName: "",
@@ -81,9 +77,8 @@ const OrderCreate = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  // Submit the order
   const handleSubmit = async () => {
-    setIsSubmitting(true); // Start loading
+    setIsSubmitting(true);
 
     try {
       const orderData = {
@@ -95,15 +90,12 @@ const OrderCreate = () => {
           quantity: ln.quantity,
         })),
       };
+      await axios.post(`${apiUrl}/api/orders`, orderData);
 
-      await axios.post("http://localhost:4000/api/orders", orderData);
-
-      // Show success message
       setToastMessage("Order created successfully!");
       setToastSeverity("success");
       setOpenToast(true);
 
-      // Clear everything
       setLines([]);
       setCustomer("");
       setSelectedCustomer({
@@ -126,17 +118,15 @@ const OrderCreate = () => {
       });
       setShowNewLine(false);
     } catch (err) {
-      // Show error message
       setToastMessage("Error creating order. Please try again.");
       setToastSeverity("error");
       setOpenToast(true);
       console.error("Error creating order:", err);
     } finally {
-      setIsSubmitting(false); // Stop loading
+      setIsSubmitting(false);
     }
   };
 
-  // When quantity/price changes in the draft, recalc total
   const handleDraftChange = (field, val) => {
     let newVal = val;
     if (field === "quantity" || field === "price") {
@@ -155,7 +145,6 @@ const OrderCreate = () => {
     }));
   };
 
-  // Called by the ProductAutocomplete
   const handleSelectProduct = (prod) => {
     if (!prod) return;
     setDraftLine((prev) => ({
@@ -171,10 +160,8 @@ const OrderCreate = () => {
     }));
   };
 
-  // Save the new line
   const handleSaveNewLine = () => {
     setLines([...lines, draftLine]);
-    // Reset
     setDraftLine({
       product_id: "",
       productName: "",
@@ -189,7 +176,6 @@ const OrderCreate = () => {
     setShowNewLine(false);
   };
 
-  // Cancel new line
   const handleCancelNewLine = () => {
     setDraftLine({
       product_id: "",
@@ -205,13 +191,11 @@ const OrderCreate = () => {
     setShowNewLine(false);
   };
 
-  // Delete an existing line
   const handleDeleteLine = (idx) => {
     const newArr = lines.filter((_, i) => i !== idx);
     setLines(newArr);
   };
 
-  // Sum of all line totals
   const grandTotal = lines.reduce((acc, ln) => acc + ln.totalPrice, 0);
   const grandQty = lines.reduce((acc, ln) => acc + ln.quantity, 0);
 
@@ -250,10 +234,8 @@ const OrderCreate = () => {
       {/* Customer & date info */}
       <Paper sx={{ p: 3, mb: 2, borderRadius: 2, boxShadow: 2 }}>
         <Grid container spacing={2}>
-          {/* Right Column (Additional Customer Info) */}
           <Grid item xs={12} sm={6}>
             <Grid container spacing={2}>
-              {/* Customer Selection */}
               <Grid item xs={12} sm={6} sx={{ ml: 1 }}>
                 <Typography variant="subtitle2" fontWeight="bold">
                   Customer Info
@@ -303,11 +285,9 @@ const OrderCreate = () => {
               </Grid>
             </Grid>
           </Grid>
-          {/* Left Column (Date + Customer Selection) */}
           <Grid item xs={12} sm={6}>
             <Grid container spacing={2}>
               <Grid item sm={8}></Grid>
-              {/* Date Field */}
               <Grid item xs={12} sm={4}>
                 <Typography variant="subtitle2" fontWeight="bold">
                   Date
@@ -378,7 +358,6 @@ const OrderCreate = () => {
                 </TableRow>
               ))}
 
-              {/* The new-line row, if showNewLine */}
               {showNewLine && (
                 <TableRow>
                   <TableCell colSpan={9}>
@@ -395,7 +374,6 @@ const OrderCreate = () => {
                         <ProductAutocomplete
                           products={products}
                           onSelectProduct={handleSelectProduct}
-                          // If you control the TextField inside Autocomplete, do something like:
                           renderInput={(params) => (
                             <TextField
                               {...params}
@@ -550,9 +528,9 @@ const OrderCreate = () => {
           sx={{
             width: "100%",
             backgroundColor:
-              toastSeverity === "success" ? "#4A90E2" : "#FF6B6B", // Custom Background (Blue for success, Red for error)
-            color: "#fff", // White Text
-            fontWeight: "bold", // Make Text Bold
+              toastSeverity === "success" ? "#4A90E2" : "#FF6B6B",
+            color: "#fff",
+            fontWeight: "bold",
             borderRadius: "8px",
           }}
         >

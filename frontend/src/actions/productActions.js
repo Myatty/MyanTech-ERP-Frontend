@@ -16,11 +16,13 @@ export const DELETE_PRODUCT_REQUEST = 'DELETE_PRODUCT_REQUEST';
 export const DELETE_PRODUCT_SUCCESS = 'DELETE_PRODUCT_SUCCESS';
 export const DELETE_PRODUCT_FAILURE = 'DELETE_PRODUCT_FAILURE';
 
+const apiUrl = import.meta.env.VITE_APP_API_URL;
+
 export const fetchProducts = () => {
   return async (dispatch) => {
     dispatch({ type: FETCH_PRODUCTS_REQUEST });
     try {
-      const response = await axios.get("http://localhost:4000/api/products");
+      const response = await axios.get(`${apiUrl}/api/products`);
       dispatch({ type: FETCH_PRODUCTS_SUCCESS, payload: response.data });
     } catch (error) {
       dispatch({ type: FETCH_PRODUCTS_FAILURE, error: error.message });
@@ -33,20 +35,20 @@ export const createProduct = (productData) => async (dispatch) => {
     dispatch({ type: CREATE_PRODUCT_REQUEST });
 
     const response = await axios.post(
-      "http://localhost:4000/api/products",
+      `${apiUrl}/api/products`,
       productData
     );
 
     dispatch({ type: CREATE_PRODUCT_SUCCESS, payload: response.data });
 
-    return true; // Success flag for navigation
+    return true; 
   } catch (error) {
     dispatch({
       type: CREATE_PRODUCT_FAILURE,
       payload: error.response?.data?.message || "Failed to create product",
     });
 
-    return false; // Failure flag
+    return false; 
   }
 };
 
@@ -54,7 +56,7 @@ export const updateProduct = (product) => {
   return async (dispatch) => {
     try {
       dispatch({ type: UPDATE_PRODUCT_REQUEST });
-      const response = await axios.put(`http://localhost:4000/api/products/${product.product_id || product.id}`, product);
+      const response = await axios.put(`${apiUrl}/api/products/${product.product_id || product.id}`, product);
       dispatch({ type: UPDATE_PRODUCT_SUCCESS, payload: response.data });
       dispatch(fetchProducts());
     } catch (error) {
@@ -67,7 +69,7 @@ export const deleteProduct = (productId) => {
   return async (dispatch) => {
     try {
       dispatch({ type: DELETE_PRODUCT_REQUEST });
-      await axios.delete(`http://localhost:4000/api/products/${productId}`);
+      await axios.delete(`${apiUrl}/api/products/${productId}`);
       dispatch({ type: DELETE_PRODUCT_SUCCESS, payload: productId });
       dispatch(fetchProducts());
     } catch (error) {

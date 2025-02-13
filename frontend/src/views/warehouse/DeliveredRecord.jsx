@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   Button,
   Box,
@@ -11,6 +12,8 @@ import {
   MenuItem,
   Card,
   CardContent,
+  Snackbar,
+  Alert,
   Chip,
 } from "@mui/material";
 import "react-datepicker/dist/react-datepicker.css";
@@ -21,145 +24,139 @@ import { CSVLink } from "react-csv";
 import PageContainer from "src/components/container/PageContainer";
 import DashboardCard from "../../components/shared/DashboardCard";
 import Skeleton from "@mui/material/Skeleton";
-
-const allOrders = [
-  {
-    order_id: 1,
-    customer_name: "Su Su",
-    status: "Delivering",
-    order_date: "Wed Feb 11 2025 13:40:56 GMT+0630",
-    township: "ALone",
-    region: "Yangon",
-    driver: "U Ba",
-    truck: "YGN/245",
-  },
-  {
-    order_id: 2,
-    customer_name: "Hla Hla",
-    status: "Delivering",
-    order_date: "Wed Feb 11 2025 13:40:56 GMT+0630",
-    township: "Bahan",
-    region: "Yangon",
-    driver: "U Ba",
-    truck: "YGN/245",
-  },
-  {
-    order_id: 3,
-    customer_name: "Mg Mg",
-    status: "Delivered",
-    order_date: "Wed Feb 11 2025 13:40:56 GMT+0630",
-    township: "Sanchaung",
-    region: "Yangon",
-    driver: "U Hla",
-    truck: "YGN/945",
-  },
-  {
-    order_id: 4,
-    customer_name: "Kyaw Kyaw",
-    status: "Delivering",
-    order_date: "Wed Feb 13 2025 12:40:56 GMT+0630",
-    township: "ALone",
-    region: "Yangon",
-    driver: "U Mg",
-    truck: "YGN/115",
-  },
-  {
-    order_id: 5,
-    customer_name: "Ye Ye",
-    status: "Delivered",
-    order_date: "Wed Feb 14 2025 12:40:56 GMT+0630",
-    township: "Tamwe",
-    region: "Yangon",
-    driver: "U Taung",
-    truck: "YGN/145",
-  },
-  {
-    order_id: 6,
-    customer_name: "Gu GU",
-    status: "Delivering",
-    order_date: "Wed Mar 11 2025 12:40:56 GMT+0630",
-    township: "Tamwe",
-    region: "Yangon",
-    driver: "U Taung",
-    truck: "YGN/145",
-  },
-];
+import { fetchAllDrivers } from "../../actions/allDriverActions";
+import { fetchDeliveries } from "../../actions/deliveryActions";
+import { fetchAllTrucks } from "../../actions/allTruckActions";
 
 const DeliverHistory = () => {
   const dispatch = useDispatch();
-  const [orders, setOrders] = useState([]);
-  const [driver, setDriver] = useState("");
   const [status, setStatus] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [driver, setDriver] = useState("");
+  const [truck, setTruck] = useState("");
   const [loading, setLoading] = useState(true);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [openToast, setOpenToast] = useState(false);
+  const complete = "complete";
+  const delivering = "delivering";
+
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const allDrivers = useSelector((state) => state.allDrivers.allDrivers);
+  const allTrucks = useSelector((state) => state.allTrucks.allTrucks);
+  const driversLoading = useSelector((state) => state.allDrivers.loading);
+  const driversError = useSelector((state) => state.allDrivers.error);
+  const allDeliveries = useSelector((state) => state.deliveries.deliveries);
+  const deliveriesLoading = useSelector((state) => state.deliveries.loading);
+  const deliveriesError = useSelector((state) => state.deliveries.error);
+
+  const apiUrl = import.meta.env.VITE_APP_API_URL;
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulate fetching data
-    setTimeout(() => {
-      setOrders(allOrders);
-      setLoading(false);
-    }, 1000);
-  }, []);
+    dispatch(fetchAllDrivers());
+    dispatch(fetchAllTrucks());
+    dispatch(fetchDeliveries());
+  }, [dispatch]);
 
-  const handleClick = async (orderId) => {
-    const changeStatus = orders.map((item) =>
-      item.order_id === orderId ? { ...item, status: "Delivered" } : item
-    );
-    setOrders(changeStatus);
+  useEffect(() => {
+    if (!driversLoading && !deliveriesLoading) {
+      setLoading(false);
+    }
+  }, [driversLoading, deliveriesLoading]);
+
+  useEffect(() => {
+    if (snackbarOpen) {
+      dispatch(fetchDeliveries());
+    }
+  }, [snackbarOpen, dispatch]);
+
+  const handleClick = async (deliveryId) => {
+
     try {
-      await axios.post(`http://localhost:4000/api/status`, [orderId]);
+      const updatedDeliveries = allDeliveries.map((item) =>
+        item.delivery_id === deliveryId ? { ...item, status: "completed" } : item
+      );
+      dispatch({ type: "UPDATE_DELIVERIES", payload: updatedDeliveries });
+
+      await axios.put(`${apiUrl}/api/deliveries/update/${deliveryId}`, { status: "completed" });
+
+      setSnackbarMessage(`Delivery ID ${deliveryId} marked as Complete`);
+      setOpenToast(true);
+
+      dispatch(fetchDeliveries());
+
     } catch (error) {
-      console.error("Error changing status:", error);
+      setSnackbarMessage("Error updating delivery status");
+      setSnackbarSeverity("error");
+      setOpenToast(true);
     }
   };
 
+
+  useEffect(() => {
+    if (snackbarOpen) {
+    }
+  }, [snackbarOpen, dispatch]);
+
+
   const handleAllClick = async () => {
-    const allOrderIds = filteredOrders
-      .filter((item) => item.status === "Delivering")
-      .map((o) => o.order_id);
-    const changeStatus = orders.map((item) =>
-      allOrderIds.includes(item.order_id)
+    const allDeliveryIds = filteredDeliveries
+      .filter((item) => item.status === "delivering")
+      .map((o) => o.delivery_id);
+    const changeStatus = allDeliveries.map((item) =>
+      allDeliveryIds.includes(item.delivery_id)
         ? { ...item, status: "Delivered" }
         : item
     );
-    setOrders(changeStatus);
+    dispatch({ type: 'UPDATE_DELIVERIES', payload: changeStatus });
     try {
-      await axios.post(`http://localhost:4000/api/status`, allOrderIds);
+      await Promise.all(
+        allDeliveryIds.map((deliveryId) =>
+          axios.put(`${apiUrl}/api/deliveries/update/${deliveryId}`, { status: "completed" })
+        )
+      );
+      setSnackbarMessage("All delivery statuses updated successfully");
+      setSnackbarOpen(true);
     } catch (error) {
       console.error("Error changing status:", error);
     }
   };
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") return;
+    setOpenToast(false);
+    setSnackbarOpen(false);
+  };
 
-  const drivers = [...new Set(orders?.map((order) => order.driver) || [])];
-  const order_status = [...new Set(orders?.map((order) => order.status) || [])];
+  const order_status = [...new Set(allDeliveries?.map((delivery) => delivery.status) || [])];
 
-  const filteredOrders = orders?.filter((order) => {
-    const DriverMatch = driver ? order.driver === driver : true;
-    const StatusMatch = status ? order.status === status : true;
+  const filteredDeliveries = allDeliveries?.filter((delivery) => {
+    const DriverMatch = driver ? delivery.driver_id === driver : true;
+    const TruckMatch = truck ? delivery.truck_id === truck : true;
+    const StatusMatch = status ? delivery.status === status : true;
     const DateMatch =
       startDate || endDate
-        ? new Date(order.order_date).getTime() >=
-            new Date(startDate).getTime() &&
-          new Date(order.order_date).getTime() <= new Date(endDate).getTime()
+        ? new Date(delivery.departure_time).getTime() >=
+        new Date(startDate).getTime() &&
+        new Date(delivery.departure_time).getTime() <= new Date(endDate).getTime()
         : true;
 
-    return DateMatch && DriverMatch && StatusMatch;
+    return DateMatch && DriverMatch && StatusMatch && TruckMatch;
   });
 
   const csvHeaders = [
     { label: "Order No", key: "order_id" },
     { label: "Customer Name", key: "customer_name" },
+    { label: "Delivery ID", key: "delivery_id" },
+    { label: "Driver ID", key: "driver_id" },
+    { label: "Truck ID", key: "truck_id" },
+    { label: "Departure Time", key: "departure_time" },
     { label: "Status", key: "status" },
-    { label: "Order Date", key: "order_date" },
-    { label: "Township", key: "township" },
-    { label: "Region", key: "region" },
-    { label: "Driver", key: "driver" },
-    { label: "Truck No", key: "truck" },
   ];
 
   const csvReport = {
-    data: filteredOrders,
+    data: filteredDeliveries,
     headers: csvHeaders,
     filename: "DeliveryHistoryReport.csv",
   };
@@ -168,43 +165,37 @@ const DeliverHistory = () => {
     { name: "No", selector: (row, index) => index + 1, width: "60px" },
     {
       name: "Date",
-      selector: (row) => new Date(row.order_date).toLocaleDateString(),
+      selector: (row) => new Date(row.departure_time).toLocaleDateString(),
       sortable: true,
       width: "150px",
     },
     {
-      name: "Driver",
-      selector: (row) => row.driver,
+      name: "Driver Name",
+      selector: (row) => row.driver_name,
       sortable: true,
       width: "150px",
     },
     {
-      name: "Truck No",
-      selector: (row) => row.truck,
+      name: "Truck Number",
+      selector: (row) => row.truck_license_plate,
       sortable: true,
       width: "150px",
     },
     {
-      name: "Order No",
-      selector: (row) => row.order_id,
+      name: "Delivery ID",
+      selector: (row) => row.delivery_id,
       sortable: true,
       width: "150px",
     },
     {
-      name: "Customer",
-      selector: (row) => row.customer_name,
+      name: "Order No.",
+      selector: (row) => `Order #${row.order_id}`,
       sortable: true,
       width: "150px",
     },
     {
-      name: "Township",
-      selector: (row) => row.township,
-      sortable: true,
-      width: "150px",
-    },
-    {
-      name: "Region",
-      selector: (row) => row.region,
+      name: "Address ",
+      selector: (row) => `${row.township}, ${row.region}`,
       sortable: true,
       width: "150px",
     },
@@ -213,7 +204,7 @@ const DeliverHistory = () => {
       selector: (row) => (
         <Chip
           label={row.status}
-          color={row.status === "Delivered" ? "success" : "warning"}
+          color={row.status === "completed" ? "success" : "warning"}
         />
       ),
       sortable: true,
@@ -224,10 +215,10 @@ const DeliverHistory = () => {
       cell: (row) => (
         <Button
           variant="contained"
-          onClick={() => handleClick(row.order_id)}
-          disabled={row.status === "Delivered"}
+          onClick={() => handleClick(row.delivery_id)}
+          disabled={row.status === "completed"}
         >
-          {row.status === "Delivered" ? (
+          {row.status === "completed" ? (
             <IconProgressCheck stroke={1.5} size="1.6rem" />
           ) : (
             "Completed"
@@ -258,13 +249,9 @@ const DeliverHistory = () => {
       },
     },
   };
-
-  // Example stats (based on the entire orders array):
-  const totalOrders = orders.length;
-  const deliveredCount = orders.filter((o) => o.status === "Delivered").length;
-  const deliveringCount = orders.filter(
-    (o) => o.status === "Delivering"
-  ).length;
+  const totalOrders = allDeliveries.length;
+  const deliveredCount = allDeliveries.filter((o) => o.status === "completed").length;
+  const deliveringCount = allDeliveries.filter((o) => o.status === "delivering").length;
 
   return (
     <PageContainer
@@ -325,11 +312,24 @@ const DeliverHistory = () => {
                 value={driver}
                 onChange={(e) => setDriver(e.target.value)}
                 label="Filter by Driver"
-              >
-                <MenuItem value="">All Drivers</MenuItem>
-                {drivers.map((d) => (
-                  <MenuItem key={d} value={d}>
-                    {d}
+              >       <MenuItem value="">All Drivers</MenuItem>
+                {allDrivers.map((d) => (
+                  <MenuItem key={d.driver_id} value={d.driver_id}>
+                    {d.driver_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl variant="outlined" size="small" fullWidth>
+              <InputLabel>Filter by Truck</InputLabel>
+              <Select
+                value={truck}
+                onChange={(e) => setTruck(e.target.value)}
+                label="Filter by Truck"
+              >       <MenuItem value="">All Trucks</MenuItem>
+                {allTrucks.map((d) => (
+                  <MenuItem key={d.truck_id} value={d.truck_id}>
+                    {d.license_plate}
                   </MenuItem>
                 ))}
               </Select>
@@ -381,7 +381,7 @@ const DeliverHistory = () => {
         ) : (
           <DataTable
             columns={columns}
-            data={filteredOrders}
+            data={filteredDeliveries}
             pagination
             highlightOnHover
             striped
@@ -389,6 +389,16 @@ const DeliverHistory = () => {
           />
         )}
       </DashboardCard>
+
+      <Snackbar
+        open={openToast}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </PageContainer>
   );
 };
