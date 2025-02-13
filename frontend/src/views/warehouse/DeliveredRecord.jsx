@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   Button,
   Box,
@@ -9,6 +10,8 @@ import {
   Select,
   MenuItem,
   TextField,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -28,6 +31,11 @@ const DeliverHistory = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [driver, setDriver] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [openToast, setOpenToast] = useState(false);
+
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const allDrivers = useSelector((state) => state.allDrivers.allDrivers);
   const driversLoading = useSelector((state) => state.allDrivers.loading);
@@ -37,13 +45,18 @@ const DeliverHistory = () => {
   const deliveriesError = useSelector((state) => state.deliveries.error);
 
   const apiUrl = import.meta.env.VITE_APP_API_URL;
-  const API_BASE_URL = import.meta.env.VITE_APP_API_URL;  
-
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(fetchAllDrivers());
     dispatch(fetchDeliveries());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!driversLoading && !deliveriesLoading) {
+      setLoading(false);
+    }
+  }, [driversLoading, deliveriesLoading]);
 
   useEffect(() => {
     console.log("All Drivers:", allDrivers);
@@ -54,21 +67,46 @@ const DeliverHistory = () => {
     console.log("Deliveries Error:", deliveriesError);
   }, [allDrivers, driversLoading, driversError, allDeliveries, deliveriesLoading, deliveriesError]);
 
+  useEffect(() => {
+    if (snackbarOpen) {
+      dispatch(fetchDeliveries()); // Fetch new deliveries after update
+    }
+  }, [snackbarOpen, dispatch]);
+
   const handleClick = async (deliveryId) => {
-    const changeStatus = allDeliveries.map((item) =>
-      item.delivery_id === deliveryId ? { ...item, status: "Delivered" } : item
-    );
-    dispatch({ type: 'UPDATE_DELIVERIES', payload: changeStatus });
+    console.log("Before Update:", allDeliveries); // Check current deliveries before update
+  
     try {
-      console.log(`PUT request to /api/update/${deliveryId} with payload:`, { status: "Delivered" });
-
-      await axios.put(`${API_BASE_URL}/api/deliveries/update/${deliveryId}`, { status: "Delivered" });
-      console.log(`Already Put request to /api/update/${deliveryId} with payload:`, { status: "Delivered" });
-
+      // ✅ Update local UI immediately
+      const updatedDeliveries = allDeliveries.map((item) =>
+        item.delivery_id === deliveryId ? { ...item, status: "delivered" } : item
+      );
+      dispatch({ type: "UPDATE_DELIVERIES", payload: updatedDeliveries });
+  
+      console.log("After Dispatch:", updatedDeliveries); // Check if state is updated
+  
+      await axios.put(`${apiUrl}/api/deliveries/update/${deliveryId}`, { status: "delivered" });
+  
+      setSnackbarMessage(`Delivery ID ${deliveryId} marked as Delivered`);
+      setOpenToast(true);
+  
+      dispatch(fetchDeliveries());
+  
     } catch (error) {
       console.error("Error changing status:", error);
+      setSnackbarMessage("Error updating delivery status");
+      setSnackbarSeverity("error");
+      setOpenToast(true);
     }
   };
+  
+
+  useEffect(() => {
+    if (snackbarOpen) {
+      dispatch(fetchDeliveries()); // Re-fetch updated data
+    }
+  }, [snackbarOpen, dispatch]);
+
 
   const handleAllClick = async () => {
     const allDeliveryIds = filteredDeliveries
@@ -81,15 +119,22 @@ const DeliverHistory = () => {
     );
     dispatch({ type: 'UPDATE_DELIVERIES', payload: changeStatus });
     try {
-      console.log(`PUT requests to /api/update/ for delivery IDs:`, allDeliveryIds);
+      console.log(`PUT requests to ${apiUrl}/api/update/ for delivery IDs:`, allDeliveryIds);
       await Promise.all(
         allDeliveryIds.map((deliveryId) =>
-          axios.put(`${API_BASE_URL}/api/update/${deliveryId}`, { status: "Delivered" })
+          axios.put(`${apiUrl}/api/deliveries/update/${deliveryId}`, { status: "Delivered" })
         )
       );
+      setSnackbarMessage("All delivery statuses updated successfully");
+      setSnackbarOpen(true);
     } catch (error) {
       console.error("Error changing status:", error);
     }
+  };
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") return;
+    setOpenToast(false);
+    setSnackbarOpen(false);
   };
 
   const order_status = [...new Set(allDeliveries?.map((delivery) => delivery.status) || [])];
@@ -159,9 +204,9 @@ const DeliverHistory = () => {
         <Button
           variant="contained"
           onClick={() => handleClick(row.delivery_id)}
-          disabled={row.status === "Delivered"}
+          disabled={row.status === "delivered"}
         >
-          {row.status === "Delivered" ? (
+          {row.status === "delivered" ? (
             <IconProgressCheck stroke={1.5} size="1.6rem" />
           ) : (
             "Complete"
@@ -256,7 +301,7 @@ const DeliverHistory = () => {
           </FormControl>
         </Box>
 
-        {deliveriesLoading ? (
+        {loading ? (
           <Box>
             {[...Array(6)].map((_, index) => (
               <Box key={index} display="flex" alignItems="center" gap={2} p={1}>
@@ -282,6 +327,16 @@ const DeliverHistory = () => {
           />
         )}
       </DashboardCard>
+
+      <Snackbar
+        open={openToast}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </PageContainer>
   );
 };
