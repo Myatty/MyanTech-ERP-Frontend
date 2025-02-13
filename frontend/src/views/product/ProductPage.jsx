@@ -226,7 +226,7 @@ const Product = () => {
           }}
         >
           {/* Display total and filtered counts */}
-          <Box
+          {/* <Box
             sx={{
               backgroundColor: "#F0F0F0",
               p: 2,
@@ -237,7 +237,8 @@ const Product = () => {
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               Total Products: {filteredProducts?.length || 0}
             </Typography>
-          </Box>
+          </Box> */}
+          <h2>Product List</h2>
 
           {/* SEARCH & CATEGORY FILTER SECTION */}
           <Box display="flex" sx={{ width: "50%" }} gap={2} mb={2}>

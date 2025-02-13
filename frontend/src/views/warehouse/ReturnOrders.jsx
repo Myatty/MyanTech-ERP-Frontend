@@ -10,7 +10,6 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { Paper, Button, Autocomplete } from "@mui/material/";
 import { IconProgressCheck } from "@tabler/icons-react";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import {
@@ -22,11 +21,16 @@ import {
   Typography,
   TextField,
   Menu,
+  Card,
+  CardContent,
+  Grid,
 } from "@mui/material";
 import StatusModel from "./components/StatusModel";
+import DashboardCard from "../../components/shared/DashboardCard";
+import PageContainer from "../../components/container/PageContainer";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
+    backgroundColor: "#5D87FF",
     color: theme.palette.common.white,
   },
   [`&.${tableCellClasses.body}`]: {
@@ -190,172 +194,212 @@ const Return = () => {
           new Date(order.order_date).getTime() <= new Date(endDate).getTime()
         : true;
 
-    return ReasonMatch && StatusMatch && DateMatch;
+    return ReasonMatch && StatusMatch && DateMatch && OrderIdMatch;
   });
   return (
-    <>
-      {/* date picker */}
-      <Box sx={{ width: 500, border: 1, p: 2, borderRadius: 2, mb: 3 }}>
-        <label style={{ fontSize: 16 }}>Date Pick</label>
-        <Box
-          sx={{ display: "flex", justifyContent: "space-between", width: 450 }}
-        >
-          <Box>
-            <Typography sx={{ mr: 2, fontWeight: "bold" }}>
-              Start Date
-            </Typography>
-            <DatePicker
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-            />
-          </Box>
-          <Box>
-            <Typography sx={{ mr: 2, fontWeight: "bold" }}>End Date</Typography>
-            <DatePicker
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-            />
-          </Box>
-        </Box>
-      </Box>
-
-      {/* other filter */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-evenly",
-          alignItems: "center",
-          mb: 3,
-        }}
-      >
-        {/* search returnID */}
-        {/* <Autocomplete
-          disablePortal
-          options={orderIds}
-          sx={{ width: 300 }}
-          onChange={(e, newValue) => {
-            setOrderId(newValue);
+    <PageContainer title="Return Orders" description="this is Return Orders">
+      <DashboardCard>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "20px",
           }}
-          renderInput={(params) => <TextField {...params} label="Order no" />}
-        /> */}
+        >
+          <h2>Return Order List</h2>
+        </div>
 
-        {/* reason dropdown */}
-        <FormControl variant="outlined" size="small" sx={{ width: 200 }}>
-          <InputLabel>Filter by reasons</InputLabel>
-          <Select
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            label="Filter by reason"
-          >
-            <MenuItem value="">All reason</MenuItem>
-            {reasons.map((r) => (
-              <MenuItem key={r} value={r}>
-                {r}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        {/* status dropdown */}
-        <FormControl variant="outlined" size="small" sx={{ width: 200 }}>
-          <InputLabel>Filter by status</InputLabel>
-          <Select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            label="Filter by status"
-          >
-            {order_status.map((s) => (
-              <MenuItem key={s} value={s}>
-                {s}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
+        <Grid container spacing={2} sx={{ mb: 2 }}>
+          <Grid item xs={12} sm={6} md={2}>
+            <Card variant="outlined" sx={{ backgroundColor: "#BBDEFB" }}>
+              <CardContent>
+                <Typography variant="subtitle1">Total Return</Typography>
+                <Typography variant="h5">6</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={2}>
+            <Card variant="outlined" sx={{ backgroundColor: "#FFCCBC" }}>
+              <CardContent>
+                <Typography variant="subtitle1">Pending</Typography>
+                <Typography variant="h5">6</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={2}>
+            <Card variant="outlined" sx={{ backgroundColor: "#FFF9C4" }}>
+              <CardContent>
+                <Typography variant="subtitle1">Pick Up</Typography>
+                <Typography variant="h5">6</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={2}>
+            <Card variant="outlined" sx={{ backgroundColor: "#C8E6C9" }}>
+              <CardContent>
+                <Typography variant="subtitle1">Collected</Typography>
+                <Typography variant="h5">6</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={2}>
+            <Card variant="outlined" sx={{ backgroundColor: "#E1BEE7" }}>
+              <CardContent>
+                <Typography variant="subtitle1">Service Center</Typography>
+                <Typography variant="h5">6</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={2}>
+            <Card variant="outlined" sx={{ backgroundColor: "#B3E5FC" }}>
+              <CardContent>
+                <Typography variant="subtitle1">Resolved</Typography>
+                <Typography variant="h5">6</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
 
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>Date</StyledTableCell>
-              <StyledTableCell>Return no</StyledTableCell>
-              <StyledTableCell>Product</StyledTableCell>
-              <StyledTableCell>Retrun Quantity</StyledTableCell>
-              <StyledTableCell>Return Reason</StyledTableCell>
-              <StyledTableCell>Status</StyledTableCell>
-              <StyledTableCell></StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredReturnOrders.map((item) => {
-              const completeIcon = (
-                <IconProgressCheck stroke={1.5} size="1.6rem" />
-              );
-              return (
-                <StyledTableRow key={item.return_id}>
-                  <StyledTableCell>
-                    {new Date(item.order_date).toLocaleDateString()}
-                  </StyledTableCell>
-                  <StyledTableCell>{item.return_id}</StyledTableCell>
-                  <StyledTableCell>{item.product_name}</StyledTableCell>
-                  <StyledTableCell>{item.qty}</StyledTableCell>
-                  <StyledTableCell>{item.reason}</StyledTableCell>
-                  <StyledTableCell>{item.status}</StyledTableCell>
-                  <StyledTableCell align="center">
-                    {item.status === "Resolved" ? (
-                      <Button>{completeIcon}</Button>
-                    ) : (
-                      <div>
-                        <Button
-                          variant="contained"
-                          onClick={(e) => {
-                            handleClick(e),
-                              setObj({
-                                ...obj,
-                                return_id: item.return_id,
-                                order_id: item.order_id,
-                                order_item_id: item.order_item_id,
-                              });
-                          }}
-                        >
-                          Change Status
-                        </Button>
-                        <Menu
-                          anchorEl={anchorEl}
-                          open={Boolean(anchorEl)}
-                          onClose={() => {
-                            handleClose(null);
-                          }}
-                        >
-                          {statusOptions[item.status].map((option) => (
-                            <MenuItem
-                              key={option}
-                              onClick={() => handleClose(option)}
-                            >
-                              {option}
-                            </MenuItem>
-                          ))}
-                        </Menu>
-                      </div>
-                    )}
-                  </StyledTableCell>
-                </StyledTableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+        {/* other filter */}
+        <Box
+          sx={{
+            display: "flex",
+            gap: 3,
+            alignItems: "center",
+            mb: 3,
+          }}
+        >
+          {/* search returnID */}
+          <Autocomplete
+            disablePortal
+            options={orderIds}
+            sx={{ width: 200 }}
+            size="small"
+            onChange={(e, newValue) => {
+              setOrderId(newValue);
+            }}
+            renderInput={(params) => <TextField {...params} label="Order No" />}
+          />
 
-      <StatusModel
-        open={open}
-        setOpen={setOpen}
-        setAnchorEl={setAnchorEl}
-        setReturOrders={setReturOrders}
-        setSelectedStatus={setSelectedStatus}
-        retunOrders={retunOrders}
-        obj={obj}
-        setObj={setObj}
-      />
-    </>
+          {/* reason dropdown */}
+          <FormControl variant="outlined" size="small" sx={{ width: 200 }}>
+            <InputLabel>Filter by reasons</InputLabel>
+            <Select
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              label="Filter by reason"
+            >
+              <MenuItem value="">All reason</MenuItem>
+              {reasons.map((r) => (
+                <MenuItem key={r} value={r}>
+                  {r}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          {/* status dropdown */}
+          <FormControl variant="outlined" size="small" sx={{ width: 200 }}>
+            <InputLabel>Filter by status</InputLabel>
+            <Select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              label="Filter by status"
+            >
+              {order_status.map((s) => (
+                <MenuItem key={s} value={s}>
+                  {s}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 700 }} aria-label="customized table">
+            <TableHead>
+              <TableRow>
+                <StyledTableCell>Date</StyledTableCell>
+                <StyledTableCell>Return no</StyledTableCell>
+                <StyledTableCell>Product</StyledTableCell>
+                <StyledTableCell>Retrun Quantity</StyledTableCell>
+                <StyledTableCell>Return Reason</StyledTableCell>
+                <StyledTableCell>Status</StyledTableCell>
+                <StyledTableCell></StyledTableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredReturnOrders.map((item) => {
+                const completeIcon = (
+                  <IconProgressCheck stroke={1.5} size="1.6rem" />
+                );
+                return (
+                  <StyledTableRow key={item.return_id}>
+                    <StyledTableCell>
+                      {new Date(item.order_date).toLocaleDateString()}
+                    </StyledTableCell>
+                    <StyledTableCell>{item.return_id}</StyledTableCell>
+                    <StyledTableCell>{item.product_name}</StyledTableCell>
+                    <StyledTableCell>{item.qty}</StyledTableCell>
+                    <StyledTableCell>{item.reason}</StyledTableCell>
+                    <StyledTableCell>{item.status}</StyledTableCell>
+                    <StyledTableCell align="center">
+                      {item.status === "Resolved" ? (
+                        <Button>{completeIcon}</Button>
+                      ) : (
+                        <div>
+                          <Button
+                            variant="contained"
+                            onClick={(e) => {
+                              handleClick(e),
+                                setObj({
+                                  ...obj,
+                                  return_id: item.return_id,
+                                  order_id: item.order_id,
+                                  order_item_id: item.order_item_id,
+                                });
+                            }}
+                          >
+                            Change Status
+                          </Button>
+                          <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={() => {
+                              handleClose(null);
+                            }}
+                          >
+                            {statusOptions[item.status].map((option) => (
+                              <MenuItem
+                                key={option}
+                                onClick={() => handleClose(option)}
+                              >
+                                {option}
+                              </MenuItem>
+                            ))}
+                          </Menu>
+                        </div>
+                      )}
+                    </StyledTableCell>
+                  </StyledTableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <StatusModel
+          open={open}
+          setOpen={setOpen}
+          setAnchorEl={setAnchorEl}
+          setReturOrders={setReturOrders}
+          setSelectedStatus={setSelectedStatus}
+          retunOrders={retunOrders}
+          obj={obj}
+          setObj={setObj}
+        />
+      </DashboardCard>
+    </PageContainer>
   );
 };
 export default Return;

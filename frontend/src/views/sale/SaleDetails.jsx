@@ -21,6 +21,7 @@ import ReturnDialog from "./components/ReturnDialog";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { fetchSaleDetail } from "../../actions/saleDetailActions";
+import InvoiceDialog from "./components/InvoiceDialog";
 
 const SaleDetails = () => {
   const [returnDialogOpen, setOpenReturnDialog] = useState(false);
@@ -31,6 +32,7 @@ const SaleDetails = () => {
   const loading = useSelector((state) => state.saleDetails.loading);
   const error = useSelector((state) => state.saleDetails.error);
   const handleReturnClick = () => setOpenReturnDialog(true);
+  const handleCreateInvoice = () => alert("Create invoice clicked" + order_id);
 
   const handleConfirmReturn = (selectedReturns) => {
     console.log("Selected Returns:", selectedReturns);
@@ -119,9 +121,16 @@ const SaleDetails = () => {
         <Typography variant="h3" sx={{ ml: 2 }}>
           Sale Details - Order #{order_id}
         </Typography>
-        <Button variant="contained" color="primary" onClick={handleReturnClick}>
-          Return
-        </Button>
+        <Box>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={handleReturnClick}
+          >
+            Return
+          </Button>
+          <InvoiceDialog />
+        </Box>
       </Box>
 
       {/* Customer & date info */}
