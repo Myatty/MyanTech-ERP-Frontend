@@ -74,29 +74,28 @@ const DeliverHistory = () => {
 
   useEffect(() => {
     if (snackbarOpen) {
-      dispatch(fetchDeliveries()); 
+      dispatch(fetchDeliveries());
     }
   }, [snackbarOpen, dispatch]);
 
   const handleClick = async (deliveryId) => {
     console.log("Before Update:", allDeliveries);
-  
+
     try {
-      // ✅ Update local UI immediately
       const updatedDeliveries = allDeliveries.map((item) =>
-        item.delivery_id === deliveryId ? { ...item, status: "delivered" } : item
+        item.delivery_id === deliveryId ? { ...item, status: "completed" } : item
       );
       dispatch({ type: "UPDATE_DELIVERIES", payload: updatedDeliveries });
-  
+
       console.log("After Dispatch:", updatedDeliveries); // Check if state is updated
-  
-      await axios.put(`${apiUrl}/api/deliveries/update/${deliveryId}`, { status: "delivered" });
-  
-      setSnackbarMessage(`Delivery ID ${deliveryId} marked as Delivered`);
+
+      await axios.put(`${apiUrl}/api/deliveries/update/${deliveryId}`, { status: "completed" });
+
+      setSnackbarMessage(`Delivery ID ${deliveryId} marked as Complete`);
       setOpenToast(true);
-  
+
       dispatch(fetchDeliveries());
-  
+
     } catch (error) {
       console.error("Error changing status:", error);
       setSnackbarMessage("Error updating delivery status");
@@ -104,7 +103,7 @@ const DeliverHistory = () => {
       setOpenToast(true);
     }
   };
-  
+
 
   useEffect(() => {
     if (snackbarOpen) {
@@ -126,7 +125,7 @@ const DeliverHistory = () => {
       console.log(`PUT requests to ${apiUrl}/api/update/ for delivery IDs:`, allDeliveryIds);
       await Promise.all(
         allDeliveryIds.map((deliveryId) =>
-          axios.put(`${apiUrl}/api/deliveries/update/${deliveryId}`, { status: "Delivered" })
+          axios.put(`${apiUrl}/api/deliveries/update/${deliveryId}`, { status: "completed" })
         )
       );
       setSnackbarMessage("All delivery statuses updated successfully");
@@ -203,7 +202,7 @@ const DeliverHistory = () => {
       selector: (row) => (
         <Chip
           label={row.status}
-          color={row.status === "Delivered" ? "success" : "warning"}
+          color={row.status === "completed" ? "success" : "warning"}
         />
       ),
       sortable: true,
@@ -215,9 +214,9 @@ const DeliverHistory = () => {
         <Button
           variant="contained"
           onClick={() => handleClick(row.delivery_id)}
-          disabled={row.status === "delivered"}
+          disabled={row.status === "completed"}
         >
-          {row.status === "delivered" ? (
+          {row.status === "completed" ? (
             <IconProgressCheck stroke={1.5} size="1.6rem" />
           ) : (
             "Complete"
@@ -250,11 +249,15 @@ const DeliverHistory = () => {
   };
 
   // Example stats (based on the entire orders array):
-  const totalOrders = orders.length;
-  const deliveredCount = orders.filter((o) => o.status === "Delivered").length;
-  const deliveringCount = orders.filter(
-    (o) => o.status === "Delivering"
-  ).length;
+
+  // Example stats (based on the fetched deliveries array):
+  const totalOrders = allDeliveries.length;
+  const deliveredCount = allDeliveries.filter((o) => o.status === "completed").length;
+  const deliveringCount = allDeliveries.filter((o) => o.status === "delivering").length;
+
+  console.log("Total Orders:", totalOrders);
+  console.log("Delivered Count:", deliveredCount);
+  console.log("Delivering Count:", deliveringCount);
 
   return (
     <PageContainer
@@ -322,11 +325,10 @@ const DeliverHistory = () => {
                 value={driver}
                 onChange={(e) => setDriver(e.target.value)}
                 label="Filter by Driver"
-              >
-                <MenuItem value="">All Drivers</MenuItem>
-                {drivers.map((d) => (
-                  <MenuItem key={d} value={d}>
-                    {d}
+              >       <MenuItem value="">All Drivers</MenuItem>
+                {allDrivers.map((d) => (
+                  <MenuItem key={d.driver_id} value={d.driver_id}>
+                    {d.driver_name}
                   </MenuItem>
                 ))}
               </Select>
