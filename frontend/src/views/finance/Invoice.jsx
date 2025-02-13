@@ -48,11 +48,18 @@ const FinanceInvoice = () => {
 
   // Card report counts
   const totalInvoices = invoices.length;
+  const totalAmount = invoices.reduce(
+    (acc, inv) => Number(acc) + Number(inv.amount),
+    0
+  );
   const suspendedCount = invoices.filter(
     (inv) => inv.status.toLowerCase() === "suspended"
   ).length;
   const paidCount = invoices.filter(
     (inv) => inv.status.toLowerCase() === "paid"
+  ).length;
+  const pendingCount = invoices.filter(
+    (inv) => inv.status.toLowerCase() === "pending"
   ).length;
 
   // Filter invoices based on order no, status, and invoice date range.
@@ -185,33 +192,52 @@ const FinanceInvoice = () => {
   return (
     <PageContainer title="Invoice Page" description="Manage invoices">
       <DashboardCard>
-        <Typography variant="h4" gutterBottom>
-          Invoice Lists
-        </Typography>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "20px",
+          }}
+        >
+          <h2>Invoice List</h2>
+        </div>
 
         {/* Card Reports */}
         <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={3}>
             <Card variant="outlined" sx={{ backgroundColor: "#BBDEFB" }}>
               <CardContent>
-                <Typography variant="subtitle1">Total Invoices</Typography>
-                <Typography variant="h5">{totalInvoices}</Typography>
+                <Typography variant="subtitle1">Total Amount</Typography>
+                <Typography variant="h5">
+                  {totalAmount.toLocaleString()} MMK
+                </Typography>
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <Card variant="outlined" sx={{ backgroundColor: "#FFE082" }}>
-              <CardContent>
-                <Typography variant="subtitle1">Suspended</Typography>
-                <Typography variant="h5">{suspendedCount}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={3}>
             <Card variant="outlined" sx={{ backgroundColor: "#C8E6C9" }}>
               <CardContent>
                 <Typography variant="subtitle1">Paid</Typography>
                 <Typography variant="h5">{paidCount}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <Card variant="outlined" sx={{ backgroundColor: "#FFF9C4" }}>
+              <CardContent>
+                <Box>
+                  <Typography variant="subtitle1">Pending</Typography>
+                  <Typography variant="h5">{pendingCount}</Typography>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <Card variant="outlined" sx={{ backgroundColor: "#FFCCBC" }}>
+              <CardContent>
+                <Typography variant="subtitle1">Suspended</Typography>
+                <Typography variant="h5">{suspendedCount}</Typography>
               </CardContent>
             </Card>
           </Grid>

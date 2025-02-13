@@ -15,6 +15,7 @@ import allTruckReducer from "./reducers/allTruckReducer";
 import returnOrderReducer from "./reducers/returnOrderReducer";
 import serviceCenterReducer from "./reducers/serviceCenterReducer";
 import invoicesStatusReducer from "./reducers/invoiceStatusReducer";
+import authReducer from "./reducers/authReducers";
 
 const rootReducer = combineReducers({
   products: productsReducer,
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   returnOrder: returnOrderReducer,
   serviceCenter: serviceCenterReducer,
   invoiceStatus: invoicesStatusReducer,
+  auth: authReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));

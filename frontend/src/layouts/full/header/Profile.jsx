@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Avatar,
   Box,
@@ -8,12 +8,12 @@ import {
   IconButton,
   MenuItem,
   ListItemIcon,
-  ListItemText
-} from '@mui/material';
+  ListItemText,
+} from "@mui/material";
 
-import { IconListCheck, IconMail, IconUser } from '@tabler/icons-react';
+import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
 
-import ProfileImg from 'src/assets/images/profile/user-1.jpg';
+import ProfileImg from "src/assets/images/profile/user-1.jpg";
 
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
@@ -33,8 +33,8 @@ const Profile = () => {
         aria-controls="msgs-menu"
         aria-haspopup="true"
         sx={{
-          ...(typeof anchorEl2 === 'object' && {
-            color: 'primary.main',
+          ...(typeof anchorEl2 === "object" && {
+            color: "primary.main",
           }),
         }}
         onClick={handleClick2}
@@ -57,11 +57,11 @@ const Profile = () => {
         keepMounted
         open={Boolean(anchorEl2)}
         onClose={handleClose2}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
         sx={{
-          '& .MuiMenu-paper': {
-            width: '200px',
+          "& .MuiMenu-paper": {
+            width: "200px",
           },
         }}
       >
@@ -84,7 +84,13 @@ const Profile = () => {
           <ListItemText>My Tasks</ListItemText>
         </MenuItem>
         <Box mt={1} py={1} px={2}>
-          <Button to="/auth/login" variant="outlined" color="primary" component={Link} fullWidth>
+          <Button
+            to="/auth/login"
+            variant="outlined"
+            color="primary"
+            component={Link}
+            fullWidth
+          >
             Logout
           </Button>
         </Box>
