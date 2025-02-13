@@ -93,7 +93,7 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
-    title: "Invoice List",
+    title: "Invoice Lists",
     icon: IconFileDollar,
     href: "/finance/invoice",
   },

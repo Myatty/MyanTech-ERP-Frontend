@@ -29,7 +29,7 @@ import axios from "axios";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
+    backgroundColor: "#4570EA",
     color: theme.palette.common.white,
   },
   [`&.${tableCellClasses.body}`]: {
@@ -153,12 +153,14 @@ const FinanceInvoice = () => {
     <>
       <PageContainer title="Product Page" description="this is product page">
         <DashboardCard>
+          <h2>Invoice Lists</h2>
           <Box
             sx={{
               display: "flex",
               justifyContent: "space-around",
-              mb: 4,
+              my: 4,
               alignItems: "center",
+              width: 500,
             }}
           >
             {/* order_id dropdown*/}
@@ -195,79 +197,79 @@ const FinanceInvoice = () => {
               </Select>
             </FormControl>
           </Box>
+
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 700 }} aria-label="customized table">
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell>Invoice</StyledTableCell>
+                  <StyledTableCell>Order no</StyledTableCell>
+                  <StyledTableCell>Customer</StyledTableCell>
+                  <StyledTableCell>Contact No</StyledTableCell>
+                  <StyledTableCell>Amount</StyledTableCell>
+                  <StyledTableCell>Status</StyledTableCell>
+                  <StyledTableCell></StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredInvoice.map((inv) => {
+                  const completeIcon = (
+                    <IconProgressCheck stroke={1.5} size="1.6rem" />
+                  );
+                  return (
+                    <StyledTableRow key={inv.inv}>
+                      <StyledTableCell>{inv.inv}</StyledTableCell>
+                      <StyledTableCell>{inv.order_id}</StyledTableCell>
+                      <StyledTableCell>{inv.customer_name}</StyledTableCell>
+                      <StyledTableCell>{inv.contact_no}</StyledTableCell>
+                      <StyledTableCell>{inv.amount}</StyledTableCell>
+                      <StyledTableCell>{inv.status}</StyledTableCell>
+                      <StyledTableCell align="center">
+                        {inv.status === "Paid" ? (
+                          <Button>{completeIcon}</Button>
+                        ) : (
+                          <div>
+                            <Button
+                              variant="contained"
+                              onClick={(e) => {
+                                handleClick(e),
+                                  setData({
+                                    ...data,
+                                    inv: inv.inv,
+                                  });
+                              }}
+                            >
+                              Change Status
+                            </Button>
+                            <Menu
+                              anchorEl={anchorEl}
+                              open={Boolean(anchorEl)}
+                              onClose={() => {
+                                handleClose(null);
+                              }}
+                            >
+                              {statusOptions.map((option) => {
+                                return (
+                                  <MenuItem
+                                    key={option}
+                                    onClick={() => handleClose(option)}
+                                  >
+                                    {option}
+                                  </MenuItem>
+                                );
+                              })}
+                            </Menu>
+                          </div>
+                        )}
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </DashboardCard>
       </PageContainer>
-
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>Invoice</StyledTableCell>
-              <StyledTableCell>Order no</StyledTableCell>
-              <StyledTableCell>Customer</StyledTableCell>
-              <StyledTableCell>Contact No</StyledTableCell>
-              <StyledTableCell>Amount</StyledTableCell>
-              <StyledTableCell>Status</StyledTableCell>
-              <StyledTableCell></StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredInvoice.map((inv) => {
-              const completeIcon = (
-                <IconProgressCheck stroke={1.5} size="1.6rem" />
-              );
-              return (
-                <StyledTableRow key={inv.inv}>
-                  <StyledTableCell>{inv.inv}</StyledTableCell>
-                  <StyledTableCell>{inv.order_id}</StyledTableCell>
-                  <StyledTableCell>{inv.customer_name}</StyledTableCell>
-                  <StyledTableCell>{inv.contact_no}</StyledTableCell>
-                  <StyledTableCell>{inv.amount}</StyledTableCell>
-                  <StyledTableCell>{inv.status}</StyledTableCell>
-                  <StyledTableCell align="center">
-                    {inv.status === "Paid" ? (
-                      <Button>{completeIcon}</Button>
-                    ) : (
-                      <div>
-                        <Button
-                          variant="contained"
-                          onClick={(e) => {
-                            handleClick(e),
-                              setData({
-                                ...data,
-                                inv: inv.inv,
-                              });
-                          }}
-                        >
-                          Change Status
-                        </Button>
-                        <Menu
-                          anchorEl={anchorEl}
-                          open={Boolean(anchorEl)}
-                          onClose={() => {
-                            handleClose(null);
-                          }}
-                        >
-                          {statusOptions.map((option) => {
-                            return (
-                              <MenuItem
-                                key={option}
-                                onClick={() => handleClose(option)}
-                              >
-                                {option}
-                              </MenuItem>
-                            );
-                          })}
-                        </Menu>
-                      </div>
-                    )}
-                  </StyledTableCell>
-                </StyledTableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
     </>
   );
 };
