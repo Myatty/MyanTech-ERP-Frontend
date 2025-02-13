@@ -10,6 +10,7 @@ import {
   IconDevicesMinus,
   IconUsersGroup,
   IconUsers,
+  IconArrowBackUp,
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -75,12 +76,18 @@ const Menuitems = [
     href: "/warehouse/delivery",
   },
   {
+    id: uniqueId(),
+    title: "Return Order",
+    icon: IconArrowBackUp,
+    href: "/warehouse/return",
+  },
+  {
     navlabel: true,
     subheader: "Finance",
   },
   {
     id: uniqueId(),
-    title: "Create Invoice",
+    title: "Invoice Lists",
     icon: IconFileDollar,
     href: "/finance/invoice",
   },
