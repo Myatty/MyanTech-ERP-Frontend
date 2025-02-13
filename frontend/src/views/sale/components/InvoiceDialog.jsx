@@ -39,12 +39,12 @@ export default function InvoiceDialog() {
     setLoading(true); // Show loader
     try {
       // Assuming the backend API is something like this:
-      await axios.post("http://localhost:4000/api/invoice", {
-        orderId: 198, // This should be dynamic based on your app
+      await axios.post("http://localhost:4000/api/invoices", {
+        orderId: 197, // This should be dynamic based on your app
       });
 
       // Dispatch Redux action if needed
-      dispatch({ type: "INVOICE_CREATED", payload: 198 });
+      dispatch({ type: "INVOICE_CREATED", payload: 197 });
 
       // Navigate to /sales/history after successful API call
       navigate("/sales/history");
