@@ -37,6 +37,8 @@ const DeliverHistory = () => {
   const [loading, setLoading] = useState(true);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [openToast, setOpenToast] = useState(false);
+  const complete = "complete";
+  const delivering = "delivering";
 
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
