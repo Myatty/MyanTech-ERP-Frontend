@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
@@ -26,6 +26,7 @@ import {
   TextField,
 } from "@mui/material";
 import axios from "axios";
+import { fetchInvoice, updateInvoice } from "../../actions/invoiceStatusAction";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -48,57 +49,62 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const FinanceInvoice = () => {
+  const dispatch = useDispatch();
+  const allInvoices = useSelector((state) => state.invoiceStatus.invoices);
   const [orderId, setOrderId] = useState(0);
   const [status, setStatus] = useState("");
   const [invoices, setInvoices] = useState([]);
   const [data, setData] = useState({ inv: null, status: "" });
-  const allInvoices = [
-    {
-      inv: "INV#12",
-      order_id: "ORDER#12",
-      customer_name: "Su Su",
-      contact_no: "09647556",
-      amount: 200000,
-      status: "Pending",
-    },
-    {
-      inv: "INV#13",
-      order_id: "ORDER#13",
-      customer_name: "Mg Mg",
-      contact_no: "09456677",
-      amount: 350000,
-      status: "Suspended",
-    },
-    {
-      inv: "INV#14",
-      order_id: "ORDER#14",
-      customer_name: "Hla Hla",
-      contact_no: "092344556",
-      amount: 400000,
-      status: "Paid",
-    },
-    {
-      inv: "INV#15",
-      order_id: "ORDER#15",
-      customer_name: "Ma Ma",
-      contact_no: "093764378",
-      amount: 150000,
-      status: "Pending",
-    },
-    {
-      inv: "INV#16",
-      order_id: "ORDER#16",
-      customer_name: "Zaw Zaw",
-      contact_no: "09343566",
-      amount: 300000,
-      status: "Pending",
-    },
-  ];
+  // const allInvoicess = [
+  //   {
+  //     inv: "INV#12",
+  //     order_id: "ORDER#12",
+  //     customer_name: "Su Su",
+  //     contact_no: "09647556",
+  //     amount: 200000,
+  //     status: "Pending",
+  //   },
+  //   {
+  //     inv: "INV#13",
+  //     order_id: "ORDER#13",
+  //     customer_name: "Mg Mg",
+  //     contact_no: "09456677",
+  //     amount: 350000,
+  //     status: "Suspended",
+  //   },
+  //   {
+  //     inv: "INV#14",
+  //     order_id: "ORDER#14",
+  //     customer_name: "Hla Hla",
+  //     contact_no: "092344556",
+  //     amount: 400000,
+  //     status: "Paid",
+  //   },
+  //   {
+  //     inv: "INV#15",
+  //     order_id: "ORDER#15",
+  //     customer_name: "Ma Ma",
+  //     contact_no: "093764378",
+  //     amount: 150000,
+  //     status: "Pending",
+  //   },
+  //   {
+  //     inv: "INV#16",
+  //     order_id: "ORDER#16",
+  //     customer_name: "Zaw Zaw",
+  //     contact_no: "09343566",
+  //     amount: 300000,
+  //     status: "Pending",
+  //   },
+  // ];
 
   useEffect(() => {
-    //you must fill with real data
+    dispatch(fetchInvoice());
+  }, [dispatch]);
+
+  useEffect(() => {
     setInvoices(allInvoices);
-  }, []);
+  }, [allInvoices]);
 
   //codes for clicking change status button
   const [anchorEl, setAnchorEl] = useState(null);
@@ -114,22 +120,14 @@ const FinanceInvoice = () => {
     //you must keep code under this comment before try in fetch try
     if (status) {
       setSelectedStatus(status); // Set selected value;
-      const filterData = invoices.map((item) =>
-        item.inv === data.inv ? { ...item, status: status } : item
-      );
-      setInvoices(filterData);
+      // const filterData = invoices.map((item) =>
+      //   item.inv === data.inv ? { ...item, status: status } : item
+      // );
+      // setInvoices(filterData);
     }
     setAnchorEl(null);
     //call fetch
-    try {
-      await axios.post(
-        //replace with correct endpoint
-        `http://localhost:4000/api/inv`,
-        { ...data, status: status }
-      );
-    } catch (error) {
-      console.error("Error changing status:", error);
-    }
+    dispatch(updateInvoice({ ...data, status: status }));
   };
 
   // Get orderId from order
