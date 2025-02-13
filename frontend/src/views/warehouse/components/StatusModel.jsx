@@ -9,6 +9,12 @@ import {
 } from "@mui/material";
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import axios from "axios";
+import { fetchDrivers } from "../../../actions/driverActions";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchTrucks } from "../../../actions/truckActions";
+const apiUrl = import.meta.env.VITE_APP_API_URL;
+
+
 const StatusModel = ({
   open,
   setOpen,
@@ -20,13 +26,25 @@ const StatusModel = ({
   setObj,
 }) => {
   //fetch avariable drivers & trucks / service centers
-  const [driver, setDriver] = useState(0);
-  const [truck, setTruck] = useState(0);
-  const [center, setCenter] = useState(0);
+  const dispatch=useDispatch();
+  useEffect(() => {
+    dispatch(fetchDrivers());
+    dispatch(fetchTrucks());
+
+  }, [dispatch]); 
+
+  const [driver, setDriver] = useState("");
+  const [truck, setTruck] = useState("");
+  const [center, setCenter] = useState("");
+
+  const drivers = useSelector((state) => state.drivers.drivers);
+  const trucks = useSelector((state) => state.trucks.trucks);
 
   //func for assign
   const handleClick = async () => {
     // //you have to keep code under this comment before try in fetch try
+    console.log("Obj", obj);
+    
     if (obj.status) {
       setSelectedStatus(obj.status); // Set selected value;
       const filterData = retunOrders.map((item) =>
@@ -49,32 +67,16 @@ const StatusModel = ({
     });
     setDriver(0), setTruck(0), setCenter(0);
     try {
-      await axios.post(
+      await axios.put(
         //replace with correct endpoint
-        `http://localhost:4000/api/return`,
+        `${apiUrl}/api/returns/assign-pickup`,
         obj
       );
     } catch (error) {
       console.error("Error changing status:", error);
     }
   };
-  //delete drivers,trucks,serviceCenters when real data get
-  const drivers = [
-    { id: 1, name: "U Ba" },
-    { id: 2, name: "U Zaw" },
-    { id: 3, name: "U Mg" },
-  ];
-  const trucks = [
-    { id: 1, name: "YGN/567" },
-    { id: 2, name: "YGN/87" },
-    { id: 3, name: "YGN/287" },
-  ];
-  const serviceCenters = [
-    { id: 1, name: "ICT Com" },
-    { id: 2, name: "Dell Service Center" },
-    { id: 3, name: "Access Spectrum Co.Ltd" },
-  ];
-  console.log("Obj", obj);
+  
   return (
     <>
       <Dialog
@@ -105,8 +107,8 @@ const StatusModel = ({
                 label="Drivers"
               >
                 {drivers.map((d) => (
-                  <MenuItem key={d.id} value={d.id}>
-                    {d.name}
+                  <MenuItem key={d.driver_id} value={d.driver_id}>
+                    {d.driver_name}
                   </MenuItem>
                 ))}
               </Select>
@@ -123,13 +125,14 @@ const StatusModel = ({
                 label="Trucks"
               >
                 {trucks.map((t) => (
-                  <MenuItem key={t.id} value={t.id}>
-                    {t.name}
+                  
+                  <MenuItem key={t.truck_id} value={t.truck_id}>
+                    {t.license_plate}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
-            {obj.status === "Service_Center" && (
+            {obj.status === "service" && (
               <FormControl
                 variant="outlined"
                 size="small"

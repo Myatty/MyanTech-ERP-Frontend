@@ -55,7 +55,7 @@ const Return = () => {
   const dispatch = useDispatch();
   const [orderId, setOrderId] = useState(0);
   const [reason, setReason] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("pending");
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const [retunOrders, setReturOrders] = useState([]);
@@ -104,10 +104,10 @@ const Return = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
 
   const statusOptions = {
-    Pending: ["picked_up"],
-    Pick_Up: ["collected"],
-    Collected: ["service", "resolved"],
-    Service_Center: ["resolved"],
+    pending: ["picked_up"],
+    picked_Up: ["collected"],
+    collected: ["service", "resolved"],
+    service: ["resolved"],
   };
 
   const handleClick = (event) => {
@@ -115,7 +115,7 @@ const Return = () => {
   };
 
   const handleClose = async (status) => {
-    if (status === "Service_Center" || status === "Pick_Up") {
+    if (status === "service" || status === "picked_up") {
       setObj({ ...obj, status: status });
       return setOpen(true);
     } else {
@@ -282,7 +282,7 @@ const Return = () => {
               onChange={(e) => setStatus(e.target.value)}
               label="Filter by Return Status"
             >
-              <MenuItem value="">All Status</MenuItem>
+
               {order_status.map((s) => (
                 <MenuItem key={s} value={s}>
                   {s}
@@ -315,8 +315,8 @@ const Return = () => {
                 );
                 const itemOptions = statusOptions[item.status] || [];
                 console.log("itemOptions", itemOptions);
-                  console.log('intm', item.status);
-                  
+                console.log('intm', item.status);
+
                 return (
                   <StyledTableRow key={item.return_id}>
 
@@ -331,40 +331,40 @@ const Return = () => {
                     <StyledTableCell>{item.return_reason}</StyledTableCell>
                     <StyledTableCell>{item.status}</StyledTableCell>
                     <StyledTableCell align="center">
-          {item.status === "resolved" ? (
-            <Button>{completeIcon}</Button>
-          ) : (
-            <div>
-              <Button
-                variant="contained"
-                onClick={(e) => {
-                  handleClick(e),
-                    setObj({
-                      ...obj,
-                      return_id: item.return_id,
-                      order_id: item.order_id,
-                      order_item_id: item.order_item_id,
-                    });
-                }}
-              >
-                Change Status
-              </Button>
-              <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={() => {
-                  handleClose(null);
-                }}
-              >
-                {itemOptions.map((option) => (
-                  <MenuItem key={option} onClick={() => handleClose(option)}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Menu>
-            </div>
-          )}
-        </StyledTableCell>
+                      {item.status === "resolved" ? (
+                        <Button>{completeIcon}</Button>
+                      ) : (
+                        <div>
+                          <Button
+                            variant="contained"
+                            onClick={(e) => {
+                              handleClick(e),
+                                setObj({
+                                  ...obj,
+                                  return_id: item.return_id,
+                                  order_id: item.order_id,
+                                  order_item_id: item.order_item_id,
+                                });
+                            }}
+                          >
+                            Change Status
+                          </Button>
+                          <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={() => {
+                              handleClose(null);
+                            }}
+                          >
+                            {itemOptions.map((option) => (
+                              <MenuItem key={option} onClick={() => handleClose(option)}>
+                                {option}
+                              </MenuItem>
+                            ))}
+                          </Menu>
+                        </div>
+                      )}
+                    </StyledTableCell>
                   </StyledTableRow>
                 );
               })}
