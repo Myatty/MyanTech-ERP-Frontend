@@ -36,6 +36,10 @@ const DeliverHistory = () => {
   const deliveriesLoading = useSelector((state) => state.deliveries.loading);
   const deliveriesError = useSelector((state) => state.deliveries.error);
 
+  const apiUrl = import.meta.env.VITE_APP_API_URL;
+  const API_BASE_URL = import.meta.env.VITE_APP_API_URL;  
+
+
   useEffect(() => {
     dispatch(fetchAllDrivers());
     dispatch(fetchDeliveries());
@@ -56,7 +60,11 @@ const DeliverHistory = () => {
     );
     dispatch({ type: 'UPDATE_DELIVERIES', payload: changeStatus });
     try {
-      await axios.post(`http://localhost:4000/api/status`, [deliveryId]);
+      console.log(`PUT request to /api/update/${deliveryId} with payload:`, { status: "Delivered" });
+
+      await axios.put(`${API_BASE_URL}/api/deliveries/update/${deliveryId}`, { status: "Delivered" });
+      console.log(`Already Put request to /api/update/${deliveryId} with payload:`, { status: "Delivered" });
+
     } catch (error) {
       console.error("Error changing status:", error);
     }
@@ -73,7 +81,12 @@ const DeliverHistory = () => {
     );
     dispatch({ type: 'UPDATE_DELIVERIES', payload: changeStatus });
     try {
-      await axios.post(`http://localhost:4000/api/status`, allDeliveryIds);
+      console.log(`PUT requests to /api/update/ for delivery IDs:`, allDeliveryIds);
+      await Promise.all(
+        allDeliveryIds.map((deliveryId) =>
+          axios.put(`${API_BASE_URL}/api/update/${deliveryId}`, { status: "Delivered" })
+        )
+      );
     } catch (error) {
       console.error("Error changing status:", error);
     }
@@ -87,8 +100,8 @@ const DeliverHistory = () => {
     const DateMatch =
       startDate || endDate
         ? new Date(delivery.departure_time).getTime() >=
-            new Date(startDate).getTime() &&
-          new Date(delivery.departure_time).getTime() <= new Date(endDate).getTime()
+        new Date(startDate).getTime() &&
+        new Date(delivery.departure_time).getTime() <= new Date(endDate).getTime()
         : true;
 
     return DateMatch && DriverMatch && StatusMatch;
