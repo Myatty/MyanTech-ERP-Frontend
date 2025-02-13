@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
@@ -28,6 +28,8 @@ import {
 import StatusModel from "./components/StatusModel";
 import DashboardCard from "../../components/shared/DashboardCard";
 import PageContainer from "../../components/container/PageContainer";
+import { fetchReturnInfo } from "../../actions/returnInfoActions";
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: "#5D87FF",
@@ -49,15 +51,17 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const Return = () => {
-  //fetch data from Return Order
+
   const dispatch = useDispatch();
   const [orderId, setOrderId] = useState(0);
   const [reason, setReason] = useState("");
-  const [status, setStatus] = useState("Pending");
+  const [status, setStatus] = useState("");
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const [retunOrders, setReturOrders] = useState([]);
   const [open, setOpen] = useState(false);
+  const returnInfo = useSelector((state) => state.returnInfo.returnInfo);
+  const apiUrl = import.meta.env.VITE_APP_API_URL;
 
   const [obj, setObj] = useState({
     driver_id: null,
@@ -68,6 +72,29 @@ const Return = () => {
     order_id: null,
     order_item_id: null,
   });
+
+  useEffect(() => {
+    dispatch(fetchReturnInfo());
+
+
+  }, [dispatch]);
+
+
+  // const returnInfo = Array.isArray(returnInfoArray) ? returnInfoArray : [];
+  console.log("returnInfo", returnInfo);
+  console.log('ret info array ', returnInfo);
+
+  const totalReturn = returnInfo.total;
+  console.log('total return ', totalReturn);
+
+  const results = returnInfo?.results || [];
+  console.log('results ', results);
+  const returnIds = [...new Set(results.map((rtOrder) => rtOrder.return_id))];
+  console.log('returnIds ', returnIds);
+
+
+  // const returnOrders = [ ...new Set(results.map((order) => order.return_id))];
+
 
   //codes for clicking change status button
   const [anchorEl, setAnchorEl] = useState(null);
@@ -111,91 +138,40 @@ const Return = () => {
     }
   };
 
-  console.log("status", selectedStatus);
+  //console.log("status", selectedStatus);
 
   useEffect(() => {
     //you must fill with real data
-    setReturOrders(allRetunOrders);
+    setReturOrders(results);
   }, []);
 
-  //delete returnOrders when real data get
-  const allRetunOrders = [
-    {
-      order_date: "Wed Feb 11 2025 13:40:56 GMT+0630",
-      return_id: 1,
-      product_name: "Apple",
-      qty: 4,
-      reason: "wrong order",
-      status: "Pending",
-      order_id: 1,
-      order_item_id: 5,
-    },
-    {
-      order_date: "Wed Feb 11 2025 13:40:56 GMT+0630",
-      return_id: 2,
-      product_name: "Dell",
-      qty: 1,
-      reason: "faulty product",
-      status: "Pending",
-      order_id: 1,
-      order_item_id: 4,
-    },
-    {
-      order_date: "Wed Feb 11 2025 13:40:56 GMT+0630",
-      return_id: 3,
-      product_name: "Lenovo",
-      qty: 3,
-      reason: "wrong order",
-      status: "Pending",
-      order_id: 2,
-      order_item_id: 3,
-    },
-    {
-      order_date: "Wed Feb 13 2025 12:40:56 GMT+0630",
-      return_id: 4,
-      product_name: "Apple",
-      qty: 2,
-      reason: "faulty product",
-      status: "Pending",
-      order_id: 2,
-      order_item_id: 2,
-    },
-    {
-      order_date: "Wed Feb 14 2025 12:40:56 GMT+0630",
-      return_id: 5,
-      product_name: "Lenovo",
-      qty: 2,
-      reason: "wrong order",
-      status: "Pending",
-      order_id: 3,
-      order_item_id: 5,
-    },
-  ];
   // Get return_id from returnOrder
   const orderIds = [
-    ...new Set(retunOrders?.map((order) => order.return_id) || []),
+    ...new Set(results?.map((order) => order.order_id) || []),
   ];
+  console.log("orderIds", orderIds);
+
   // Get reason from returnOrder
-  const reasons = [...new Set(retunOrders?.map((order) => order.reason) || [])];
+  const reasons = [...new Set(results?.map((order) => order.return_reason) || [])];
+  console.log("reasons", reasons);
+
   // Get status from returnOrder
   const order_status = [
-    ...new Set(retunOrders?.map((order) => order.status) || []),
-  ];
-
-  // Filtered returnOrders based on return_id & status & reason
-  const filteredReturnOrders = retunOrders?.filter((order) => {
-    const ReasonMatch = reason ? order.reason === reason : true;
+    ...new Set(results?.map((order) => order.status) || []),
+  ];const filteredReturnOrders = results?.filter((order) => {
+    // Compare the single selected reason to the order's reason
+    const ReasonMatch = reason ? order.return_reason === reason : true;
+    // Compare the single selected status to the order's status
     const StatusMatch = status ? order.status === status : true;
-    const OrderIdMatch = orderId ? order.return_id === orderId : true;
-    const DateMatch =
-      startDate || endDate
-        ? new Date(order.order_date).getTime() >=
-            new Date(startDate).getTime() &&
-          new Date(order.order_date).getTime() <= new Date(endDate).getTime()
-        : true;
-
-    return ReasonMatch && StatusMatch && DateMatch && OrderIdMatch;
+    // Compare the single selected orderId to the order's return_id
+    const OrderIdMatch = orderId ? order.order_id === orderId : true;
+  
+    return ReasonMatch && StatusMatch && OrderIdMatch;
   });
+
+
+  console.log("filteredReturnOrders", filteredReturnOrders);
+
   return (
     <PageContainer title="Return Orders" description="this is Return Orders">
       <DashboardCard>
@@ -215,7 +191,7 @@ const Return = () => {
             <Card variant="outlined" sx={{ backgroundColor: "#BBDEFB" }}>
               <CardContent>
                 <Typography variant="subtitle1">Total Return</Typography>
-                <Typography variant="h5">6</Typography>
+                <Typography variant="h5">{totalReturn}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -300,12 +276,13 @@ const Return = () => {
           </FormControl>
           {/* status dropdown */}
           <FormControl variant="outlined" size="small" sx={{ width: 200 }}>
-            <InputLabel>Filter by status</InputLabel>
+            <InputLabel>Filter by Return Status</InputLabel>
             <Select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              label="Filter by status"
+              label="Filter by Return Status"
             >
+              <MenuItem value="">All Status</MenuItem>
               {order_status.map((s) => (
                 <MenuItem key={s} value={s}>
                   {s}
@@ -319,10 +296,12 @@ const Return = () => {
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
             <TableHead>
               <TableRow>
-                <StyledTableCell>Date</StyledTableCell>
                 <StyledTableCell>Return no</StyledTableCell>
+                <StyledTableCell>Order no</StyledTableCell>
+                <StyledTableCell>Return Date</StyledTableCell>
+                <StyledTableCell>Customer</StyledTableCell>
                 <StyledTableCell>Product</StyledTableCell>
-                <StyledTableCell>Retrun Quantity</StyledTableCell>
+                <StyledTableCell>Quantity</StyledTableCell>
                 <StyledTableCell>Return Reason</StyledTableCell>
                 <StyledTableCell>Status</StyledTableCell>
                 <StyledTableCell></StyledTableCell>
@@ -335,13 +314,16 @@ const Return = () => {
                 );
                 return (
                   <StyledTableRow key={item.return_id}>
-                    <StyledTableCell>
-                      {new Date(item.order_date).toLocaleDateString()}
-                    </StyledTableCell>
+
                     <StyledTableCell>{item.return_id}</StyledTableCell>
+                    <StyledTableCell>Order #{item.order_id}</StyledTableCell>
+                    <StyledTableCell>
+                      {new Date(item.return_date).toLocaleDateString()}
+                    </StyledTableCell>
+                    <StyledTableCell>{item.customer_name}</StyledTableCell>
                     <StyledTableCell>{item.product_name}</StyledTableCell>
                     <StyledTableCell>{item.qty}</StyledTableCell>
-                    <StyledTableCell>{item.reason}</StyledTableCell>
+                    <StyledTableCell>{item.return_reason}</StyledTableCell>
                     <StyledTableCell>{item.status}</StyledTableCell>
                     <StyledTableCell align="center">
                       {item.status === "Resolved" ? (
@@ -369,14 +351,14 @@ const Return = () => {
                               handleClose(null);
                             }}
                           >
-                            {statusOptions[item.status].map((option) => (
+                            {/* {statusOptions[item.status].map((option) => (
                               <MenuItem
                                 key={option}
                                 onClick={() => handleClose(option)}
                               >
                                 {option}
                               </MenuItem>
-                            ))}
+                            ))} */}
                           </Menu>
                         </div>
                       )}
