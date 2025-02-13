@@ -1,19 +1,7 @@
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import * as React from "react";
-import { useState, useEffect } from "react";
-import { styled } from "@mui/material/styles";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell, { tableCellClasses } from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import { Paper } from "@mui/material/";
+import DataTable from "react-data-table-component";
 import { IconProgressCheck } from "@tabler/icons-react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import PageContainer from "src/components/container/PageContainer";
-import DashboardCard from "../../components/shared/DashboardCard";
 import {
   FormControl,
   InputLabel,
@@ -23,80 +11,32 @@ import {
   Menu,
   Button,
   Typography,
-  TextField,
+  Grid,
+  Card,
+  CardContent,
+  Chip,
 } from "@mui/material";
-import axios from "axios";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import PageContainer from "src/components/container/PageContainer";
+import DashboardCard from "../../components/shared/DashboardCard";
 import { fetchInvoice, updateInvoice } from "../../actions/invoiceStatusAction";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: "#4570EA",
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
 
 const FinanceInvoice = () => {
   const dispatch = useDispatch();
   const allInvoices = useSelector((state) => state.invoiceStatus.invoices);
-  const [orderId, setOrderId] = useState(0);
+  const [orderId, setOrderId] = useState("");
   const [status, setStatus] = useState("");
   const [invoices, setInvoices] = useState([]);
+  // For date filtering – invoice start and end dates
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  // State to hold invoice data when changing status
   const [data, setData] = useState({ invoice_id: null, status: "" });
-  // const allInvoicess = [
-  //   {
-  //     inv: "INV#12",
-  //     order_id: "ORDER#12",
-  //     customer_name: "Su Su",
-  //     contact_no: "09647556",
-  //     amount: 200000,
-  //     status: "Pending",
-  //   },
-  //   {
-  //     inv: "INV#13",
-  //     order_id: "ORDER#13",
-  //     customer_name: "Mg Mg",
-  //     contact_no: "09456677",
-  //     amount: 350000,
-  //     status: "Suspended",
-  //   },
-  //   {
-  //     inv: "INV#14",
-  //     order_id: "ORDER#14",
-  //     customer_name: "Hla Hla",
-  //     contact_no: "092344556",
-  //     amount: 400000,
-  //     status: "Paid",
-  //   },
-  //   {
-  //     inv: "INV#15",
-  //     order_id: "ORDER#15",
-  //     customer_name: "Ma Ma",
-  //     contact_no: "093764378",
-  //     amount: 150000,
-  //     status: "Pending",
-  //   },
-  //   {
-  //     inv: "INV#16",
-  //     order_id: "ORDER#16",
-  //     customer_name: "Zaw Zaw",
-  //     contact_no: "09343566",
-  //     amount: 300000,
-  //     status: "Pending",
-  //   },
-  // ];
+  // For the change status menu anchor
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const statusOptions = ["Pending", "Suspended", "Paid"];
 
   useEffect(() => {
     dispatch(fetchInvoice());
@@ -106,68 +46,195 @@ const FinanceInvoice = () => {
     setInvoices(allInvoices);
   }, [allInvoices]);
 
-  //codes for clicking change status button
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState("");
+  // Card report counts
+  const totalInvoices = invoices.length;
+  const suspendedCount = invoices.filter(
+    (inv) => inv.status.toLowerCase() === "suspended"
+  ).length;
+  const paidCount = invoices.filter(
+    (inv) => inv.status.toLowerCase() === "paid"
+  ).length;
 
-  const statusOptions = ["Pending", "Suspended", "Paid"];
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = async (status) => {
-    //you must keep code under this comment before try in fetch try
-    if (status) {
-      setSelectedStatus(status); // Set selected value;
-      // const filterData = invoices.map((item) =>
-      //   item.inv === data.inv ? { ...item, status: status } : item
-      // );
-      // setInvoices(filterData);
-    }
-    setAnchorEl(null);
-    //call fetch
-    dispatch(updateInvoice({ ...data, status: status }));
-  };
-
-  // Get orderId from order
-  const orderIds = [
-    ...new Set(invoices?.map((invoice) => invoice.order_id) || []),
-  ];
-  // Get status from order
-  const invoice_status = [
-    ...new Set(invoices?.map((invoice) => invoice.status) || []),
-  ];
-
-  // Filtered invoices based on order_id & status
-  const filteredInvoice = invoices?.filter((invoice) => {
-    const OrderIdMatch = orderId ? invoice.order_id === orderId : true;
-    const StatusMatch = status ? invoice.status === status : true;
-
-    return OrderIdMatch && StatusMatch;
+  // Filter invoices based on order no, status, and invoice date range.
+  // We assume each invoice has an "invoice_date" property.
+  const filteredInvoice = invoices.filter((invoice) => {
+    const orderMatch = orderId ? invoice.order_id === orderId : true;
+    const statusMatch = status ? invoice.status === status : true;
+    const dateMatch =
+      (startDate ? new Date(invoice.invoice_date) >= startDate : true) &&
+      (endDate ? new Date(invoice.invoice_date) <= endDate : true);
+    return orderMatch && statusMatch && dateMatch;
   });
 
+  // Unique order IDs and status values for dropdown filters.
+  const orderIds = [...new Set(invoices.map((invoice) => invoice.order_id))];
+  const invoiceStatusList = [
+    ...new Set(invoices.map((invoice) => invoice.status)),
+  ];
+
+  // Opens the status menu and saves the row data to update later.
+  const handleClick = (event, row) => {
+    setAnchorEl(event.currentTarget);
+    setData({ invoice_id: row.inv, status: row.status });
+  };
+
+  // When a status option is chosen (or menu closed) update the invoice via Redux.
+  const handleClose = async (newStatus) => {
+    setAnchorEl(null);
+    if (newStatus) {
+      dispatch(updateInvoice({ ...data, status: newStatus }));
+    }
+  };
+
+  const completeIcon = <IconProgressCheck stroke={1.5} size="1.6rem" />;
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "pending":
+        return "warning";
+      case "suspended":
+        return "error";
+      case "paid":
+        return "success";
+      default:
+        return "default";
+    }
+  };
+
+  const columns = [
+    {
+      name: "Invoice Date",
+      selector: (row) =>
+        row.invoice_date ? new Date(row.invoice_date).toLocaleDateString() : "",
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "Invoice",
+      selector: (row) => "INV#" + row.inv,
+      sortable: true,
+    },
+    {
+      name: "Order No",
+      selector: (row) => "Order#" + row.order_id,
+      sortable: true,
+    },
+    {
+      name: "Customer",
+      selector: (row) => row.customer_name,
+      sortable: true,
+    },
+    {
+      name: "Contact No",
+      selector: (row) => row.contact_no,
+    },
+    {
+      name: "Amount",
+      selector: (row) => row.amount,
+      sortable: true,
+      right: true,
+    },
+    {
+      name: "Status",
+      selector: (row) => (
+        <Chip
+          label={row.status.charAt(0).toUpperCase() + row.status.slice(1)}
+          color={getStatusColor(row.status)}
+        />
+      ),
+      sortable: true,
+    },
+    {
+      name: "Action",
+      cell: (row) =>
+        row.status.toLowerCase() === "paid" ? (
+          <Button>{completeIcon}</Button>
+        ) : (
+          <Button variant="contained" onClick={(e) => handleClick(e, row)}>
+            Change Status
+          </Button>
+        ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+      width: "150px",
+    },
+  ];
+
+  const customStyles = {
+    headRow: {
+      style: {
+        backgroundColor: "#5D87FF",
+        minHeight: "56px",
+        borderTopRightRadius: "8px",
+        borderTopLeftRadius: "8px",
+      },
+    },
+    headCells: {
+      style: {
+        color: "#FFF",
+        fontSize: "14px",
+        fontWeight: "bold",
+        "&:not(:last-of-type)": {
+          borderRight: "1px solid #e0e0e0",
+        },
+      },
+    },
+  };
+
   return (
-    <>
-      <PageContainer title="Product Page" description="this is product page">
-        <DashboardCard>
-          <h2>Invoice Lists</h2>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-around",
-              my: 4,
-              alignItems: "center",
-              width: 500,
-            }}
-          >
-            {/* order_id dropdown*/}
-            <FormControl variant="outlined" size="small" sx={{ width: 200 }}>
+    <PageContainer title="Invoice Page" description="Manage invoices">
+      <DashboardCard>
+        <Typography variant="h4" gutterBottom>
+          Invoice Lists
+        </Typography>
+
+        {/* Card Reports */}
+        <Grid container spacing={2} sx={{ mb: 2 }}>
+          <Grid item xs={12} sm={4}>
+            <Card variant="outlined" sx={{ backgroundColor: "#BBDEFB" }}>
+              <CardContent>
+                <Typography variant="subtitle1">Total Invoices</Typography>
+                <Typography variant="h5">{totalInvoices}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Card variant="outlined" sx={{ backgroundColor: "#FFE082" }}>
+              <CardContent>
+                <Typography variant="subtitle1">Suspended</Typography>
+                <Typography variant="h5">{suspendedCount}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Card variant="outlined" sx={{ backgroundColor: "#C8E6C9" }}>
+              <CardContent>
+                <Typography variant="subtitle1">Paid</Typography>
+                <Typography variant="h5">{paidCount}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+
+        {/* Filter Controls */}
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 2,
+            mb: 2,
+            justifyContent: "space-between",
+          }}
+        >
+          <Box sx={{ display: "flex", gap: 2 }}>
+            {/* Filter by order no */}
+            <FormControl variant="outlined" size="small" sx={{ minWidth: 200 }}>
               <InputLabel>Filter by order no</InputLabel>
               <Select
                 value={orderId}
                 onChange={(e) => setOrderId(e.target.value)}
-                label="Filter by drivers"
+                label="Filter by order no"
               >
                 <MenuItem value="">All Order no</MenuItem>
                 {orderIds.map((o) => (
@@ -178,8 +245,8 @@ const FinanceInvoice = () => {
               </Select>
             </FormControl>
 
-            {/* status dropdown*/}
-            <FormControl variant="outlined" size="small" sx={{ width: 200 }}>
+            {/* Filter by status */}
+            <FormControl variant="outlined" size="small" sx={{ minWidth: 200 }}>
               <InputLabel>Filter by status</InputLabel>
               <Select
                 value={status}
@@ -187,88 +254,73 @@ const FinanceInvoice = () => {
                 label="Filter by status"
               >
                 <MenuItem value="">All Status</MenuItem>
-                {invoice_status.map((o) => (
-                  <MenuItem key={o} value={o}>
-                    {o}
+                {invoiceStatusList.map((s) => (
+                  <MenuItem key={s} value={s}>
+                    {s}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
           </Box>
 
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 700 }} aria-label="customized table">
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell>Invoice</StyledTableCell>
-                  <StyledTableCell>Order no</StyledTableCell>
-                  <StyledTableCell>Customer</StyledTableCell>
-                  <StyledTableCell>Contact No</StyledTableCell>
-                  <StyledTableCell>Amount</StyledTableCell>
-                  <StyledTableCell>Status</StyledTableCell>
-                  <StyledTableCell></StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredInvoice.map((inv) => {
-                  const completeIcon = (
-                    <IconProgressCheck stroke={1.5} size="1.6rem" />
-                  );
-                  return (
-                    <StyledTableRow key={inv.inv}>
-                      <StyledTableCell>{inv.inv}</StyledTableCell>
-                      <StyledTableCell>{inv.order_id}</StyledTableCell>
-                      <StyledTableCell>{inv.customer_name}</StyledTableCell>
-                      <StyledTableCell>{inv.contact_no}</StyledTableCell>
-                      <StyledTableCell>{inv.amount}</StyledTableCell>
-                      <StyledTableCell>{inv.status}</StyledTableCell>
-                      <StyledTableCell align="center">
-                        {inv.status === "paid" ? (
-                          <Button>{completeIcon}</Button>
-                        ) : (
-                          <div>
-                            <Button
-                              variant="contained"
-                              onClick={(e) => {
-                                handleClick(e),
-                                  setData({
-                                    ...data,
-                                    invoice_id: inv.inv,
-                                  });
-                              }}
-                            >
-                              Change Status
-                            </Button>
-                            <Menu
-                              anchorEl={anchorEl}
-                              open={Boolean(anchorEl)}
-                              onClose={() => {
-                                handleClose(null);
-                              }}
-                            >
-                              {statusOptions.map((option) => {
-                                return (
-                                  <MenuItem
-                                    key={option}
-                                    onClick={() => handleClose(option)}
-                                  >
-                                    {option}
-                                  </MenuItem>
-                                );
-                              })}
-                            </Menu>
-                          </div>
-                        )}
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </DashboardCard>
-      </PageContainer>
-    </>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            {/* Invoice Date Start */}
+            <Box>
+              <Typography variant="caption" display="block">
+                Invoice Start Date
+              </Typography>
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+                dateFormat="MM/dd/yyyy"
+                placeholderText="Start Date"
+                className="custom-datepicker"
+              />
+            </Box>
+
+            {/* Invoice Date End */}
+            <Box>
+              <Typography variant="caption" display="block">
+                Invoice End Date
+              </Typography>
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => setEndDate(date)}
+                dateFormat="MM/dd/yyyy"
+                placeholderText="End Date"
+                className="custom-datepicker"
+              />
+            </Box>
+          </Box>
+        </Box>
+
+        {/* Data table with built-in pagination */}
+        <DataTable
+          columns={columns}
+          data={filteredInvoice}
+          pagination
+          highlightOnHover
+          pointerOnHover
+          striped
+          responsive
+          customStyles={customStyles}
+        />
+
+        {/* Change status Menu */}
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={() => handleClose(null)}
+        >
+          {statusOptions.map((option) => (
+            <MenuItem key={option} onClick={() => handleClose(option)}>
+              {option}
+            </MenuItem>
+          ))}
+        </Menu>
+      </DashboardCard>
+    </PageContainer>
   );
 };
+
 export default FinanceInvoice;

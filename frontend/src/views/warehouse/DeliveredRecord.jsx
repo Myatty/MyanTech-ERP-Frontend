@@ -73,20 +73,22 @@ const DeliverHistory = () => {
   }, [snackbarOpen, dispatch]);
 
   const handleClick = async (deliveryId) => {
-
     try {
       const updatedDeliveries = allDeliveries.map((item) =>
-        item.delivery_id === deliveryId ? { ...item, status: "completed" } : item
+        item.delivery_id === deliveryId
+          ? { ...item, status: "completed" }
+          : item
       );
       dispatch({ type: "UPDATE_DELIVERIES", payload: updatedDeliveries });
 
-      await axios.put(`${apiUrl}/api/deliveries/update/${deliveryId}`, { status: "completed" });
+      await axios.put(`${apiUrl}/api/deliveries/update/${deliveryId}`, {
+        status: "completed",
+      });
 
       setSnackbarMessage(`Delivery ID ${deliveryId} marked as Complete`);
       setOpenToast(true);
 
       dispatch(fetchDeliveries());
-
     } catch (error) {
       setSnackbarMessage("Error updating delivery status");
       setSnackbarSeverity("error");
@@ -94,12 +96,10 @@ const DeliverHistory = () => {
     }
   };
 
-
   useEffect(() => {
     if (snackbarOpen) {
     }
   }, [snackbarOpen, dispatch]);
-
 
   const handleAllClick = async () => {
     const allDeliveryIds = filteredDeliveries
@@ -110,11 +110,13 @@ const DeliverHistory = () => {
         ? { ...item, status: "Delivered" }
         : item
     );
-    dispatch({ type: 'UPDATE_DELIVERIES', payload: changeStatus });
+    dispatch({ type: "UPDATE_DELIVERIES", payload: changeStatus });
     try {
       await Promise.all(
         allDeliveryIds.map((deliveryId) =>
-          axios.put(`${apiUrl}/api/deliveries/update/${deliveryId}`, { status: "completed" })
+          axios.put(`${apiUrl}/api/deliveries/update/${deliveryId}`, {
+            status: "completed",
+          })
         )
       );
       setSnackbarMessage("All delivery statuses updated successfully");
@@ -129,7 +131,9 @@ const DeliverHistory = () => {
     setSnackbarOpen(false);
   };
 
-  const order_status = [...new Set(allDeliveries?.map((delivery) => delivery.status) || [])];
+  const order_status = [
+    ...new Set(allDeliveries?.map((delivery) => delivery.status) || []),
+  ];
 
   const filteredDeliveries = allDeliveries?.filter((delivery) => {
     const DriverMatch = driver ? delivery.driver_id === driver : true;
@@ -138,8 +142,9 @@ const DeliverHistory = () => {
     const DateMatch =
       startDate || endDate
         ? new Date(delivery.departure_time).getTime() >=
-        new Date(startDate).getTime() &&
-        new Date(delivery.departure_time).getTime() <= new Date(endDate).getTime()
+            new Date(startDate).getTime() &&
+          new Date(delivery.departure_time).getTime() <=
+            new Date(endDate).getTime()
         : true;
 
     return DateMatch && DriverMatch && StatusMatch && TruckMatch;
@@ -250,8 +255,12 @@ const DeliverHistory = () => {
     },
   };
   const totalOrders = allDeliveries.length;
-  const deliveredCount = allDeliveries.filter((o) => o.status === "completed").length;
-  const deliveringCount = allDeliveries.filter((o) => o.status === "delivering").length;
+  const deliveredCount = allDeliveries.filter(
+    (o) => o.status === "completed"
+  ).length;
+  const deliveringCount = allDeliveries.filter(
+    (o) => o.status === "delivering"
+  ).length;
 
   return (
     <PageContainer
@@ -271,7 +280,7 @@ const DeliverHistory = () => {
         </div>
 
         <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={4}>
             <Card variant="outlined" sx={{ backgroundColor: "#BBDEFB" }}>
               <CardContent>
                 <Typography variant="subtitle1">Total Orders</Typography>
@@ -280,7 +289,7 @@ const DeliverHistory = () => {
             </Card>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={4}>
             <Card variant="outlined" sx={{ backgroundColor: "#C8E6C9" }}>
               <CardContent>
                 <Typography variant="subtitle1">Completed</Typography>
@@ -289,7 +298,7 @@ const DeliverHistory = () => {
             </Card>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={4}>
             <Card variant="outlined" sx={{ backgroundColor: "#FFE082" }}>
               <CardContent>
                 <Typography variant="subtitle1">Delivering</Typography>
@@ -312,7 +321,9 @@ const DeliverHistory = () => {
                 value={driver}
                 onChange={(e) => setDriver(e.target.value)}
                 label="Filter by Driver"
-              >       <MenuItem value="">All Drivers</MenuItem>
+              >
+                {" "}
+                <MenuItem value="">All Drivers</MenuItem>
                 {allDrivers.map((d) => (
                   <MenuItem key={d.driver_id} value={d.driver_id}>
                     {d.driver_name}
@@ -326,7 +337,9 @@ const DeliverHistory = () => {
                 value={truck}
                 onChange={(e) => setTruck(e.target.value)}
                 label="Filter by Truck"
-              >       <MenuItem value="">All Trucks</MenuItem>
+              >
+                {" "}
+                <MenuItem value="">All Trucks</MenuItem>
                 {allTrucks.map((d) => (
                   <MenuItem key={d.truck_id} value={d.truck_id}>
                     {d.license_plate}
@@ -395,7 +408,11 @@ const DeliverHistory = () => {
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
       >
-        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>
