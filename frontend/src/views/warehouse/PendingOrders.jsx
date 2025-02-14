@@ -32,7 +32,7 @@ export default function CustomizedTables() {
 
   const [region, setRegion] = useState("");
   const [township, setTownship] = useState("");
-  const [searchOrder, setSearchOrder] = useState(""); 
+  const [searchOrder, setSearchOrder] = useState("");
   const [assignOrderId, setAssignOrderId] = useState([]);
   const [selectOrderId, setSelectOrderId] = useState([]);
 
@@ -114,7 +114,7 @@ export default function CustomizedTables() {
           <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
             <TableRow>
               <TableCell>Date and Time</TableCell>
-              <TableCell align="left">Order Number</TableCell>
+              <TableCell align="left">Order No</TableCell>
               <TableCell align="left">Customer</TableCell>
               <TableCell align="left">Product</TableCell>
               <TableCell align="left">Quantity</TableCell>

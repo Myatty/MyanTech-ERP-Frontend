@@ -110,8 +110,6 @@ const Return = () => {
     if (status === null) return;
     if (status === "service" || status === "picked_up") {
       setObj({ ...obj, status: status });
-      console.log("Obj", obj);
-
       return setOpen(true);
     } else {
       if (status) {
@@ -132,7 +130,6 @@ const Return = () => {
               status: status,
             }
           );
-          console.log("Response:", response.data);
         } else {
           const response = await axios.put(
             `${apiUrl}/api/returns/return-resolve`,
@@ -141,8 +138,6 @@ const Return = () => {
               status: status,
             }
           );
-
-          console.log("Response:", response.data);
         }
         dispatch(fetchReturnInfo());
         dispatch(fetchDrivers());
@@ -163,11 +158,11 @@ const Return = () => {
     ...new Set(results?.map((order) => order.return_reason) || []),
   ];
   const order_status = [
-    ...new Set(results?.map((order) => order.status) || []),
+    ...new Set(results?.map((order) => order.return_status) || []),
   ];
   const filteredReturnOrders = results?.filter((order) => {
     const ReasonMatch = reason ? order.return_reason === reason : true;
-    const StatusMatch = status ? order.status === status : true;
+    const StatusMatch = status ? order.return_status === status : true;
     const OrderIdMatch = orderId ? order.order_id === orderId : true;
 
     return ReasonMatch && StatusMatch && OrderIdMatch;
@@ -324,9 +319,9 @@ const Return = () => {
 
                     <StyledTableCell>{item.customer_name}</StyledTableCell>
                     <StyledTableCell>{item.product_name}</StyledTableCell>
-                    <StyledTableCell>{item.qty}</StyledTableCell>
+                    <StyledTableCell>{item.quantity}</StyledTableCell>
                     <StyledTableCell>{item.return_reason}</StyledTableCell>
-                    <StyledTableCell>{item.status}</StyledTableCell>
+                    <StyledTableCell>{item.return_status}</StyledTableCell>
                     <StyledTableCell align="center">
                       {item.status === "resolved" ? (
                         <Button>{completeIcon}</Button>

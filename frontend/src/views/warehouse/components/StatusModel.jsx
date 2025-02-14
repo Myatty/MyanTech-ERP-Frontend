@@ -16,7 +16,6 @@ const apiUrl = import.meta.env.VITE_APP_API_URL;
 import { fetchServiceCenter } from "../../../actions/serviceCentersAction";
 import { fetchReturnInfo } from "../../../actions/returnInfoActions";
 
-
 const StatusModel = ({
   open,
   setOpen,
@@ -33,7 +32,6 @@ const StatusModel = ({
     dispatch(fetchDrivers());
     dispatch(fetchTrucks());
     dispatch(fetchServiceCenter());
-
   }, [dispatch]);
 
   const [driver, setDriver] = useState("");
@@ -42,15 +40,14 @@ const StatusModel = ({
 
   const drivers = useSelector((state) => state.drivers.drivers);
   const trucks = useSelector((state) => state.trucks.trucks);
-  const serviceCenters = useSelector((state) => state.serviceCenter.serviceCenters);
+  const serviceCenters = useSelector(
+    (state) => state.serviceCenter.serviceCenters
+  );
 
   //func for assign
   const handleClick = async () => {
-    // //you have to keep code under this comment before try in fetch try
-    console.log("Obj", obj);
-
     if (obj.status) {
-      setSelectedStatus(obj.status); // Set selected value;
+      setSelectedStatus(obj.status);
       const filterData = retunOrders.map((item) =>
         item.return_id === obj.return_id
           ? { ...item, status: obj.status }
@@ -71,35 +68,22 @@ const StatusModel = ({
     });
     setDriver(0), setTruck(0), setCenter(0);
     try {
-      if (
-        obj.status === "service"
-      ) {
-        console.log("obj status", obj.status)
-        await axios.put(
-          //replace with correct endpoint
-          `${apiUrl}/api/returns/assign-service`,
-          obj
-        );
+      if (obj.status === "service") {
+        console.log("obj status", obj.status);
+        await axios.put(`${apiUrl}/api/returns/assign-service`, obj);
       } else {
-        console.log("obj status", obj.status)
-        await axios.put(
-          //replace with correct endpoint
-          `${apiUrl}/api/returns/assign-pickup`,
-          obj
-        );
+        console.log("obj status", obj.status);
+        await axios.put(`${apiUrl}/api/returns/assign-pickup`, obj);
       }
-      dispatch(fetchReturnInfo())
-      dispatch(fetchDrivers())
-      dispatch(fetchTrucks())
-
+      dispatch(fetchReturnInfo());
+      dispatch(fetchDrivers());
+      dispatch(fetchTrucks());
     } catch (error) {
       console.error("Error changing status:", error);
     }
   };
 
   const centers = serviceCenters?.results || [];
-
-
 
   return (
     <>
@@ -149,7 +133,6 @@ const StatusModel = ({
                 label="Trucks"
               >
                 {trucks.map((t) => (
-
                   <MenuItem key={t.truck_id} value={t.truck_id}>
                     {t.license_plate}
                   </MenuItem>
@@ -172,7 +155,10 @@ const StatusModel = ({
                   label="Service Centers"
                 >
                   {centers.map((c) => (
-                    <MenuItem key={c.service_center_id} value={c.service_center_id}>
+                    <MenuItem
+                      key={c.service_center_id}
+                      value={c.service_center_id}
+                    >
                       {c.name}
                     </MenuItem>
                   ))}

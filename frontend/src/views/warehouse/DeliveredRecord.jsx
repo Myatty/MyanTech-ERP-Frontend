@@ -188,7 +188,7 @@ const DeliverHistory = () => {
     },
     {
       name: "Delivery ID",
-      selector: (row) => row.delivery_id,
+      selector: (row) => "Deli #" + row.delivery_id,
       sortable: true,
       width: "150px",
     },
