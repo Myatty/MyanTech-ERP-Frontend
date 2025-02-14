@@ -28,12 +28,9 @@ const FinanceInvoice = () => {
   const [orderId, setOrderId] = useState("");
   const [status, setStatus] = useState("");
   const [invoices, setInvoices] = useState([]);
-  // For date filtering – invoice start and end dates
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  // State to hold invoice data when changing status
   const [data, setData] = useState({ invoice_id: null, status: "" });
-  // For the change status menu anchor
   const [anchorEl, setAnchorEl] = useState(null);
 
   const statusOptions = ["Pending", "Suspended", "Paid"];
@@ -46,25 +43,10 @@ const FinanceInvoice = () => {
     setInvoices(allInvoices);
   }, [allInvoices]);
 
-  // Card report counts
-  const totalInvoices = invoices.length;
-  const totalAmount = invoices.reduce(
-    (acc, inv) => Number(acc) + Number(inv.amount),
-    0
-  );
-  const suspendedCount = invoices.filter(
-    (inv) => inv.status.toLowerCase() === "suspended"
-  ).length;
-  const paidCount = invoices.filter(
-    (inv) => inv.status.toLowerCase() === "paid"
-  ).length;
-  const pendingCount = invoices.filter(
-    (inv) => inv.status.toLowerCase() === "pending"
-  ).length;
-
   // Filter invoices based on order no, status, and invoice date range.
   // We assume each invoice has an "invoice_date" property.
   const filteredInvoice = invoices.filter((invoice) => {
+    if (invoice.status == null) return;
     const orderMatch = orderId ? invoice.order_id === orderId : true;
     const statusMatch = status ? invoice.status === status : true;
     const dateMatch =
@@ -72,6 +54,21 @@ const FinanceInvoice = () => {
       (endDate ? new Date(invoice.invoice_date) <= endDate : true);
     return orderMatch && statusMatch && dateMatch;
   });
+
+  // Card report counts
+  const totalAmount = filteredInvoice.reduce(
+    (acc, inv) => Number(acc) + Number(inv.amount),
+    0
+  );
+  const suspendedCount = filteredInvoice.filter(
+    (inv) => inv.status.toLowerCase() === "suspended"
+  ).length;
+  const paidCount = filteredInvoice.filter(
+    (inv) => inv.status.toLowerCase() === "paid"
+  ).length;
+  const pendingCount = filteredInvoice.filter(
+    (inv) => inv.status.toLowerCase() === "pending"
+  ).length;
 
   // Unique order IDs and status values for dropdown filters.
   const orderIds = [...new Set(invoices.map((invoice) => invoice.order_id))];
@@ -110,11 +107,11 @@ const FinanceInvoice = () => {
 
   const columns = [
     {
-      name: "Invoice Date",
+      name: "Inv Date",
       selector: (row) =>
         row.invoice_date ? new Date(row.invoice_date).toLocaleDateString() : "",
       sortable: true,
-      width: "150px",
+      width: "120px",
     },
     {
       name: "Invoice",
@@ -158,13 +155,13 @@ const FinanceInvoice = () => {
           <Button>{completeIcon}</Button>
         ) : (
           <Button variant="contained" onClick={(e) => handleClick(e, row)}>
-            Change Status
+            Change
           </Button>
         ),
       ignoreRowClick: true,
       allowOverflow: true,
       button: true,
-      width: "150px",
+      width: "130px",
     },
   ];
 

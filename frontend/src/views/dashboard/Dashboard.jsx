@@ -9,6 +9,8 @@ import RecentTransactions from "./components/RecentTransactions";
 import ProductPerformance from "./components/ProductPerformance";
 import MonthlyEarnings from "./components/MonthlyEarnings";
 import SystemReports from "./components/SystemReports";
+import SlowProductPerformance from "./components/SlowProductPerformance";
+import ProfitProductPerformance from "./components/ProfitProductPerformance";
 
 const Dashboard = () => {
   return (
@@ -36,6 +38,12 @@ const Dashboard = () => {
           </Grid>
           <Grid item xs={12} lg={8}>
             <ProductPerformance />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <SlowProductPerformance />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <ProfitProductPerformance />
           </Grid>
         </Grid>
       </Box>
