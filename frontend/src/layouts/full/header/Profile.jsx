@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   Avatar,
   Box,
@@ -10,47 +11,41 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-
 import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
 
+import { logoutUser } from "src/actions/authActions";
 import ProfileImg from "src/assets/images/profile/user-1.jpg";
 
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const handleClick2 = (event) => {
     setAnchorEl2(event.currentTarget);
   };
+
   const handleClose2 = () => {
     setAnchorEl2(null);
+  };
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    handleClose2();
+    navigate("/auth/login");
   };
 
   return (
     <Box>
       <IconButton
         size="large"
-        aria-label="show 11 new notifications"
         color="inherit"
         aria-controls="msgs-menu"
         aria-haspopup="true"
-        sx={{
-          ...(typeof anchorEl2 === "object" && {
-            color: "primary.main",
-          }),
-        }}
         onClick={handleClick2}
       >
-        <Avatar
-          src={ProfileImg}
-          alt={ProfileImg}
-          sx={{
-            width: 35,
-            height: 35,
-          }}
-        />
+        <Avatar src={ProfileImg} alt="Profile" sx={{ width: 35, height: 35 }} />
       </IconButton>
-      {/* ------------------------------------------- */}
-      {/* Message Dropdown */}
-      {/* ------------------------------------------- */}
       <Menu
         id="msgs-menu"
         anchorEl={anchorEl2}
@@ -85,11 +80,10 @@ const Profile = () => {
         </MenuItem>
         <Box mt={1} py={1} px={2}>
           <Button
-            to="/auth/login"
             variant="outlined"
             color="primary"
-            component={Link}
             fullWidth
+            onClick={handleLogout}
           >
             Logout
           </Button>

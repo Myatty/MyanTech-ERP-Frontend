@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -15,25 +15,26 @@ import CustomTextField from "../../../components/forms/theme-elements/CustomText
 const AuthLogin = ({ title }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  // local loading just to show spinner on the button
+  const [localLoading, setLocalLoading] = useState(false);
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { error } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setErrorMessage("");
+  // Pull these from Redux
+  const { error, token, loading } = useSelector((state) => state.auth);
 
-    try {
-      await dispatch(loginUser(email, password));
-      navigate("/dashboard"); // Redirect after successful login
-    } catch (err) {
-      setErrorMessage(err.message);
-      setLoading(false);
+  useEffect(() => {
+    if (token) {
+      // If there's a token, it means login succeeded
+      navigate("/dashboard");
     }
+  }, [token, navigate]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setLocalLoading(true);
+    dispatch(loginUser(email, password)).finally(() => setLocalLoading(false)); // stop spinner
   };
 
   return (
@@ -45,7 +46,9 @@ const AuthLogin = ({ title }) => {
       )}
 
       <Stack component="form" onSubmit={handleSubmit}>
-        {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+        {error && (
+          <Alert severity="error">The username or password is incorrect!</Alert>
+        )}
 
         <Box>
           <Typography
@@ -61,10 +64,12 @@ const AuthLogin = ({ title }) => {
             id="email"
             variant="outlined"
             fullWidth
+            required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </Box>
+
         <Box mt="25px">
           <Typography
             variant="subtitle1"
@@ -80,6 +85,7 @@ const AuthLogin = ({ title }) => {
             type="password"
             variant="outlined"
             fullWidth
+            required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -92,9 +98,13 @@ const AuthLogin = ({ title }) => {
             size="large"
             fullWidth
             type="submit"
-            disabled={loading}
+            disabled={localLoading || loading} // disable if loading
           >
-            {loading ? <CircularProgress size={24} /> : "Sign In"}
+            {localLoading || loading ? (
+              <CircularProgress size={24} />
+            ) : (
+              "Sign In"
+            )}
           </Button>
         </Box>
       </Stack>

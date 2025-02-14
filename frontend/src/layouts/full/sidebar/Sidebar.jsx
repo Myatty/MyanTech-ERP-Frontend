@@ -1,26 +1,22 @@
-import { useMediaQuery, Box, Drawer } from '@mui/material';
-import SidebarItems from './SidebarItems';
-import { Upgrade } from './Updrade';
-import { Sidebar, Logo } from 'react-mui-sidebar';
-import logo from '../../../assets/images/logos/dark1-logo.svg'
+import { useMediaQuery, Box, Drawer } from "@mui/material";
+import SidebarItems from "./SidebarItems";
+import { Upgrade } from "./Updrade";
+import { Sidebar, Logo } from "react-mui-sidebar";
+import logo from "../../../assets/images/logos/dark1-logo.svg";
 
 const MSidebar = (props) => {
-
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up("lg"));
-  const sidebarWidth = '270px';
+  const sidebarWidth = "270px";
 
-  // Custom CSS for short scrollbar
   const scrollbarStyles = {
-    '&::-webkit-scrollbar': {
-      width: '7px',
-
+    "&::-webkit-scrollbar": {
+      width: "7px",
     },
-    '&::-webkit-scrollbar-thumb': {
-      backgroundColor: '#eff2f7',
-      borderRadius: '15px',
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#eff2f7",
+      borderRadius: "15px",
     },
   };
-
 
   if (lgUp) {
     return (
@@ -39,7 +35,7 @@ const MSidebar = (props) => {
           variant="permanent"
           PaperProps={{
             sx: {
-              boxSizing: 'border-box',
+              boxSizing: "border-box",
               ...scrollbarStyles,
             },
           }}
@@ -49,12 +45,11 @@ const MSidebar = (props) => {
           {/* ------------------------------------------- */}
           <Box
             sx={{
-              height: '100%',
+              height: "100%",
             }}
           >
-
             <Sidebar
-              width={'270px'}
+              width={"270px"}
               collapsewidth="80px"
               open={props.isSidebarOpen}
               themeColor="#5d87ff"
@@ -72,10 +67,10 @@ const MSidebar = (props) => {
                 <SidebarItems />
                 <Upgrade />
               </Box>
-            </Sidebar >
+            </Sidebar>
           </Box>
-        </Drawer >
-      </Box >
+        </Drawer>
+      </Box>
     );
   }
   return (
@@ -86,14 +81,13 @@ const MSidebar = (props) => {
       variant="temporary"
       PaperProps={{
         sx: {
-
           boxShadow: (theme) => theme.shadows[8],
           ...scrollbarStyles,
         },
       }}
     >
       <Sidebar
-        width={'270px'}
+        width={"270px"}
         collapsewidth="80px"
         isCollapse={false}
         mode="light"

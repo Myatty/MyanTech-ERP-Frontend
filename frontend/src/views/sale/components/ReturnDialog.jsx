@@ -19,10 +19,12 @@ import {
 } from "@mui/material";
 import { IconTrash } from "@tabler/icons-react";
 import axios from "axios";
+import { useNavigate } from "react-router";
 const apiUrl = import.meta.env.VITE_APP_API_URL;
 
 const ReturnDialog = ({ open, onClose, orderItems, onConfirm }) => {
   const [returnItems, setReturnItems] = useState([]);
+  const navigate = useNavigate();
   useEffect(() => {
     if (open) {
       setReturnItems(
@@ -70,6 +72,7 @@ const ReturnDialog = ({ open, onClose, orderItems, onConfirm }) => {
       await axios.post(`${apiUrl}/api/returns`, selectedReturns);
       onConfirm(selectedReturns);
       onClose();
+      navigate("/sales/history");
     } catch (error) {
       console.error("Error posting return items:", error);
     }

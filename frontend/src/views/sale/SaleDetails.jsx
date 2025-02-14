@@ -42,11 +42,6 @@ const SaleDetails = () => {
     dispatch(fetchSaleDetail(order_id));
   }, [dispatch, order_id]);
 
-  useEffect(() => {
-    console.log("sale details:", orderDetails);
-    console.log("order items:", orderItems);
-  }, [orderDetails, orderItems]);
-
   if (loading) {
     return (
       <Box
@@ -148,6 +143,7 @@ const SaleDetails = () => {
                   variant="standard"
                   size="small"
                   margin="dense"
+                  disabled
                   placeholder="Customer Name"
                   value={orderDetails.customer_name || ""}
                   InputProps={{ readOnly: true }}
@@ -157,6 +153,7 @@ const SaleDetails = () => {
                   variant="standard"
                   size="small"
                   margin="dense"
+                  disabled
                   placeholder="Township"
                   value={orderDetails.township || ""}
                   InputProps={{ readOnly: true }}
@@ -166,6 +163,7 @@ const SaleDetails = () => {
                   variant="standard"
                   size="small"
                   margin="dense"
+                  disabled
                   placeholder="Region"
                   value={orderDetails.region || ""}
                   InputProps={{ readOnly: true }}
@@ -174,6 +172,7 @@ const SaleDetails = () => {
                   fullWidth
                   variant="standard"
                   size="small"
+                  disabled
                   margin="dense"
                   placeholder="Contact Number"
                   value={orderDetails.contact_number1 || ""}
@@ -194,6 +193,7 @@ const SaleDetails = () => {
                 <DatePicker
                   selected={new Date(orderDetails.order_date)}
                   onChange={(dt) => {}}
+                  disabled
                   dateFormat="dd/MM/yyyy"
                   customInput={
                     <TextField
@@ -210,6 +210,7 @@ const SaleDetails = () => {
                   variant="standard"
                   size="small"
                   margin="dense"
+                  disabled
                   placeholder="Delivery Status"
                   value={
                     `Delivery Status - ${
@@ -224,6 +225,7 @@ const SaleDetails = () => {
                   variant="standard"
                   size="small"
                   margin="dense"
+                  disabled
                   placeholder="Payment Status"
                   value={`Payment Status - ${
                     orderDetails.invoice_status

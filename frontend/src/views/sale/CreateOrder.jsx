@@ -40,7 +40,6 @@ const OrderCreate = () => {
   const dispatch = useDispatch();
   const apiUrl = import.meta.env.VITE_APP_API_URL;
 
-
   const { loading, products, error } = useSelector((state) => state.products);
   const { customers } = useSelector((state) => state.customers);
 
@@ -296,6 +295,7 @@ const OrderCreate = () => {
                   selected={selectedDate}
                   onChange={(dt) => setSelectedDate(dt)}
                   dateFormat="dd/MM/yyyy"
+                  disabled
                   customInput={
                     <TextField
                       fullWidth
