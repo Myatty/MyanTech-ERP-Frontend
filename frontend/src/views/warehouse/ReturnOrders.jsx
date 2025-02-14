@@ -307,7 +307,7 @@ const Return = () => {
                 const completeIcon = (
                   <IconProgressCheck stroke={1.5} size="1.6rem" />
                 );
-                const itemOptions = statusOptions[item.status] || [];
+                const itemOptions = statusOptions[item.return_status] || [];
 
                 return (
                   <StyledTableRow key={item.return_id}>
