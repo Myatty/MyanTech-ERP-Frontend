@@ -7,7 +7,6 @@ import Chart from "react-apexcharts";
 const SalesOverview = () => {
   // select
   const [month, setMonth] = React.useState("1");
-
   const handleChange = (event) => {
     setMonth(event.target.value);
   };
@@ -56,9 +55,7 @@ const SalesOverview = () => {
       borderColor: "rgba(0,0,0,0.1)",
       strokeDashArray: 3,
       xaxis: {
-        lines: {
-          show: false,
-        },
+        lines: { show: false },
       },
     },
     yaxis: {
@@ -75,23 +72,23 @@ const SalesOverview = () => {
         "22/02",
         "23/02",
       ],
-      axisBorder: {
-        show: false,
-      },
+      axisBorder: { show: false },
     },
     tooltip: {
       theme: theme.palette.mode === "dark" ? "dark" : "light",
       fillSeriesColor: false,
     },
   };
+
+  // First series = Orders Placed, second = Deliveries Completed
   const seriescolumnchart = [
     {
-      name: "Eanings this month",
-      data: [355, 390, 300, 350, 390, 180, 355, 390],
+      name: "Orders Placed",
+      data: [35, 40, 30, 35, 39, 18, 35, 40],
     },
     {
-      name: "Expense this month",
-      data: [280, 250, 325, 215, 250, 310, 280, 250],
+      name: "Deliveries Completed",
+      data: [28, 25, 32, 21, 25, 31, 28, 25],
     },
   ];
 
