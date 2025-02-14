@@ -36,7 +36,7 @@ const SlowProductPerformance = () => {
   }, []);
 
   return (
-    <DashboardCard title="Low-Selling Products">
+    <DashboardCard title="Slow Moving Products">
       {loading ? (
         <Box display="flex" justifyContent="center" p={2}>
           <CircularProgress />
@@ -47,12 +47,12 @@ const SlowProductPerformance = () => {
         </Typography>
       ) : (
         <Box sx={{ overflow: "auto" }}>
-          <Table aria-label="slow selling products" sx={{ mt: 2 }}>
+          <Table aria-label="slow selling products">
             <TableHead>
               <TableRow>
                 <TableCell>
                   <Typography variant="subtitle2" fontWeight={600}>
-                    Product ID
+                    No
                   </Typography>
                 </TableCell>
                 <TableCell>
@@ -73,14 +73,17 @@ const SlowProductPerformance = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {products.map((item) => (
-                <TableRow key={item.product_id}>
-                  <TableCell>{item.product_id}</TableCell>
-                  <TableCell>{item.product_name}</TableCell>
-                  <TableCell>{item.total_quantity_sold}</TableCell>
-                  <TableCell>{item.total_revenue}</TableCell>
-                </TableRow>
-              ))}
+              {products.map(
+                (item, index) =>
+                  index < 10 && (
+                    <TableRow key={item.product_id}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{item.product_name}</TableCell>
+                      <TableCell>{item.total_quantity_sold}</TableCell>
+                      <TableCell>{item.total_revenue}</TableCell>
+                    </TableRow>
+                  )
+              )}
             </TableBody>
           </Table>
         </Box>

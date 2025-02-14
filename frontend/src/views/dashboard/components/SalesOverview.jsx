@@ -94,7 +94,7 @@ const SalesOverview = () => {
 
   return (
     <DashboardCard
-      title="Sales Overview"
+      title="Order & Delivery Overview"
       action={
         <Select
           labelId="month-dd"
@@ -104,8 +104,6 @@ const SalesOverview = () => {
           onChange={handleChange}
         >
           <MenuItem value={1}>Feb 2025</MenuItem>
-          <MenuItem value={2}>Jan 2025</MenuItem>
-          <MenuItem value={3}>Dec 2024</MenuItem>
         </Select>
       }
     >
