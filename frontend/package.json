@@ -21,6 +21,7 @@
     "@tabler/icons-react": "^2.35.0",
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",
+    "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "modernize-free-react-app-vite": "file:",
     "prop-types": "^15.8.1",
