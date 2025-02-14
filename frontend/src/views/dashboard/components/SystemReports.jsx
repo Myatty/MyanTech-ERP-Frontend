@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Typography, Avatar, Box } from "@mui/material";
 import DashboardCard from "../../../components/shared/DashboardCard";
+import axios from "axios";
 // Import whichever Tabler icons you like
 import {
   IconClipboardList,
@@ -26,21 +27,19 @@ const SystemReports = () => {
   });
 
   useEffect(() => {
-    setStats({
-      totalOrders: 135,
-      pendingOrders: 17,
-      deliveriesCompleted: 102,
-      returnOrders: 4,
-      totalInvoices: 80,
-      totalCustomers: 56,
-      totalRevenue: 8093000,
-      totalProducts: 120,
-    });
+    // setStats({
+    //   totalOrders: 135,
+    //   pendingOrders: 17,
+    //   deliveriesCompleted: 102,
+    //   returnOrders: 4,
+    //   totalInvoices: 80,
+    //   totalCustomers: 56,
+    //   totalRevenue: 8093000,
+    //   totalProducts: 120,
+    // });
     const fetchStats = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:4000/api/dashboard/stats"
-        );
+        const res = await axios.get("http://localhost:4000/api/report/stats");
         setStats(res.data);
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
@@ -181,7 +180,7 @@ const SystemReports = () => {
             <Box>
               <Typography variant="subtitle2">Revenue (MMK)</Typography>
               <Typography variant="h4" fontWeight="700">
-                {stats.totalRevenue.toLocaleString()}
+                {Number(stats.totalRevenue).toLocaleString()}
               </Typography>
             </Box>
             <Avatar sx={{ bgcolor: "primary" }}>

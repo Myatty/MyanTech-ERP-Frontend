@@ -79,8 +79,12 @@ const ProfitProductPerformance = () => {
                     <TableRow key={item.product_id}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>{item.product_name}</TableCell>
-                      <TableCell>{item.total_quantity_sold}</TableCell>
-                      <TableCell>{item.total_revenue}</TableCell>
+                      <TableCell align="center">
+                        {item.total_quantity_sold}
+                      </TableCell>
+                      <TableCell align="right">
+                        {Number(item.total_revenue).toLocaleString()} MMK
+                      </TableCell>
                     </TableRow>
                   )
               )}
