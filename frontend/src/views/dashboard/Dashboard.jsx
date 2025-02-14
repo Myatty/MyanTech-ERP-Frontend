@@ -8,12 +8,16 @@ import YearlyBreakup from "./components/YearlyBreakup";
 import RecentTransactions from "./components/RecentTransactions";
 import ProductPerformance from "./components/ProductPerformance";
 import MonthlyEarnings from "./components/MonthlyEarnings";
+import SystemReports from "./components/SystemReports";
 
 const Dashboard = () => {
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
       <Box>
         <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <SystemReports />
+          </Grid>
           <Grid item xs={12} lg={8}>
             <SalesOverview />
           </Grid>

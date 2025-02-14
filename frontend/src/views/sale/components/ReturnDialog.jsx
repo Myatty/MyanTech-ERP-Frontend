@@ -28,8 +28,8 @@ const ReturnDialog = ({ open, onClose, orderItems, onConfirm }) => {
       setReturnItems(
         orderItems.map((item) => ({
           ...item,
-          returnQty: item.quantity, 
-          returnReason: "", 
+          returnQty: item.quantity,
+          returnReason: "",
         }))
       );
     }
@@ -71,7 +71,7 @@ const ReturnDialog = ({ open, onClose, orderItems, onConfirm }) => {
       onConfirm(selectedReturns);
       onClose();
     } catch (error) {
-      console.error('Error posting return items:', error);
+      console.error("Error posting return items:", error);
     }
   };
 

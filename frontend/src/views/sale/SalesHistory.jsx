@@ -40,15 +40,6 @@ const SaleHistoryPage = () => {
     dispatch(fetchOrders());
   }, [dispatch]);
 
-  useEffect(() => {
-    console.log("Fetched Orders:", orders); // Debugging log
-  }, [orders]);
-
-  const handleEdit = (row) => {
-    alert(`Edit product ID: ${row.order_id}`);
-  };
-
-  // set finance_status to null if the value is undefined
   const transformedOrders = orders?.map((order) => ({
     ...order,
     finance_status: order.finance_status || "N/A",
