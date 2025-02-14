@@ -323,7 +323,7 @@ const Return = () => {
                     <StyledTableCell>{item.return_reason}</StyledTableCell>
                     <StyledTableCell>{item.return_status}</StyledTableCell>
                     <StyledTableCell align="center">
-                      {item.status === "resolved" ? (
+                      {item.return_status === "resolved" ? (
                         <Button>{completeIcon}</Button>
                       ) : (
                         <div>
