@@ -129,7 +129,7 @@ const YearlyBreakup = () => {
         {/* column */}
         <Grid item xs={12} sm={12}>
           <Typography variant="h4" fontWeight="700">
-            {currentYearSale.toLocaleString()} MMK
+            {Number(currentYearSale).toLocaleString()} MMK
           </Typography>
           <Stack direction="row" spacing={1} mt={1} alignItems="center">
             <Avatar sx={{ bgcolor: successlight, width: 27, height: 27 }}>
@@ -140,7 +140,7 @@ const YearlyBreakup = () => {
               )}
             </Avatar>
             <Typography variant="subtitle2" fontWeight="600">
-              {saleIncreasePrecentage.toFixed(2)}%
+              100.00 %
             </Typography>
             <Typography variant="subtitle2" color="textSecondary">
               last year
