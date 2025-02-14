@@ -17,8 +17,10 @@ import returnOrderReducer from "./reducers/returnOrderReducer";
 import serviceCenterReducer from "./reducers/serviceCenterReducer";
 import invoicesStatusReducer from "./reducers/invoiceStatusReducer";
 import authReducer from "./reducers/authReducers";
+import themeReducer from "./reducers/themeReducer";
 
 const rootReducer = combineReducers({
+  themes: themeReducer,
   products: productsReducer,
   users: usersReducer,
   orders: ordersReducer,

@@ -1,20 +1,29 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import { Provider } from "react-redux";
-import { BrowserRouter as Router, useRoutes } from "react-router-dom";
-import RouterConfig from "./routes/Router";
+import { useRoutes } from "react-router-dom";
+import { Provider, useSelector } from "react-redux";
+import Router from "./routes/Router";
 import store from "./store";
 import { baselightTheme } from "./theme/DefaultColors";
 
-function App() {
-  const routing = useRoutes(RouterConfig); // Now correctly uses routes
-  const theme = baselightTheme;
+function AppContent() {
+  const routing = useRoutes(Router);
+  const mode = useSelector((state) => state.themes.mode);
+  const theme = baselightTheme(mode);
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {routing} {/* Routes will be rendered here */}
+      {routing}
     </ThemeProvider>
+  );
+}
+
+function App() {
+  return (
+    <Provider store={store}>
+      <AppContent />
+    </Provider>
   );
 }
 

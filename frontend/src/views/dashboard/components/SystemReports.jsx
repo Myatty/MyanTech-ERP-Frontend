@@ -63,8 +63,8 @@ const SystemReports = () => {
                 {stats.totalOrders}
               </Typography>
             </Box>
-            <Avatar sx={{ bgcolor: "primary" }}>
-              <IconClipboardList />
+            <Avatar sx={{ bgcolor: "primary.dark" }}>
+              <IconClipboardList color="white" />
             </Avatar>
           </Box>
         </DashboardCard>
@@ -83,8 +83,8 @@ const SystemReports = () => {
                 {stats.pendingOrders}
               </Typography>
             </Box>
-            <Avatar sx={{ bgcolor: "secondary" }}>
-              <IconClipboardCheck />
+            <Avatar sx={{ bgcolor: "primary.dark" }}>
+              <IconClipboardCheck color="white" />
             </Avatar>
           </Box>
         </DashboardCard>
@@ -103,8 +103,8 @@ const SystemReports = () => {
                 {stats.deliveriesCompleted}
               </Typography>
             </Box>
-            <Avatar sx={{ bgcolor: "success" }}>
-              <IconTruckDelivery />
+            <Avatar sx={{ bgcolor: "primary.dark" }}>
+              <IconTruckDelivery color="white" />
             </Avatar>
           </Box>
         </DashboardCard>
@@ -123,8 +123,8 @@ const SystemReports = () => {
                 {stats.returnOrders}
               </Typography>
             </Box>
-            <Avatar sx={{ bgcolor: "warning" }}>
-              <IconTruckReturn />
+            <Avatar sx={{ bgcolor: "primary.dark" }}>
+              <IconTruckReturn color="white" />
             </Avatar>
           </Box>
         </DashboardCard>
@@ -143,8 +143,8 @@ const SystemReports = () => {
                 {stats.totalInvoices}
               </Typography>
             </Box>
-            <Avatar sx={{ bgcolor: "info" }}>
-              <IconReceipt2 />
+            <Avatar sx={{ bgcolor: "primary.dark" }}>
+              <IconReceipt2 color="white" />
             </Avatar>
           </Box>
         </DashboardCard>
@@ -163,8 +163,8 @@ const SystemReports = () => {
                 {stats.totalCustomers}
               </Typography>
             </Box>
-            <Avatar sx={{ bgcolor: "secondary" }}>
-              <IconUser />
+            <Avatar sx={{ bgcolor: "primary.dark" }}>
+              <IconUser color="white" />
             </Avatar>
           </Box>
         </DashboardCard>
@@ -183,8 +183,8 @@ const SystemReports = () => {
                 {Number(stats.totalRevenue).toLocaleString()}
               </Typography>
             </Box>
-            <Avatar sx={{ bgcolor: "primary" }}>
-              <IconCash />
+            <Avatar sx={{ bgcolor: "primary.dark" }}>
+              <IconCash color="white" />
             </Avatar>
           </Box>
         </DashboardCard>
@@ -202,8 +202,8 @@ const SystemReports = () => {
                 {stats.totalProducts.toLocaleString()}
               </Typography>
             </Box>
-            <Avatar sx={{ bgcolor: "primary" }}>
-              <IconPackage />
+            <Avatar sx={{ bgcolor: "primary.dark" }}>
+              <IconPackage color="white" />
             </Avatar>
           </Box>
         </DashboardCard>

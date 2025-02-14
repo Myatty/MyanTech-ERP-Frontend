@@ -53,7 +53,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const Return = () => {
-
   const dispatch = useDispatch();
   const [orderId, setOrderId] = useState(0);
   const [reason, setReason] = useState("");
@@ -108,7 +107,7 @@ const Return = () => {
 
   const handleClose = async (status) => {
     setAnchorEl(null);
-if (status===null) return
+    if (status === null) return;
     if (status === "service" || status === "picked_up") {
       setObj({ ...obj, status: status });
       console.log("Obj", obj);
@@ -123,23 +122,31 @@ if (status===null) return
         );
         setReturOrders(updatedOrders);
       }
-      
+
       try {
         if (status === "collected") {
-          const response = await axios.put(`${apiUrl}/api/returns/collect-free`, {
-            return_id: obj.return_id, status: status
-          });
+          const response = await axios.put(
+            `${apiUrl}/api/returns/collect-free`,
+            {
+              return_id: obj.return_id,
+              status: status,
+            }
+          );
           console.log("Response:", response.data);
         } else {
-          const response = await axios.put(`${apiUrl}/api/returns/return-resolve`, {
-            return_id: obj.return_id, status: status
-          });
+          const response = await axios.put(
+            `${apiUrl}/api/returns/return-resolve`,
+            {
+              return_id: obj.return_id,
+              status: status,
+            }
+          );
 
           console.log("Response:", response.data);
         }
-        dispatch(fetchReturnInfo())
-        dispatch(fetchDrivers())
-        dispatch(fetchTrucks())
+        dispatch(fetchReturnInfo());
+        dispatch(fetchDrivers());
+        dispatch(fetchTrucks());
       } catch (error) {
         console.error("Error changing status:", error);
       }
@@ -151,13 +158,14 @@ if (status===null) return
     setReturOrders(results);
   }, []);
 
-  const orderIds = [
-    ...new Set(results?.map((order) => order.order_id) || []),
+  const orderIds = [...new Set(results?.map((order) => order.order_id) || [])];
+  const reasons = [
+    ...new Set(results?.map((order) => order.return_reason) || []),
   ];
-  const reasons = [...new Set(results?.map((order) => order.return_reason) || [])];
   const order_status = [
     ...new Set(results?.map((order) => order.status) || []),
-  ]; const filteredReturnOrders = results?.filter((order) => {
+  ];
+  const filteredReturnOrders = results?.filter((order) => {
     const ReasonMatch = reason ? order.return_reason === reason : true;
     const StatusMatch = status ? order.status === status : true;
     const OrderIdMatch = orderId ? order.order_id === orderId : true;
@@ -275,7 +283,6 @@ if (status===null) return
               onChange={(e) => setStatus(e.target.value)}
               label="Filter by Return Status"
             >
-
               {order_status.map((s) => (
                 <MenuItem key={s} value={s}>
                   {s}
@@ -289,16 +296,15 @@ if (status===null) return
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
             <TableHead>
               <TableRow>
-                <StyledTableCell>Return no</StyledTableCell>
-                <StyledTableCell>Order no</StyledTableCell>
                 <StyledTableCell>Return Date</StyledTableCell>
+                <StyledTableCell>Return No</StyledTableCell>
+                <StyledTableCell>Order No</StyledTableCell>
                 <StyledTableCell>Customer</StyledTableCell>
                 <StyledTableCell>Product Name</StyledTableCell>
-                <StyledTableCell>Quantity</StyledTableCell>
+                <StyledTableCell>Qty</StyledTableCell>
                 <StyledTableCell>Return Reason</StyledTableCell>
                 <StyledTableCell>Status</StyledTableCell>
                 <StyledTableCell>Actions</StyledTableCell>
-                <StyledTableCell></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -310,12 +316,12 @@ if (status===null) return
 
                 return (
                   <StyledTableRow key={item.return_id}>
-
-                    <StyledTableCell>RET#{item.return_id}</StyledTableCell>
-                    <StyledTableCell>Order #{item.order_id}</StyledTableCell>
                     <StyledTableCell>
                       {new Date(item.return_date).toLocaleDateString()}
                     </StyledTableCell>
+                    <StyledTableCell>RET#{item.return_id}</StyledTableCell>
+                    <StyledTableCell>Order #{item.order_id}</StyledTableCell>
+
                     <StyledTableCell>{item.customer_name}</StyledTableCell>
                     <StyledTableCell>{item.product_name}</StyledTableCell>
                     <StyledTableCell>{item.qty}</StyledTableCell>
@@ -348,7 +354,10 @@ if (status===null) return
                             }}
                           >
                             {itemOptions.map((option) => (
-                              <MenuItem key={option} onClick={() => handleClose(option)}>
+                              <MenuItem
+                                key={option}
+                                onClick={() => handleClose(option)}
+                              >
                                 {option}
                               </MenuItem>
                             ))}

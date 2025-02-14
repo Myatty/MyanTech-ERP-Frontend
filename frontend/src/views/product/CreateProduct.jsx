@@ -13,7 +13,7 @@ import {
   Alert,
 } from "@mui/material";
 import PageContainer from "src/components/container/PageContainer";
-import { createProduct,fetchProducts } from "../../actions/productActions";
+import { createProduct, fetchProducts } from "../../actions/productActions";
 
 const CreateProduct = () => {
   const dispatch = useDispatch();
@@ -29,7 +29,7 @@ const CreateProduct = () => {
     product_segment: "",
   });
 
-  const [openToast, setOpenToast] = useState(false); 
+  const [openToast, setOpenToast] = useState(false);
 
   const categories = ["Electronics", "Laptops", "Phones", "Accessories"];
   const brands = ["Apple", "Samsung", "HP", "Dell", "Sony"];
@@ -43,8 +43,8 @@ const CreateProduct = () => {
     const success = await dispatch(createProduct(productData));
 
     if (success) {
-      setOpenToast(true);
-      dispatch(fetchProducts()); 
+      setOpenToast(true); // Show success toast
+      dispatch(fetchProducts()); // Update product list
       setProductData({
         name: "",
         category: "",
@@ -53,7 +53,7 @@ const CreateProduct = () => {
         serial_number: "",
         stock_quantity: "",
         product_segment: "",
-      }); 
+      }); // Reset form
     }
   };
 
@@ -65,7 +65,6 @@ const CreateProduct = () => {
           margin: "auto",
           padding: "40px",
           borderRadius: "12px",
-          background: "#fff",
           boxShadow: "0px 5px 10px rgba(0, 0, 0, 0.1)",
         }}
       >
@@ -95,6 +94,7 @@ const CreateProduct = () => {
 
             <Grid item xs={12} md={6}>
               <TextField
+                select
                 fullWidth
                 label="Category *"
                 name="category"
@@ -102,16 +102,17 @@ const CreateProduct = () => {
                 onChange={handleChange}
                 required
               >
-                {/* {categories.map((category) => (
+                {categories.map((category) => (
                   <MenuItem key={category} value={category}>
                     {category}
                   </MenuItem>
-                ))} */}
+                ))}
               </TextField>
             </Grid>
 
             <Grid item xs={12} md={6}>
               <TextField
+                select
                 fullWidth
                 label="Brand *"
                 name="brand"
@@ -119,11 +120,11 @@ const CreateProduct = () => {
                 onChange={handleChange}
                 required
               >
-                {/* {brands.map((brand) => (
+                {brands.map((brand) => (
                   <MenuItem key={brand} value={brand}>
                     {brand}
                   </MenuItem>
-                ))} */}
+                ))}
               </TextField>
             </Grid>
 
@@ -219,9 +220,9 @@ const CreateProduct = () => {
           severity="success"
           sx={{
             width: "100%",
-            backgroundColor: "#4A90E2", 
-            color: "#fff", 
-            fontWeight: "bold", 
+            backgroundColor: "#4A90E2", // Custom Background (Blue)
+            color: "#fff", // White Text
+            fontWeight: "bold", // Make Text Bold
             borderRadius: "8px",
           }}
         >

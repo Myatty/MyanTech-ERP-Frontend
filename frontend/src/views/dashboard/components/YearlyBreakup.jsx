@@ -10,6 +10,7 @@ import {
 import axios from "axios";
 
 import DashboardCard from "../../../components/shared/DashboardCard";
+import { useSelector } from "react-redux";
 const YearlyBreakup = () => {
   const [currentYearSale, setCurrentYearSale] = useState(0);
   const [currentYear, setCurrentYear] = useState(0);
@@ -17,22 +18,7 @@ const YearlyBreakup = () => {
   const [previousYearSale, setPreviousYearSale] = useState(0);
   const [twoYearsAgoSale, setTwoYearsAgoSale] = useState(0);
   const [saleIncreasePrecentage, setSaleIncreasePrecentage] = useState(0);
-
-  // useEffect(() => {
-  //   const fetchCurrentYearSale = async () => {
-  //     try {
-  //       const response = await axios.get('http://localhost:4000/api/orders/current-year-breakup');
-  //       if (response.data.length > 0) {
-  //         setCurrentYearSale(response.data[0].total_amount);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching total yearly sales:', error);
-  //     }
-  //   };
-
-  //   fetchCurrentYearSale();
-  // }, []);
-
+  const mode = useSelector((state) => state.themes.mode);
   useEffect(() => {
     const fetchYearlySales = async () => {
       try {
@@ -73,66 +59,25 @@ const YearlyBreakup = () => {
   const theme = useTheme();
   const primary = theme.palette.primary.main;
   const primarylight = "#ecf2ff";
-  const successlight = theme.palette.success.light;
-
-  // chart
-  const optionscolumnchart = {
-    chart: {
-      type: "donut",
-      fontFamily: "'Plus Jakarta Sans', sans-serif;",
-      foreColor: "#adb0bb",
-      toolbar: {
-        show: false,
-      },
-      height: 155,
-    },
-    colors: [primary, primarylight, "#F9F9FD"],
-    plotOptions: {
-      pie: {
-        startAngle: 0,
-        endAngle: 360,
-        donut: {
-          size: "75%",
-          background: "transparent",
-        },
-      },
-    },
-    tooltip: {
-      theme: theme.palette.mode === "dark" ? "dark" : "light",
-      fillSeriesColor: false,
-    },
-    stroke: {
-      show: false,
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    legend: {
-      show: false,
-    },
-    responsive: [
-      {
-        breakpoint: 991,
-        options: {
-          chart: {
-            width: 120,
-          },
-        },
-      },
-    ],
-  };
-  const seriescolumnchart = [38, 40, 25];
+  const successlight = mode === "dark" ? "#121212" : theme.palette.main;
 
   return (
     <DashboardCard title="Yearly Breakup">
       <Grid container spacing={3}>
         {/* column */}
-        <Grid item xs={12} sm={12}>
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          sx={{
+            backgroundColor: successlight,
+          }}
+        >
           <Typography variant="h4" fontWeight="700">
             {Number(currentYearSale).toLocaleString()} MMK
           </Typography>
           <Stack direction="row" spacing={1} mt={1} alignItems="center">
-            <Avatar sx={{ bgcolor: successlight, width: 27, height: 27 }}>
+            <Avatar sx={{ width: 27, height: 27, background: primarylight }}>
               {currentYearSale > previousYearSale ? (
                 <IconArrowUpRight width={20} color="#39B69A" />
               ) : (
