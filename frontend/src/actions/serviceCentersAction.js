@@ -9,7 +9,7 @@ export const fetchServiceCenter = () => {
   return async (dispatch) => {
     dispatch({ type: FETCH_CENTER_REQUEST });
     try {
-      const response = await axios.get(`${apiUrl}/api/`);
+      const response = await axios.get(`${apiUrl}/api/serviceCenter`);
 
       dispatch({ type: FETCH_CENTER_SUCCESS, payload: response.data });
     } catch (error) {

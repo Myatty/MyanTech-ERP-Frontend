@@ -29,6 +29,8 @@ import StatusModel from "./components/StatusModel";
 import DashboardCard from "../../components/shared/DashboardCard";
 import PageContainer from "../../components/container/PageContainer";
 import { fetchReturnInfo } from "../../actions/returnInfoActions";
+import { fetchDrivers } from "../../actions/driverActions";
+import { fetchTrucks } from "../../actions/truckActions";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -77,10 +79,7 @@ const Return = () => {
     dispatch(fetchReturnInfo());
   }, [dispatch]);
 
-
   // const returnInfo = Array.isArray(returnInfoArray) ? returnInfoArray : [];
-  console.log("returnInfo", returnInfo);
-  console.log('ret info array ', returnInfo);
 
   const totalReturn = returnInfo?.total || 0;
   const serviceCount = returnInfo?.serviceCount || 0;
@@ -88,16 +87,9 @@ const Return = () => {
   const pickUpCount = returnInfo?.pickupCount || 0;
   const collectedCount = returnInfo?.collectedCount || 0;
   const resolvedCount = returnInfo?.resolvedCount || 0;
-  console.log('service ', pickUpCount);
 
   const results = returnInfo?.results || [];
-  console.log('results ', results);
   const returnIds = [...new Set(results.map((rtOrder) => rtOrder.return_id))];
-  console.log('returnIds ', returnIds);
-
-
-  // const returnOrders = [ ...new Set(results.map((order) => order.return_id))];
-
 
   //codes for clicking change status button
   const [anchorEl, setAnchorEl] = useState(null);
@@ -105,7 +97,7 @@ const Return = () => {
 
   const statusOptions = {
     pending: ["picked_up"],
-    picked_Up: ["collected"],
+    picked_up: ["collected"],
     collected: ["service", "resolved"],
     service: ["resolved"],
   };
@@ -115,50 +107,54 @@ const Return = () => {
   };
 
   const handleClose = async (status) => {
+    setAnchorEl(null);
+if (status===null) return
     if (status === "service" || status === "picked_up") {
       setObj({ ...obj, status: status });
+      console.log("Obj", obj);
+
       return setOpen(true);
     } else {
-      //you must keep code under this comment before try in fetch try
       if (status) {
-        setSelectedStatus(status); // Set selected value;
-        const filterData = retunOrders.map((item) =>
+        setSelectedStatus(status);
+
+        const updatedOrders = retunOrders.map((item) =>
           item.return_id === obj.return_id ? { ...item, status: status } : item
         );
-        setReturOrders(filterData);
+        setReturOrders(updatedOrders);
       }
-      setAnchorEl(null);
-      //call fetch
+      
       try {
-        await axios.post(
+        if (status === "collected") {
+          const response = await axios.put(`${apiUrl}/api/returns/collect-free`, {
+            return_id: obj.return_id, status: status
+          });
+          console.log("Response:", response.data);
+        } else {
+          const response = await axios.put(`${apiUrl}/api/returns/return-resolve`, {
+            return_id: obj.return_id, status: status
+          });
 
-          `${apiUrl}/api/return`,
-          { ...obj, status: status }
-        );
+          console.log("Response:", response.data);
+        }
+        dispatch(fetchReturnInfo())
+        dispatch(fetchDrivers())
+        dispatch(fetchTrucks())
       } catch (error) {
         console.error("Error changing status:", error);
       }
     }
   };
 
-  //console.log("status", selectedStatus);
-
   useEffect(() => {
     //you must fill with real data
     setReturOrders(results);
   }, []);
 
-  // Get return_id from returnOrder
   const orderIds = [
     ...new Set(results?.map((order) => order.order_id) || []),
   ];
-  console.log("orderIds", orderIds);
-
-  // Get reason from returnOrder
   const reasons = [...new Set(results?.map((order) => order.return_reason) || [])];
-  console.log("reasons", reasons);
-
-  // Get status from returnOrder
   const order_status = [
     ...new Set(results?.map((order) => order.status) || []),
   ]; const filteredReturnOrders = results?.filter((order) => {
@@ -168,9 +164,6 @@ const Return = () => {
 
     return ReasonMatch && StatusMatch && OrderIdMatch;
   });
-
-
-  console.log("filteredReturnOrders", filteredReturnOrders);
 
   return (
     <PageContainer title="Return Orders" description="this is Return Orders">
@@ -314,13 +307,11 @@ const Return = () => {
                   <IconProgressCheck stroke={1.5} size="1.6rem" />
                 );
                 const itemOptions = statusOptions[item.status] || [];
-                console.log("itemOptions", itemOptions);
-                console.log('intm', item.status);
 
                 return (
                   <StyledTableRow key={item.return_id}>
 
-                    <StyledTableCell>{item.return_id}</StyledTableCell>
+                    <StyledTableCell>RET#{item.return_id}</StyledTableCell>
                     <StyledTableCell>Order #{item.order_id}</StyledTableCell>
                     <StyledTableCell>
                       {new Date(item.return_date).toLocaleDateString()}
