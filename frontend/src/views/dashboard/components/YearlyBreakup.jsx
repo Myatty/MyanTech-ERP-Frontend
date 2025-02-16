@@ -43,7 +43,7 @@ const YearlyBreakup = () => {
           const increasePercentage = Math.abs(
             ((data[0].total_amount - data[1].total_amount) /
               data[1].total_amount) *
-              100
+            100
           );
           setSaleIncreasePrecentage(increasePercentage);
         }
@@ -62,7 +62,7 @@ const YearlyBreakup = () => {
   const successlight = mode === "dark" ? "#121212" : theme.palette.main;
 
   return (
-    <DashboardCard title="Yearly Breakup">
+    <DashboardCard title="Total Revenue (MMK)">
       <Grid container spacing={3}>
         {/* column */}
         <Grid

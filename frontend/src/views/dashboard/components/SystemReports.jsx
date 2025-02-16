@@ -178,7 +178,7 @@ const SystemReports = () => {
             justifyContent="space-between"
           >
             <Box>
-              <Typography variant="subtitle2">Revenue (MMK)</Typography>
+              <Typography variant="subtitle2">Total Sale (MMK)</Typography>
               <Typography variant="h4" fontWeight="700">
                 {Number(stats.totalRevenue).toLocaleString()}
               </Typography>
