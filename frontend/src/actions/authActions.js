@@ -4,7 +4,7 @@ export const AUTH_LOGIN_REQUEST = "AUTH_LOGIN_REQUEST";
 export const AUTH_LOGIN_SUCCESS = "AUTH_LOGIN_SUCCESS";
 export const AUTH_LOGIN_FAILURE = "AUTH_LOGIN_FAILURE";
 const apiUrl = import.meta.env.VITE_APP_API_URL;
-
+console.log("API URL:", apiUrl); // <-- check if the URL is correct
 // Action for login
 // authActions.js
 export const loginUser = (email, password) => async (dispatch) => {
