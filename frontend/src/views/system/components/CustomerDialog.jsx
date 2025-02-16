@@ -37,7 +37,6 @@ const CustomerDialog = ({ open, setOpen }) => {
   };
 
   const handleSubmit = async (e) => {
-    console.log("customerData", customerData);
     e.preventDefault();
     try {
       await axios.post(`${apiUrl}/api/customers`, customerData);

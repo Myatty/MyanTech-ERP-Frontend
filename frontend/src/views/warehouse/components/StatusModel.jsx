@@ -69,10 +69,8 @@ const StatusModel = ({
     setDriver(0), setTruck(0), setCenter(0);
     try {
       if (obj.status === "service") {
-        console.log("obj status", obj.status);
         await axios.put(`${apiUrl}/api/returns/assign-service`, obj);
       } else {
-        console.log("obj status", obj.status);
         await axios.put(`${apiUrl}/api/returns/assign-pickup`, obj);
       }
       dispatch(fetchReturnInfo());
