@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -8,17 +8,18 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import axios from 'axios';
+import axios from "axios";
+const apiUrl = import.meta.env.VITE_APP_API_URL;
 
 const DialogBox = ({ open, setOpen, onProductCreated }) => {
   const [formData, setFormData] = useState({
-    name: '',
-    category: '',
-    brand: '',
-    price: '',
-    serial_number: '',
-    stock_quantity: '',
-    product_segment: '',
+    name: "",
+    category: "",
+    brand: "",
+    price: "",
+    serial_number: "",
+    stock_quantity: "",
+    product_segment: "",
   });
 
   const handleChange = (e) => {
@@ -32,11 +33,11 @@ const DialogBox = ({ open, setOpen, onProductCreated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:4000/api/products', formData);
+      await axios.post(`${apiUrl}/api/products`, formData);
       setOpen(false);
-      onProductCreated(); 
+      onProductCreated();
     } catch (error) {
-      console.error('Error creating product:', error);
+      console.error("Error creating product:", error);
     }
   };
 
@@ -98,7 +99,9 @@ const DialogBox = ({ open, setOpen, onProductCreated }) => {
           />
           <DialogActions>
             <Button onClick={() => setOpen(false)}>Cancel</Button>
-            <Button type="submit" variant="contained">Create</Button>
+            <Button type="submit" variant="contained">
+              Create
+            </Button>
           </DialogActions>
         </Box>
       </DialogContent>

@@ -1,5 +1,14 @@
-import React, { useState } from 'react';
-import { FormControl, InputLabel, Select, MenuItem, ListItemText, TextField, Button, Box } from '@mui/material';
+import React, { useState } from "react";
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  ListItemText,
+  TextField,
+  Button,
+  Box,
+} from "@mui/material";
 
 const SelectedProduct = ({
   products,
@@ -12,7 +21,7 @@ const SelectedProduct = ({
   customer_id,
 }) => {
   const [status, setStatus] = useState(true);
-  const [product, setProduct] = useState('');
+  const [product, setProduct] = useState("");
   const [selectProductQty, setSelectProductQty] = useState(0);
   const [fakeId, setFakeId] = useState(0);
 
@@ -25,14 +34,13 @@ const SelectedProduct = ({
       const updateOrder = orders.map((item) => {
         return item.serial_number === newOrder.serial_number
           ? {
-            ...item,
-            quantity: item.quantity + newOrder.quantity,
-            totalPrice: item.totalPrice + newOrder.totalPrice,
-          }
+              ...item,
+              quantity: item.quantity + newOrder.quantity,
+              totalPrice: item.totalPrice + newOrder.totalPrice,
+            }
           : item;
       });
       setOrders([...updateOrder]);
-      console.log("okok", updateOrder);
     } else {
       setOrders([...orders, newOrder]);
     }
@@ -61,9 +69,7 @@ const SelectedProduct = ({
 
   // Select Product to order
   const handleChange = (e) => {
-    console.log("Products array:", products); // Debugging log
     const find = products.find((i) => i.product_id === Number(e.target.value));
-    console.log("Selected product:", find); // Debugging log
     if (find) {
       setFakeId(fakeId + 1);
       setNewOrder({
@@ -101,10 +107,6 @@ const SelectedProduct = ({
     }
   };
 
-  console.log("fakeid", fakeId);
-  console.log("select", newOrder);
-  console.log("order", orders);
-
   return (
     <>
       <Box
@@ -115,7 +117,6 @@ const SelectedProduct = ({
         }}
       >
         <FormControl sx={{ mt: 2, width: 300 }}>
-
           <InputLabel>Product</InputLabel>
           <Select
             name="product"
@@ -193,7 +194,6 @@ const SelectedProduct = ({
           }}
           sx={{ width: 200 }}
         />
-
       </Box>
       <Button variant="contained" color="primary" onClick={handleAddOrder}>
         Add Product

@@ -11,6 +11,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import DashboardCard from "../../../components/shared/DashboardCard";
+const apiUrl = import.meta.env.VITE_APP_API_URL;
 
 const ProfitProductPerformance = () => {
   const [loading, setLoading] = useState(false);
@@ -22,9 +23,7 @@ const ProfitProductPerformance = () => {
       setLoading(true);
       setError("");
       try {
-        const res = await axios.get(
-          "http://localhost:4000/api/report/profitproduct"
-        );
+        const res = await axios.get(`${apiUrl}/api/report/profitproduct`);
         setProducts(res.data.results); // results array
       } catch (err) {
         setError(err.message);

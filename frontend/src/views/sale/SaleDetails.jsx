@@ -34,9 +34,7 @@ const SaleDetails = () => {
   const handleReturnClick = () => setOpenReturnDialog(true);
   const handleCreateInvoice = () => alert("Create invoice clicked" + order_id);
 
-  const handleConfirmReturn = (selectedReturns) => {
-    console.log("Selected Returns:", selectedReturns);
-  };
+  const handleConfirmReturn = (selectedReturns) => {};
 
   useEffect(() => {
     dispatch(fetchSaleDetail(order_id));
@@ -93,7 +91,6 @@ const SaleDetails = () => {
 
   // Handle return
   const handleReturn = () => {
-    console.log("Returning order:", order_id);
     // return logic here
   };
 

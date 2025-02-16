@@ -13,6 +13,7 @@ import {
   IconClipboardCheck,
   IconTruckReturn,
 } from "@tabler/icons-react";
+const apiUrl = import.meta.env.VITE_APP_API_URL;
 
 const SystemReports = () => {
   const [stats, setStats] = useState({
@@ -39,7 +40,7 @@ const SystemReports = () => {
     // });
     const fetchStats = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/api/report/stats");
+        const res = await axios.get(`${apiUrl}/api/report/stats`);
         setStats(res.data);
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
