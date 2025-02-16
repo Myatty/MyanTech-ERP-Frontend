@@ -3,13 +3,14 @@ import axios from "axios";
 export const AUTH_LOGIN_REQUEST = "AUTH_LOGIN_REQUEST";
 export const AUTH_LOGIN_SUCCESS = "AUTH_LOGIN_SUCCESS";
 export const AUTH_LOGIN_FAILURE = "AUTH_LOGIN_FAILURE";
+const apiUrl = import.meta.env.VITE_APP_API_URL;
 
 // Action for login
 // authActions.js
 export const loginUser = (email, password) => async (dispatch) => {
   dispatch({ type: AUTH_LOGIN_REQUEST });
   try {
-    const response = await axios.post("http://localhost:4000/auth/login", {
+    const response = await axios.post(`${apiUrl}/auth/login`, {
       email,
       password,
     });

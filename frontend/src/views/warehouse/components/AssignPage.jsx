@@ -21,6 +21,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { IconTrash } from "@tabler/icons-react";
+const apiUrl = import.meta.env.VITE_APP_API_URL;
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -79,7 +80,7 @@ const AssignTruck = ({
 
     try {
       await axios.post(
-        `http://localhost:4000/api/deliveries`,
+        `${apiUrl}/api/deliveries`,
         {
           order_ids: assignOrderId,
         },

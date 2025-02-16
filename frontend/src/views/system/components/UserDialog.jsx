@@ -16,6 +16,7 @@ import {
 import { useDispatch } from "react-redux";
 import { fetchUsers } from "../../../actions/userActions";
 import axios from "axios";
+const apiUrl = import.meta.env.VITE_APP_API_URL;
 
 const UserDialog = ({
   open,
@@ -54,7 +55,7 @@ const UserDialog = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:4000/api/users", userData);
+      await axios.post(`${apiUrl}/api/users`, userData);
       setOpen(false);
       dispatch(fetchUsers());
     } catch (error) {

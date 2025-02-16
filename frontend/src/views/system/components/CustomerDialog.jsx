@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import axios from "axios";
+const apiUrl = import.meta.env.VITE_APP_API_URL;
 
 import { fetchCustomers } from "../../../actions/customerActions";
 
@@ -39,7 +40,7 @@ const CustomerDialog = ({ open, setOpen }) => {
     console.log("customerData", customerData);
     e.preventDefault();
     try {
-      await axios.post("http://localhost:4000/api/customers", customerData);
+      await axios.post(`${apiUrl}/api/customers`, customerData);
       setOpen(false);
       dispatch(fetchCustomers());
     } catch (error) {

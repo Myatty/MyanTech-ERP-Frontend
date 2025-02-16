@@ -8,8 +8,8 @@ import {
   IconArrowDownRight,
 } from "@tabler/icons-react";
 import axios from "axios";
-
 import DashboardCard from "../../../components/shared/DashboardCard";
+const apiUrl = import.meta.env.VITE_APP_API_URL;
 import { useSelector } from "react-redux";
 const YearlyBreakup = () => {
   const [currentYearSale, setCurrentYearSale] = useState(0);
@@ -22,9 +22,7 @@ const YearlyBreakup = () => {
   useEffect(() => {
     const fetchYearlySales = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:4000/api/orders/yearly-breakup"
-        );
+        const response = await axios.get(`${apiUrl}/api/orders/yearly-breakup`);
         const data = response.data;
 
         if (data.length > 0) {
