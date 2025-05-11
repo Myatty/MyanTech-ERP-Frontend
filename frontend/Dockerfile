@@ -3,6 +3,10 @@ FROM node:22.14.0-alpine3.20 AS builder
 
 WORKDIR /app
 
+# for .env (use --build-arg api-name Tag when building the image)
+ARG VITE_APP_API_URL
+ENV VITE_APP_API_URL=$VITE_APP_API_URL
+
 COPY ./package*.json .
 
 RUN npm install 
