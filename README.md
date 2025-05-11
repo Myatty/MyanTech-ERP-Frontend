@@ -6,11 +6,6 @@ This repository contains the frontend source code for the **MyanTech ERP** proje
 - [Overview](#overview)  
 - [Key Features](#key-features)  
 - [Technology Stack](#technology-stack)  
-- [Getting Started](#getting-started)  
-- [Project Structure](#project-structure)  
-- [Environment Variables](#environment-variables)  
-- [Scripts](#scripts)  
-- [License](#license)  
 
 ## Overview  
 **MyanTech ERP** is an enterprise resource planning web application designed to **streamline and manage business processes** such as **sales, warehouse operations, and finance**.  
@@ -40,13 +35,10 @@ This repository contains the frontend source code for the **MyanTech ERP** proje
 
 ## Technology Stack  
 - **Frontend Library**: React + Redux  
+- **Backend Library**: Node.Js + Express.Js  
+- **Database**: MySQL deployed on AWS RDS 
 - **Bundler/Dev Server**: Vite  
 - **UI Framework**: MUI v5  
 - **HTTP Client**: Axios  
 
-## Getting Started  
 
-### Clone this repository:  
-```sh
-git clone https://github.com/your-username/myantech-erp-frontend.git
-cd myantech-erp-frontend
