@@ -40,5 +40,3 @@ This repository contains the frontend source code for the **MyanTech ERP** proje
 - **Bundler/Dev Server**: Vite  
 - **UI Framework**: MUI v5  
 - **HTTP Client**: Axios  
-
-
